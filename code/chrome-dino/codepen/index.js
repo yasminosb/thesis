@@ -49,7 +49,7 @@
       // Images.
       this.images = {};
       this.imagesLoaded = 0;
-      if (this.isDisabled()) {
+      if (this.isDisabled()) { // false HC
         this.setupDisabledRunner();
       } else {
         this.loadImages();
@@ -212,7 +212,7 @@
       /**
        * For disabled instances, set up a snackbar with the disabled message.
        */
-      setupDisabledRunner: function() {
+      setupDisabledRunner: function() { // not called HC
         this.containerEl = document.createElement('div');
         this.containerEl.className = Runner.classes.SNACKBAR;
         this.containerEl.textContent = loadTimeData.getValue('disabled');
@@ -230,7 +230,7 @@
        * @param {string} setting
        * @param {*} value
        */
-      updateConfigSetting: function(setting, value) {
+      updateConfigSetting: function(setting, value) { // not called HC
         if (setting in this.config && value != undefined) {
           this.config[setting] = value;
           switch (setting) {
@@ -2449,7 +2449,10 @@
     
     
     function onDocumentLoad() {
-        new Runner('.interstitial-wrapper');
+        r = new Runner('.interstitial-wrapper');
+        
+        // r.updateConfigSetting("SPEED",10);
+
     }
     
     document.addEventListener('DOMContentLoaded', onDocumentLoad);
