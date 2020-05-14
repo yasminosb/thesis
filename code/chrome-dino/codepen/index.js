@@ -321,7 +321,7 @@
         this.canvas = createCanvas(this.containerEl, this.dimensions.WIDTH,
             this.dimensions.HEIGHT, Runner.classes.PLAYER);
         this.canvasCtx = this.canvas.getContext('2d');
-        this.canvasCtx.fillStyle = '#f7f7f7';
+        this.canvasCtx.fillStyle = '#f7f7f7'; // does not change anything?
         this.canvasCtx.fill();
         Runner.updateCanvasScaling(this.canvas);
         // Horizon contains clouds, obstacles and the ground.
@@ -368,15 +368,7 @@
             boxStyles.paddingLeft.length - 2));
         this.dimensions.WIDTH = this.outerContainerEl.offsetWidth - padding * 2;
         this.dimensions.WIDTH = Math.min(DEFAULT_WIDTH, this.dimensions.WIDTH);
-            
-            
-            
-            
-            
-            
-            
-            
-            
+          
         // Redraw the elements back onto the canvas.
         if (this.canvas) {
           this.canvas.width = this.dimensions.WIDTH;
