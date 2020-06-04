@@ -49,7 +49,8 @@
       // Images.
       this.images = {};
       this.imagesLoaded = 0;
-      if (this.isDisabled()) { // false HC
+      //this.parameters = new Parameters();
+      if (this.isDisabled()) { // false - hardcoded
         this.setupDisabledRunner();
       } else {
         this.loadImages();
@@ -81,26 +82,26 @@
      * @enum {number}
      */
     Runner.config = {
-      ACCELERATION: 0.002, // 
+      ACCELERATION: 0.002, 
       BG_CLOUD_SPEED: 0.2, 
       BOTTOM_PAD: 10,
       CLEAR_TIME: 3000,
       CLOUD_FREQUENCY: 0.5,
       GAMEOVER_CLEAR_TIME: 750,
-      GAP_COEFFICIENT: 0.6, //
-      GRAVITY: 0.001, //? 
+      GAP_COEFFICIENT: 0.6, 
+      GRAVITY: 0.001, 
       INITIAL_JUMP_VELOCITY: 12,
       INVERT_FADE_DURATION: 12000,
-      INVERT_DISTANCE: 700,/* Day & Night */ //
+      INVERT_DISTANCE: 700, /* Day & Night */ //
       MAX_BLINK_COUNT: 3,
       MAX_CLOUDS: 6,
-      MAX_OBSTACLE_LENGTH: 5, //
-      MAX_OBSTACLE_DUPLICATION:  2, //
-      MAX_SPEED: 10, //
-      MIN_JUMP_HEIGHT: 35,
+      MAX_OBSTACLE_LENGTH: 3, 
+      MAX_OBSTACLE_DUPLICATION: 2 , // 2
+      MAX_SPEED: 10, 
+      MIN_JUMP_HEIGHT: 15,
       MOBILE_SPEED_COEFFICIENT: 1.2,
       RESOURCE_TEMPLATE_ID: 'audio-resources',
-      SPEED: 4, //
+      SPEED: 6,
       SPEED_DROP_COEFFICIENT: 3,
       ARCADE_MODE_INITIAL_TOP_POSITION: 35,
       ARCADE_MODE_TOP_POSITION_PERCENT: 0.1
@@ -401,6 +402,7 @@
        */
       playIntro: function() {
         if (!this.activated && !this.crashed) {
+          parameters.addLog("playIntro");
           this.playingIntro = true;
           this.tRex.playingIntro = true;
           // CSS animation definition.
@@ -485,6 +487,7 @@
               this.currentSpeed += this.config.ACCELERATION;
             }
           } else {
+            parameters.gameOver(this.horizon.obstacles[0], this, this.tRex);
             this.gameOver();
           }
           var playAchievementSound = this.distanceMeter.update(deltaTime,
@@ -494,21 +497,23 @@
           }
     
           // Night mode.
-          if (this.invertTimer > this.config.INVERT_FADE_DURATION) {
-            this.invertTimer = 0;
-            this.invertTrigger = false;
-            this.invert();
-          } else if (this.invertTimer) {
-            this.invertTimer += deltaTime;
-          } else {
-            var actualDistance =
-                this.distanceMeter.getActualDistance(Math.ceil(this.distanceRan));
-            if (actualDistance > 0) {
-              this.invertTrigger = !(actualDistance %
-                  this.config.INVERT_DISTANCE);
-              if (this.invertTrigger && this.invertTimer === 0) {
-                this.invertTimer += deltaTime;
-                this.invert();
+          if(Parameters.config.NIGHT_MODE_ENABLED){
+            if (this.invertTimer > this.config.INVERT_FADE_DURATION) {
+              this.invertTimer = 0;
+              this.invertTrigger = false;
+              this.invert();
+            } else if (this.invertTimer) {
+              this.invertTimer += deltaTime;
+            } else {
+              var actualDistance =
+                  this.distanceMeter.getActualDistance(Math.ceil(this.distanceRan));
+              if (actualDistance > 0) {
+                this.invertTrigger = !(actualDistance %
+                    this.config.INVERT_DISTANCE);
+                if (this.invertTrigger && this.invertTimer === 0) {
+                  this.invertTimer += deltaTime;
+                  this.invert();
+                }
               }
             }
           }
@@ -525,6 +530,7 @@
        */
       handleEvent: function(e) {
         return (function(evtType, events) {
+          parameters.addEvent(evtType);
           switch (evtType) {
             case events.KEYDOWN:
             case events.TOUCHSTART:
@@ -784,6 +790,7 @@
         }
         // Update the high score.
         if (this.distanceRan > this.highestScore) {
+          parameters.store("newHighScore", true);
           this.highestScore = Math.ceil(this.distanceRan);
           this.distanceMeter.setHighScore(this.highestScore);
         }
@@ -860,6 +867,7 @@
           this.invertTimer = 0;
           this.inverted = false;
         } else {
+          parameters.addLog("invert");
           this.inverted = document.body.classList.toggle(Runner.classes.INVERTED,
               this.invertTrigger);
         }
@@ -962,6 +970,108 @@
     function getTimeStamp() {
       return IS_IOS ? new Date().getTime() : performance.now();
     }
+
+    /**
+     * Yasmine Bogaert
+     * dict: stores the parameters that have been used
+     */
+    function Parameters(){
+      this.dict = {
+        events: [],
+        logs: [],
+        obstacles: []
+      };
+    }
+
+    /**
+     * Parameters that we want to be adjustable
+     */
+    Parameters.config = {
+        SPEED: 6,
+        ACCELERATION: 0.002, 
+        MIN_GAP: 120,
+        OBSTACLE_TYPES: ['CACTUS_LARGE', 'CACTUS_SMALL', 'PTERODACTYL'], /** 'CACTUS_LARGE', 'CACTUS_SMALL', 'PTERODACTYL' */
+        NIGHT_MODE_ENABLED: true, 
+        NIGHT_MODE_DISTANCE: 700, 
+        CLEAR_TIME: 3000, 
+        MAX_OBSTACLE_LENGTH: 3, 
+        MAX_SPEED: 10,
+        PTERODACTYL_YPOS: [ 100, 75, 50 ], 
+    }
+
+    /**
+     * Overwrite Runner config with own parameters
+     * other overwrite locations
+     * - Obstacle.types
+     * - minGap_default
+     * - Night mode l500
+     */
+    Runner.config.SPEED = Parameters.config.SPEED;
+    Runner.config.ACCELERATION = Parameters.config.ACCELERATION;
+    Runner.config.INVERT_DISTANCE = Parameters.config.NIGHT_MODE_DISTANCE;
+    Runner.config.CLEAR_TIME = Parameters.config.CLEAR_TIME;
+    Runner.config.MAX_OBSTACLE_LENGTH = Parameters.config.MAX_OBSTACLE_LENGTH;
+    Runner.config.MAX_SPEED = Parameters.config.MAX_SPEED;
+    minGap_default = Parameters.config.MIN_GAP;
+
+    /**
+     * Store events the dict
+     */
+    Parameters.prototype = {
+      /**
+       * Store new value in dict
+       */
+      store: function(key, value){
+        this.dict[key] = value;
+      },
+      /**
+       * add obstacle to obstacles
+       * @param {*} obstacle 
+       */
+      addObstacle(obstacle){
+        this.dict.obstacles.push([obstacle, getTimeStamp()]);
+      },
+      /**
+       * add log to logs
+       * @param {*} log 
+       */
+      addLog: function(log){
+        this.dict.logs.push([log, getTimeStamp()]);
+      },
+      /**
+       * add event to events
+       * @param {*} eventType 
+       */
+      addEvent: function(eventType){
+        this.dict.events.push([eventType, getTimeStamp()]);
+      },
+      gameOver: function(obstacle, runner, tRex){
+        this.dict["collisionObstacle"] = obstacle;
+        this.log(runner, tRex);
+      },
+      /** 
+       * Log all the parameters stored in dict
+       * @param {*} runner runner obj
+       * @param {*} tRex trex obj
+       */
+      log: function(runner, tRex){
+        var actualDistance = runner.distanceMeter.getActualDistance(Math.ceil(runner.distanceRan));
+        var params = {
+          "distanceRan": runner.distanceRan,
+          "actualDistance": actualDistance,
+          "runnerConfig": runner.config,
+          "tRexConfig": tRex.config,
+          "inverted": runner.inverted,
+          "obstacleTypes": Obstacle.types
+          }
+        var all_params = Object.assign({}, this.dict, params);
+        console.log(all_params);
+      }
+
+    }
+
+    var parameters = new Parameters();
+
     //******************************************************************************
     /**
      * Game over panel.
@@ -1206,7 +1316,7 @@
       init: function(speed) {
         this.cloneCollisionBoxes();
         // Only allow sizing if we're at the right speed.
-        if (this.size > 1 && this.typeConfig.multipleSpeed > speed) {
+        if (this.size > 1 && this.typeConfig.multipleSpeed > speed) { // size is random but since pterodactyl has multipleSpeed 900 -> always size reset to 1
           this.size = 1;
         }
         this.width = this.typeConfig.width * this.size;
@@ -1218,6 +1328,13 @@
         } else {
           this.yPos = this.typeConfig.yPos;
         }
+        var param_obstacle = {
+          "typeConfig" : this.typeConfig,
+          "size": this.size, // for tree
+          "yPos": this.yPos, // for pterodactyl
+        }
+        parameters.addObstacle(param_obstacle);
+        
         this.draw();
         // Make collision box adjustments,
         // Central box is adjusted to the size as one box.
@@ -1236,7 +1353,7 @@
         if (this.typeConfig.speedOffset) {
           this.speedOffset = Math.random() > 0.5 ? this.typeConfig.speedOffset :
               -this.typeConfig.speedOffset;
-        }
+        } // either x times slower or x times faster than horizon (0.8 for pterodactyl)
         this.gap = this.getGap(this.gapCoefficient, speed);
       },
       /**
@@ -1250,6 +1367,12 @@
           sourceHeight = sourceHeight * 2;
         }
         // X position in sprite.
+        /**
+         * sprite : X-XX-XXX for size 1-2-3
+         * size = 0 -> original pos in sprite + 0*width
+         * size = 1 -> original pos in sprite + 1*width
+         * size = 3 -> original pos in sprite + 3*width
+         */
         var sourceX = (sourceWidth * this.size) * (0.5 * (this.size - 1)) +
             this.spritePos.x;
         // Animation frames.
@@ -1329,8 +1452,61 @@
      * speedOffset: speed faster / slower than the horizon.
      * minSpeed: Minimum speed which the obstacle can make an appearance.
      */
-    Obstacle.types = [
-      {
+    var minGap_default = (typeof minGap_default == 'undefined' ? 120 : minGap_default);
+    var CACTUS_SMALL = {
+      type: 'CACTUS_SMALL',
+      width: 17,
+      height: 35,
+      yPos: 105,
+      multipleSpeed: 4,
+      minGap: minGap_default, //120,
+      minSpeed: 0,
+      collisionBoxes: [
+        new CollisionBox(0, 7, 5, 27),
+        new CollisionBox(4, 0, 6, 34),
+        new CollisionBox(10, 4, 7, 14)
+      ]
+    }
+
+    var CACTUS_LARGE = {
+      type: 'CACTUS_LARGE',
+      width: 25,
+      height: 50,
+      yPos: 90,
+      multipleSpeed: 7,
+      minGap: minGap_default, //120,
+      minSpeed: 0,
+      collisionBoxes: [
+        new CollisionBox(0, 12, 7, 38),
+        new CollisionBox(8, 0, 7, 49),
+        new CollisionBox(13, 10, 10, 38)
+      ]
+    }
+
+    var PTERODACTYL = {
+      type: 'PTERODACTYL',
+      width: 46,
+      height: 40,
+      yPos: Parameters.config.PTERODACTYL_YPOS, //[ 100, 75, 50 ], // Variable height.
+      yPosMobile: [ 100, 50 ], // Variable height mobile.
+      multipleSpeed: 999,
+      minSpeed: 8.5,
+      minGap: minGap_default + 30, //150,
+      collisionBoxes: [
+        new CollisionBox(15, 15, 16, 5),
+        new CollisionBox(18, 21, 24, 6),
+        new CollisionBox(2, 14, 4, 3),
+        new CollisionBox(6, 10, 4, 7),
+        new CollisionBox(10, 8, 6, 9)
+      ],
+      numFrames: 2,
+      frameRate: 1000/6,
+      speedOffset: .8
+    }
+    Obstacle.types = []
+    
+    /*Obstacle.types = [
+       {
         type: 'CACTUS_SMALL',
         width: 17,
         height: 35,
@@ -1378,7 +1554,32 @@
         frameRate: 1000/6,
         speedOffset: .8
       }
-    ];
+    ];*/
+    var nr_ObstacleTypes = Parameters.config.OBSTACLE_TYPES.length;
+    for(var i = 0; i < nr_ObstacleTypes; i++){
+      var type = Parameters.config.OBSTACLE_TYPES[i];
+      switch(type){
+        case 'CACTUS_SMALL':
+          Obstacle.types.push(CACTUS_SMALL);
+          break;
+        case 'CACTUS_LARGE':
+          Obstacle.types.push(CACTUS_LARGE);
+          break;
+        case 'PTERODACTYL':
+          if(Parameters.config.OBSTACLE_TYPES.length == 1){
+            PTERODACTYL.minSpeed = 0;
+          } else if (Parameters.config.OBSTACLE_TYPES.length == 2){
+          Runner.config.MAX_OBSTACLE_DUPLICATION = 7;
+          }
+          Obstacle.types.push(PTERODACTYL)
+          break;
+      }
+    }
+
+    if(nr_ObstacleTypes == 1){
+      Runner.config.MAX_OBSTACLE_DUPLICATION = Number.MAX_SAFE_INTEGER;
+    }
+
     //******************************************************************************
     /**
      * T-rex game character.
@@ -1618,6 +1819,7 @@
        */
       startJump: function(speed) {
         if (!this.jumping) {
+          parameters.addLog("startJump")
           this.update(0, Trex.status.JUMPING);
           // Tweak the jump velocity based on the speed.
           this.jumpVelocity = this.config.INIITAL_JUMP_VELOCITY - (speed / 10);
@@ -1632,6 +1834,7 @@
       endJump: function() {
         if (this.reachedMinHeight &&
             this.jumpVelocity < this.config.DROP_VELOCITY) {
+          parameters.addLog("endJump");
           this.jumpVelocity = this.config.DROP_VELOCITY;
         }
       },
@@ -1678,9 +1881,11 @@
        */
       setDuck: function(isDucking) {
         if (isDucking && this.status != Trex.status.DUCKING) {
+          parameters.addLog("startDuck");
           this.update(0, Trex.status.DUCKING);
           this.ducking = true;
         } else if (this.status == Trex.status.DUCKING) {
+          parameters.addLog("stopDuck");
           this.update(0, Trex.status.RUNNING);
           this.ducking = false;
         }
@@ -2383,7 +2588,7 @@
         var obstacleType = Obstacle.types[obstacleTypeIndex];
         // Check for multiples of the same type of obstacle.
         // Also check obstacle is available at current speed.
-        if (this.duplicateObstacleCheck(obstacleType.type) ||
+        if ((this.duplicateObstacleCheck(obstacleType.type)) ||
             currentSpeed < obstacleType.minSpeed) {
           this.addNewObstacle(currentSpeed);
         } else {
