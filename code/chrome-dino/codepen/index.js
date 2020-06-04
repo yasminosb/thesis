@@ -95,7 +95,7 @@
       INVERT_DISTANCE: 700, /* Day & Night */ //
       MAX_BLINK_COUNT: 3,
       MAX_CLOUDS: 6,
-      MAX_OBSTACLE_LENGTH: 3, 
+      MAX_OBSTACLE_LENGTH: 3, // not used: Obstacle.MAX_OBSTACLE_LENGTH instead
       MAX_OBSTACLE_DUPLICATION: 2 , // 2
       MAX_SPEED: 10, 
       MIN_JUMP_HEIGHT: 15,
@@ -994,7 +994,7 @@
         NIGHT_MODE_ENABLED: true, 
         NIGHT_MODE_DISTANCE: 700, 
         CLEAR_TIME: 3000, 
-        MAX_OBSTACLE_LENGTH: 2, 
+        MAX_OBSTACLE_LENGTH: 3, 
         MAX_SPEED: 10,
         PTERODACTYL_YPOS: [ 100, 75, 50 ], 
     }
