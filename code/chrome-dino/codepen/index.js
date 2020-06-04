@@ -994,24 +994,25 @@
         NIGHT_MODE_ENABLED: true, 
         NIGHT_MODE_DISTANCE: 700, 
         CLEAR_TIME: 3000, 
-        MAX_OBSTACLE_LENGTH: 3, 
+        MAX_OBSTACLE_LENGTH: 2, 
         MAX_SPEED: 10,
         PTERODACTYL_YPOS: [ 100, 75, 50 ], 
     }
 
     /**
-     * Overwrite Runner config with own parameters
-     * other overwrite locations
+     * Overwrite necessary parameters:
+     * - Runner.config specific parameters
      * - Obstacle.types
      * - minGap_default
      * - Night mode l500
+     * - Obstacle.MAX_OBSTACLE_LENGTH
      */
     Runner.config.SPEED = Parameters.config.SPEED;
     Runner.config.ACCELERATION = Parameters.config.ACCELERATION;
     Runner.config.INVERT_DISTANCE = Parameters.config.NIGHT_MODE_DISTANCE;
     Runner.config.CLEAR_TIME = Parameters.config.CLEAR_TIME;
-    Runner.config.MAX_OBSTACLE_LENGTH = Parameters.config.MAX_OBSTACLE_LENGTH;
     Runner.config.MAX_SPEED = Parameters.config.MAX_SPEED;
+    Obstacle.MAX_OBSTACLE_LENGTH = Parameters.config.MAX_OBSTACLE_LENGTH;
     minGap_default = Parameters.config.MIN_GAP;
 
     /**
@@ -1307,7 +1308,7 @@
      * Maximum obstacle grouping count.
      * @const
      */
-    Obstacle.MAX_OBSTACLE_LENGTH = 3,
+    Obstacle.MAX_OBSTACLE_LENGTH = (typeof Obstacle.MAX_OBSTACLE_LENGTH == 'undefined') ? 3 : Obstacle.MAX_OBSTACLE_LENGTH,
     Obstacle.prototype = {
       /**
        * Initialise the DOM for the obstacle.
