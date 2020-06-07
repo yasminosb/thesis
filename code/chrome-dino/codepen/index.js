@@ -402,7 +402,7 @@
        */
       playIntro: function() {
         if (!this.activated && !this.crashed) {
-          parameters.addLog("playIntro");
+          logging.addLog("playIntro");
           this.playingIntro = true;
           this.tRex.playingIntro = true;
           // CSS animation definition.
@@ -487,7 +487,7 @@
               this.currentSpeed += this.config.ACCELERATION;
             }
           } else {
-            parameters.gameOver(this.horizon.obstacles[0], this, this.tRex);
+            logging.gameOver(this.horizon.obstacles[0], this, this.tRex);
             this.gameOver();
           }
           var playAchievementSound = this.distanceMeter.update(deltaTime,
@@ -530,7 +530,7 @@
        */
       handleEvent: function(e) {
         return (function(evtType, events) {
-          parameters.addEvent(evtType);
+          logging.addEvent(evtType);
           switch (evtType) {
             case events.KEYDOWN:
             case events.TOUCHSTART:
@@ -790,7 +790,7 @@
         }
         // Update the high score.
         if (this.distanceRan > this.highestScore) {
-          parameters.store("newHighScore", true);
+          logging.store("newHighScore", true);
           this.highestScore = Math.ceil(this.distanceRan);
           this.distanceMeter.setHighScore(this.highestScore);
         }
@@ -867,7 +867,7 @@
           this.invertTimer = 0;
           this.inverted = false;
         } else {
-          parameters.addLog("invert");
+          logging.addLog("invert");
           this.inverted = document.body.classList.toggle(Runner.classes.INVERTED,
               this.invertTrigger);
         }
@@ -971,16 +971,8 @@
       return IS_IOS ? new Date().getTime() : performance.now();
     }
 
-    /**
-     * Yasmine Bogaert
-     * dict: stores the parameters that have been used
-     */
     function Parameters(){
-      this.dict = {
-        events: [],
-        logs: [],
-        obstacles: []
-      };
+
     }
 
     /**
@@ -1016,9 +1008,22 @@
     minGap_default = Parameters.config.MIN_GAP;
 
     /**
+     * Logging module
+     * dict: stores the parameters that have been used
+     * everything nevessary to replay a game
+     */
+    function Logging(){
+      this.dict = {
+        events: [],
+        logs: [],
+        obstacles: []
+      };
+    }
+
+    /**
      * Store events the dict
      */
-    Parameters.prototype = {
+    Logging.prototype = {
       /**
        * Store new value in dict
        */
@@ -1071,7 +1076,7 @@
 
     }
 
-    var parameters = new Parameters();
+    var logging = new Logging();
 
     //******************************************************************************
     /**
@@ -1334,7 +1339,7 @@
           "size": this.size, // for tree
           "yPos": this.yPos, // for pterodactyl
         }
-        parameters.addObstacle(param_obstacle);
+        logging.addObstacle(param_obstacle);
         
         this.draw();
         // Make collision box adjustments,
@@ -1820,7 +1825,7 @@
        */
       startJump: function(speed) {
         if (!this.jumping) {
-          parameters.addLog("startJump")
+          logging.addLog("startJump")
           this.update(0, Trex.status.JUMPING);
           // Tweak the jump velocity based on the speed.
           this.jumpVelocity = this.config.INIITAL_JUMP_VELOCITY - (speed / 10);
@@ -1835,7 +1840,7 @@
       endJump: function() {
         if (this.reachedMinHeight &&
             this.jumpVelocity < this.config.DROP_VELOCITY) {
-          parameters.addLog("endJump");
+          logging.addLog("endJump");
           this.jumpVelocity = this.config.DROP_VELOCITY;
         }
       },
@@ -1882,11 +1887,11 @@
        */
       setDuck: function(isDucking) {
         if (isDucking && this.status != Trex.status.DUCKING) {
-          parameters.addLog("startDuck");
+          logging.addLog("startDuck");
           this.update(0, Trex.status.DUCKING);
           this.ducking = true;
         } else if (this.status == Trex.status.DUCKING) {
-          parameters.addLog("stopDuck");
+          logging.addLog("stopDuck");
           this.update(0, Trex.status.RUNNING);
           this.ducking = false;
         }
