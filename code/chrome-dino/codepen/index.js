@@ -497,7 +497,7 @@
           }
     
           // Night mode.
-          if(Parameters.config.NIGHT_MODE_ENABLED){
+          if(Parameters.default_config.NIGHT_MODE_ENABLED){
             if (this.invertTimer > this.config.INVERT_FADE_DURATION) {
               this.invertTimer = 0;
               this.invertTrigger = false;
@@ -971,41 +971,58 @@
       return IS_IOS ? new Date().getTime() : performance.now();
     }
 
-    function Parameters(){
+    function Replay(){
+    }
 
+    Replay.prototype = {
+      replay: function(){
+
+      }
     }
 
     /**
      * Parameters that we want to be adjustable
+     * default config
      */
-    Parameters.config = {
-        SPEED: 6,
-        ACCELERATION: 0.002, 
-        MIN_GAP: 120,
-        OBSTACLE_TYPES: ['CACTUS_LARGE', 'CACTUS_SMALL', 'PTERODACTYL'], /** 'CACTUS_LARGE', 'CACTUS_SMALL', 'PTERODACTYL' */
-        NIGHT_MODE_ENABLED: true, 
-        NIGHT_MODE_DISTANCE: 700, 
-        CLEAR_TIME: 3000, 
-        MAX_OBSTACLE_LENGTH: 3, 
-        MAX_SPEED: 10,
-        PTERODACTYL_YPOS: [ 100, 75, 50 ], 
+    Parameters.default_config = {
+      SPEED: 6,
+      ACCELERATION: 0.002, 
+      MIN_GAP: 120,
+      OBSTACLE_TYPES: ['CACTUS_LARGE', 'CACTUS_SMALL', 'PTERODACTYL'], /** 'CACTUS_LARGE', 'CACTUS_SMALL', 'PTERODACTYL' */
+      NIGHT_MODE_ENABLED: true, 
+      NIGHT_MODE_DISTANCE: 700, 
+      CLEAR_TIME: 3000, 
+      MAX_OBSTACLE_LENGTH: 3, 
+      MAX_SPEED: 10,
+      PTERODACTYL_YPOS: [ 100, 75, 50 ], /** [ 100, 75, 50 ] */
     }
 
-    /**
-     * Overwrite necessary parameters:
-     * - Runner.config specific parameters
-     * - Obstacle.types
-     * - minGap_default
-     * - Night mode l500
-     * - Obstacle.MAX_OBSTACLE_LENGTH
-     */
-    Runner.config.SPEED = Parameters.config.SPEED;
-    Runner.config.ACCELERATION = Parameters.config.ACCELERATION;
-    Runner.config.INVERT_DISTANCE = Parameters.config.NIGHT_MODE_DISTANCE;
-    Runner.config.CLEAR_TIME = Parameters.config.CLEAR_TIME;
-    Runner.config.MAX_SPEED = Parameters.config.MAX_SPEED;
-    Obstacle.MAX_OBSTACLE_LENGTH = Parameters.config.MAX_OBSTACLE_LENGTH;
-    minGap_default = Parameters.config.MIN_GAP;
+    function Parameters(opt_config){
+      this.config = opt_config ? opt_config : Parameters.default_config;
+      console.log(this.config);
+    }
+    window['Parameters'] = Parameters;
+
+    Parameters.prototype = {
+      setParameters: function(){
+        /**
+         * Overwrite necessary parameters:
+         * - Runner.config specific parameters
+         * - Obstacle.types
+         * - minGap_default
+         * - Night mode l500
+         * - Obstacle.MAX_OBSTACLE_LENGTH
+         * TODO: update all parameters in this function, instead of hardcoded
+         */
+        Runner.config.SPEED = this.config.SPEED;
+        Runner.config.ACCELERATION = this.config.ACCELERATION;
+        Runner.config.INVERT_DISTANCE = this.config.NIGHT_MODE_DISTANCE;
+        Runner.config.CLEAR_TIME = this.config.CLEAR_TIME;
+        Runner.config.MAX_SPEED = this.config.MAX_SPEED;
+        Obstacle.MAX_OBSTACLE_LENGTH = this.config.MAX_OBSTACLE_LENGTH;
+        minGap_default = this.config.MIN_GAP;
+      }
+    }
 
     /**
      * Logging module
@@ -1493,7 +1510,7 @@
       type: 'PTERODACTYL',
       width: 46,
       height: 40,
-      yPos: Parameters.config.PTERODACTYL_YPOS, //[ 100, 75, 50 ], // Variable height.
+      yPos: Parameters.default_config.PTERODACTYL_YPOS, //[ 100, 75, 50 ], // Variable height.
       yPosMobile: [ 100, 50 ], // Variable height mobile.
       multipleSpeed: 999,
       minSpeed: 8.5,
@@ -1561,9 +1578,9 @@
         speedOffset: .8
       }
     ];*/
-    var nr_ObstacleTypes = Parameters.config.OBSTACLE_TYPES.length;
+    var nr_ObstacleTypes = Parameters.default_config.OBSTACLE_TYPES.length;
     for(var i = 0; i < nr_ObstacleTypes; i++){
-      var type = Parameters.config.OBSTACLE_TYPES[i];
+      var type = Parameters.default_config.OBSTACLE_TYPES[i];
       switch(type){
         case 'CACTUS_SMALL':
           Obstacle.types.push(CACTUS_SMALL);
@@ -1572,9 +1589,9 @@
           Obstacle.types.push(CACTUS_LARGE);
           break;
         case 'PTERODACTYL':
-          if(Parameters.config.OBSTACLE_TYPES.length == 1){
+          if(Parameters.default_config.OBSTACLE_TYPES.length == 1){
             PTERODACTYL.minSpeed = 0;
-          } else if (Parameters.config.OBSTACLE_TYPES.length == 2){
+          } else if (Parameters.default_config.OBSTACLE_TYPES.length == 2){
           Runner.config.MAX_OBSTACLE_DUPLICATION = 7;
           }
           Obstacle.types.push(PTERODACTYL)
@@ -2647,13 +2664,16 @@
             this.dimensions.WIDTH));
       }
     };
-    })();
+    }
+    
+    )();
     
     
     
     function onDocumentLoad() {
         r = new Runner('.interstitial-wrapper');
-        
+        p = new Parameters();
+        p.setParameters();
         // r.updateConfigSetting("SPEED",10);
 
     }
