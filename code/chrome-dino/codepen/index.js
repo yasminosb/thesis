@@ -405,7 +405,7 @@
        */
       playIntro: function() {
         if (!this.activated && !this.crashed) {
-          logging.addLog("playIntro");
+          logger.addLog("playIntro");
           this.playingIntro = true;
           this.tRex.playingIntro = true;
           // CSS animation definition.
@@ -491,7 +491,7 @@
               this.currentSpeed += this.config.ACCELERATION;
             }
           } else {
-            logging.gameOver(this.horizon.obstacles[0], this, this.tRex);
+            logger.gameOver(this.horizon.obstacles[0], this, this.tRex);
             this.gameOver();
           }
           var playAchievementSound = this.distanceMeter.update(deltaTime,
@@ -534,7 +534,7 @@
        */
       handleEvent: function(e) {
         return (function(evtType, events) {
-          logging.addEvent(evtType);
+          logger.addEvent(evtType);
           switch (evtType) {
             case events.KEYDOWN:
             case events.TOUCHSTART:
@@ -794,12 +794,13 @@
         }
         // Update the high score.
         if (this.distanceRan > this.highestScore) {
-          logging.store("newHighScore", true);
+          logger.store("newHighScore", true);
           this.highestScore = Math.ceil(this.distanceRan);
           this.distanceMeter.setHighScore(this.highestScore);
         }
         // Reset the time clock.
         this.time = getTimeStamp();
+        replay(logger);
       },
       stop: function() {
         this.playing = false;
@@ -871,7 +872,7 @@
           this.invertTimer = 0;
           this.inverted = false;
         } else {
-          logging.addLog("invert");
+          logger.addLog("invert");
           this.inverted = document.body.classList.toggle(Runner.classes.INVERTED,
               this.invertTrigger);
         }
@@ -1026,13 +1027,9 @@
       return IS_IOS ? new Date().getTime() : performance.now();
     }
 
-    function Replay(){
-    }
+    function replay(params){
+      console.log("REPLAY", params)
 
-    Replay.prototype = {
-      replay: function(){
-
-      }
     }
 
     /**
@@ -1044,7 +1041,7 @@
       ACCELERATION: 0.002, 
       MIN_GAP: 120,
       OBSTACLE_TYPES: ['CACTUS_LARGE', 'CACTUS_SMALL', 'PTERODACTYL'], 
-      OBSTACLE_TYPES_CHANCES: {'CACTUS_LARGE' : 0.33, 'CACTUS_SMALL': 0.33, 'PTERODACTYL': 0.33},
+      OBSTACLE_TYPES_SPEC: {'CACTUS_LARGE' : 0.33, 'CACTUS_SMALL': 0.33, 'PTERODACTYL': 0.33},
       NIGHT_MODE_ENABLED: true, 
       NIGHT_MODE_DISTANCE: 700, 
       CLEAR_TIME: 3000, 
@@ -1203,8 +1200,8 @@
       getPterodactylYPOS(){
         return this.config.PTERODACTYL_YPOS;
       },
-      getObstacleTypesChances(){
-        return this.config.OBSTACLE_TYPES_CHANCES;
+      getObstacleTypesSpec(){
+        return this.config.OBSTACLE_TYPES_SPEC;
       },
       getMaxGap(){
         return this.config.MAX_GAP;
@@ -1229,7 +1226,7 @@
      * dict: stores the parameters that have been used
      * everything nevessary to replay a game
      */
-    function Logging(){
+    function Logger(){
       this.dict = {
         events: [],
         logs: [],
@@ -1240,7 +1237,7 @@
     /**
      * Store events the dict
      */
-    Logging.prototype = {
+    Logger.prototype = {
       /**
        * Store new value in dict
        */
@@ -1270,30 +1267,28 @@
       },
       gameOver: function(obstacle, runner, tRex){
         this.dict["collisionObstacle"] = obstacle;
-        this.log(runner, tRex);
+        var actualDistance = runner.distanceMeter.getActualDistance(Math.ceil(runner.distanceRan));
+        
+        this.dict[ "distanceRan"] = runner.distanceRan,
+        this.dict[ "actualDistance" ] =  actualDistance,
+        this.dict[ "runnerConfig"] =  runner.config,
+        this.dict[ "tRexConfig"] =  tRex.config,
+        this.dict[ "inverted"] =  runner.inverted,
+        this.dict[ "obstacleTypes"] =  Obstacle.types
+        this.log();
       },
       /** 
        * Log all the parameters stored in dict
        * @param {*} runner runner obj
        * @param {*} tRex trex obj
        */
-      log: function(runner, tRex){
-        var actualDistance = runner.distanceMeter.getActualDistance(Math.ceil(runner.distanceRan));
-        var params = {
-          "distanceRan": runner.distanceRan,
-          "actualDistance": actualDistance,
-          "runnerConfig": runner.config,
-          "tRexConfig": tRex.config,
-          "inverted": runner.inverted,
-          "obstacleTypes": Obstacle.types
-          }
-        var all_params = Object.assign({}, this.dict, params);
-        console.log(all_params);
+      log: function(){
+        console.log(this.dict);
       }
 
     }
 
-    var logging = new Logging();
+    var logger = new Logger();
 
     //******************************************************************************
     /**
@@ -1557,7 +1552,7 @@
           "size": this.size, // for tree
           "yPos": this.yPos, // for pterodactyl
         }
-        logging.addObstacle(param_obstacle);
+        logger.addObstacle(param_obstacle);
         
         this.draw();
         // Make collision box adjustments,
@@ -2058,7 +2053,7 @@
        */
       startJump: function(speed) {
         if (!this.jumping) {
-          logging.addLog("startJump")
+          logger.addLog("startJump")
           this.update(0, Trex.status.JUMPING);
           // Tweak the jump velocity based on the speed.
           this.jumpVelocity = this.config.INIITAL_JUMP_VELOCITY - (speed / 10);
@@ -2073,7 +2068,7 @@
       endJump: function() {
         if (this.reachedMinHeight &&
             this.jumpVelocity < this.config.DROP_VELOCITY) {
-          logging.addLog("endJump");
+          logger.addLog("endJump");
           this.jumpVelocity = this.config.DROP_VELOCITY;
         }
       },
@@ -2120,11 +2115,11 @@
        */
       setDuck: function(isDucking) {
         if (isDucking && this.status != Trex.status.DUCKING) {
-          logging.addLog("startDuck");
+          logger.addLog("startDuck");
           this.update(0, Trex.status.DUCKING);
           this.ducking = true;
         } else if (this.status == Trex.status.DUCKING) {
-          logging.addLog("stopDuck");
+          logger.addLog("stopDuck");
           this.update(0, Trex.status.RUNNING);
           this.ducking = false;
         }
@@ -2827,7 +2822,7 @@
 
         //var obstacleTypeIndex = getRandomNum(0, Obstacle.types.length - 1);
         //var obstacleType = Obstacle.types[obstacleTypeIndex];
-        var type = getRandomWeighted(this.runner.parameters.getObstacleTypesChances());
+        var type = getRandomWeighted(this.runner.parameters.getObstacleTypesSpec());
         console.log("type", type)
         var obstacleType = Obstacle.types.filter(obj => {return obj.type == type})[0];
         console.log("obstacletype", obstacleType)
@@ -2903,7 +2898,7 @@
         ACCELERATION: 0.002,  
         MIN_GAP: 250,
         OBSTACLE_TYPES: [ 'CACTUS_LARGE', 'CACTUS_SMALL', 'PTERODACTYL'], 
-        OBSTACLE_TYPES_CHANCES: {'CACTUS_LARGE' : 0.1, 'CACTUS_SMALL': 0.1, 'PTERODACTYL': 0.8}, 
+        OBSTACLE_TYPES_SPEC: {'CACTUS_LARGE' : 0.35, 'CACTUS_SMALL': 0.35, 'PTERODACTYL': 0.3}, 
         NIGHT_MODE_ENABLED: true, 
         NIGHT_MODE_DISTANCE: 700, 
         CLEAR_TIME: 1000, 
