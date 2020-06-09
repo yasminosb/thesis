@@ -330,7 +330,7 @@
         Runner.updateCanvasScaling(this.canvas);
         // Horizon contains clouds, obstacles and the ground.
         this.horizon = new Horizon(this.canvas, this.spriteDef, this.dimensions,
-            this.config.GAP_COEFFICIENT);
+            this.config.GAP_COEFFICIENT, this);
         // Distance meter
         this.distanceMeter = new DistanceMeter(this.canvas,
               this.spriteDef.TEXT_SPRITE, this.dimensions.WIDTH);
@@ -458,7 +458,7 @@
        * Update the game frame and schedules the next one.
        */
       update: function() {
-        console.log("update - speed:", this.currentSpeed);
+        //console.log("update - speed:", this.currentSpeed);
         this.updatePending = false;
         var now = getTimeStamp();
         var deltaTime = now - (this.time || now);
@@ -928,6 +928,57 @@
       return Math.floor(Math.random() * (max - min + 1)) + min;
     }
     /**
+     * Get random number in gaussian distribution
+     * @param {number} min
+     * @param {number} max
+     */
+    function getRandomGaussian(min, max) {
+      return Math.floor(min + gaussianRand() * (min - max + 1));
+    }
+    function gaussianRand() {
+      var rand = 0;
+    
+      for (var i = 0; i < 6; i += 1) {
+        rand += Math.random();
+      }
+    
+      return rand / 6;
+    }
+    
+    /**
+     * Get random from (1-) squared stochastic variable
+     * Higher chance to get values closer to max
+     * CDF: sqrt(x)
+     * PDF: 1/(2*sqrt(x))
+     * @param {number} min 
+     * @param {number} max 
+     */
+    function getRandomSquared(pow, min, max){
+      var rand = Math.random();
+      var sq = 1-Math.pow(rand, pow);
+      console.log(sq)
+      return Math.floor(sq * (max - min + 1)) + min;
+    }
+
+    /**
+     * 
+     * @param {number} spec distribution e.g. {'CACTUS_LARGE' : 0.35, 'CACTUS_SMALL': 0.35, 'PTERODACTYL': 0.3}
+     */
+    function getRandomWeighted(spec){
+      console.log("spec", spec)
+      var i, j, table=[];
+      for (i in spec) {
+        // The constant 10 below should be computed based on the
+        // weights in the spec for a correct and optimal table size.
+        // E.g. the spec {0:0.999, 1:0.001} will break this impl.
+        for (j=0; j<spec[i]*10; j++) {
+          table.push(i);
+        }
+      }
+      return table[Math.floor(Math.random() * table.length)];
+      
+    }
+    /**
      * Vibrate on mobile devices.
      * @param {number} duration Duration of the vibration in milliseconds.
      */
@@ -992,13 +1043,19 @@
       SPEED: 6,
       ACCELERATION: 0.002, 
       MIN_GAP: 120,
-      OBSTACLE_TYPES: ['CACTUS_LARGE', 'CACTUS_SMALL', 'PTERODACTYL'], /** 'CACTUS_LARGE', 'CACTUS_SMALL', 'PTERODACTYL' */
+      OBSTACLE_TYPES: ['CACTUS_LARGE', 'CACTUS_SMALL', 'PTERODACTYL'], 
+      OBSTACLE_TYPES_CHANCES: {'CACTUS_LARGE' : 0.33, 'CACTUS_SMALL': 0.33, 'PTERODACTYL': 0.33},
       NIGHT_MODE_ENABLED: true, 
       NIGHT_MODE_DISTANCE: 700, 
       CLEAR_TIME: 3000, 
       MAX_OBSTACLE_LENGTH: 3, 
       MAX_SPEED: 10,
-      PTERODACTYL_YPOS: [ 100, 75, 50 ], /** [ 100, 75, 50 ] */
+      PTERODACTYL_YPOS: [ 100, 75, 50 ],
+      CHECK_DUPLICATION: false,
+      MAX_DUPLICATION: 2,
+      USE_GAME_GAP: false,
+      MAX_GAP: 400,
+      GAP_DISTRIBUTION_POW: 2
     }
 
     function Parameters(opt_config){
@@ -1050,7 +1107,7 @@
           yPos: this.getPterodactylYPOS(), //[ 100, 75, 50 ], // Variable height.
           yPosMobile: [ 100, 50 ], // Variable height mobile.
           multipleSpeed: 999,
-          minSpeed: 8.5,
+          minSpeed: 0, //8.5,
           minGap: minGap_default + 30, //150,
           collisionBoxes: [
             new CollisionBox(15, 15, 16, 5),
@@ -1114,6 +1171,7 @@
         Runner.config.CLEAR_TIME = this.getClearTime();
         Runner.config.MAX_SPEED = this.getMaxSpeed();
         Obstacle.MAX_OBSTACLE_LENGTH = this.getMaxObstacleLength();
+        Obstacle.MAX_OBSTACLE_DUPLICATION = this.getMaxObstacleDuplication();
       },
       getSpeed(){
         return this.config.SPEED;
@@ -1144,6 +1202,24 @@
       },
       getPterodactylYPOS(){
         return this.config.PTERODACTYL_YPOS;
+      },
+      getObstacleTypesChances(){
+        return this.config.OBSTACLE_TYPES_CHANCES;
+      },
+      getMaxGap(){
+        return this.config.MAX_GAP;
+      },
+      getUseGameGap(){
+        return this.config.USE_GAME_GAP;
+      },
+      getGapDistributionPow(){
+        return this.config.GAP_DISTRIBUTION_POW;
+      },
+      getMaxObstacleDuplication(){
+        return this.config.MAX_OBSTACLE_DUPLICATION;
+      },
+      checkDuplication(){
+        return this.config.CHECK_DUPLICATION;
       }
     }
     //var parameters = new Parameters();
@@ -1426,7 +1502,8 @@
      * @param {number} opt_xOffset
      */
     function Obstacle(canvasCtx, type, spriteImgPos, dimensions,
-        gapCoefficient, speed, opt_xOffset) {
+        gapCoefficient, speed, opt_xOffset, runner) {
+      this.runner = runner;
       this.canvasCtx = canvasCtx;
       this.spritePos = spriteImgPos;
       this.typeConfig = type;
@@ -1567,10 +1644,20 @@
        * @return {number} The gap size.
        */
       getGap: function(gapCoefficient, speed) {
-        var minGap = Math.round(this.width * speed +
-              this.typeConfig.minGap * gapCoefficient);
-        var maxGap = Math.round(minGap * Obstacle.MAX_GAP_COEFFICIENT);
-        return getRandomNum(minGap, maxGap);
+        if(this.runner.parameters.getUseGameGap()){
+          var minGap = Math.round(this.width * speed +
+                this.typeConfig.minGap * gapCoefficient);
+          var maxGap = Math.round(minGap * Obstacle.MAX_GAP_COEFFICIENT);
+          var r =  getRandomNum(minGap, maxGap);
+          console.log("r", r);
+          return r
+        } else {
+          var minGap = this.runner.parameters.getMinGap();
+          var maxGap = this.runner.parameters.getMaxGap();
+          console.log(minGap,maxGap)
+          var r = getRandomSquared(this.runner.parameters.getGapDistributionPow(), minGap, maxGap);
+          return r
+        }
       },
       /**
        * Check if obstacle is visible.
@@ -2613,7 +2700,7 @@
      * @param {number} gapCoefficient
      * @constructor
      */
-    function Horizon(canvas, spritePos, dimensions, gapCoefficient) {
+    function Horizon(canvas, spritePos, dimensions, gapCoefficient, runner) {
       this.canvas = canvas;
       this.canvasCtx = this.canvas.getContext('2d');
       this.config = Horizon.config;
@@ -2630,6 +2717,7 @@
       this.cloudSpeed = this.config.BG_CLOUD_SPEED;
       // Horizon
       this.horizonLine = null;
+      this.runner = runner;
       this.init();
     };
     /**
@@ -2736,8 +2824,13 @@
        * @param {number} currentSpeed
        */
       addNewObstacle: function(currentSpeed) {
-        var obstacleTypeIndex = getRandomNum(0, Obstacle.types.length - 1);
-        var obstacleType = Obstacle.types[obstacleTypeIndex];
+
+        //var obstacleTypeIndex = getRandomNum(0, Obstacle.types.length - 1);
+        //var obstacleType = Obstacle.types[obstacleTypeIndex];
+        var type = getRandomWeighted(this.runner.parameters.getObstacleTypesChances());
+        console.log("type", type)
+        var obstacleType = Obstacle.types.filter(obj => {return obj.type == type})[0];
+        console.log("obstacletype", obstacleType)
         // Check for multiples of the same type of obstacle.
         // Also check obstacle is available at current speed.
         if ((this.duplicateObstacleCheck(obstacleType.type)) ||
@@ -2747,7 +2840,7 @@
           var obstacleSpritePos = this.spritePos[obstacleType.type];
           this.obstacles.push(new Obstacle(this.canvasCtx, obstacleType,
               obstacleSpritePos, this.dimensions,
-              this.gapCoefficient, currentSpeed, obstacleType.width));
+              this.gapCoefficient, currentSpeed, obstacleType.width, this.runner));
           this.obstacleHistory.unshift(obstacleType.type);
           if (this.obstacleHistory.length > 1) {
             this.obstacleHistory.splice(Runner.config.MAX_OBSTACLE_DUPLICATION);
@@ -2760,12 +2853,17 @@
        * @return {boolean}
        */
       duplicateObstacleCheck: function(nextObstacleType) {
-        var duplicateCount = 0;
-        for (var i = 0; i < this.obstacleHistory.length; i++) {
-          duplicateCount = this.obstacleHistory[i] == nextObstacleType ?
-              duplicateCount + 1 : 0;
+        console.log(this.runner)
+        if(this.runner.parameters.checkDuplication()){
+          var duplicateCount = 0;
+          for (var i = 0; i < this.obstacleHistory.length; i++) {
+            duplicateCount = this.obstacleHistory[i] == nextObstacleType ?
+                duplicateCount + 1 : 0;
+          }
+          return duplicateCount >= Runner.config.MAX_OBSTACLE_DUPLICATION;
+        } else {
+          return false;
         }
-        return duplicateCount >= Runner.config.MAX_OBSTACLE_DUPLICATION;
       },
       /**
        * Reset the horizon layer.
@@ -2801,16 +2899,22 @@
     
     function onDocumentLoad() {
       var par = {
-        SPEED: 7, //
-        ACCELERATION: 0.2,  //
-        MIN_GAP: 120,
-        OBSTACLE_TYPES: [ 'CACTUS_LARGE', 'CACTUS_SMALL', 'PTERODACTYL'], //
-        NIGHT_MODE_ENABLED: true, //
-        NIGHT_MODE_DISTANCE: 100, //
-        CLEAR_TIME: 0, //
-        MAX_OBSTACLE_LENGTH: 1, //
-        MAX_SPEED: 12, //
-        PTERODACTYL_YPOS: [ 100, 75, 50 ], //
+        SPEED: 6, 
+        ACCELERATION: 0.002,  
+        MIN_GAP: 250,
+        OBSTACLE_TYPES: [ 'CACTUS_LARGE', 'CACTUS_SMALL', 'PTERODACTYL'], 
+        OBSTACLE_TYPES_CHANCES: {'CACTUS_LARGE' : 0.1, 'CACTUS_SMALL': 0.1, 'PTERODACTYL': 0.8}, 
+        NIGHT_MODE_ENABLED: true, 
+        NIGHT_MODE_DISTANCE: 700, 
+        CLEAR_TIME: 1000, 
+        MAX_OBSTACLE_LENGTH: 3, 
+        MAX_SPEED: 10, 
+        PTERODACTYL_YPOS: [ 50, 75, 100 ], 
+        CHECK_DUPLICATION: true,
+        MAX_OBSTACLE_DUPLICATION: 2,
+        USE_GAME_GAP: false,
+        MAX_GAP: 400,
+        GAP_DISTRIBUTION_POW: 2
       }
       r = new Runner('.interstitial-wrapper', par);
 
