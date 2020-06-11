@@ -14,6 +14,7 @@
 
       this.parameters = new Parameters(opt_param_config);
       this.parameters.initialise();
+      this.replaying = false;
       // Singleton
       if (Runner.instance_) {
         return Runner.instance_;
@@ -405,7 +406,7 @@
        */
       playIntro: function() {
         if (!this.activated && !this.crashed) {
-          logger.addLog("playIntro");
+          if(!this.replaying) logger.addLog("playIntro");
           this.playingIntro = true;
           this.tRex.playingIntro = true;
           // CSS animation definition.
@@ -424,6 +425,7 @@
           this.playing = true;
           this.activated = true;
         } else if (this.crashed) {
+          console.log("restart 1")
           this.restart();
         }
       },
@@ -454,6 +456,32 @@
             this.dimensions.HEIGHT);
       },
       
+      replay: function(params){
+        if (this.replaying == false){
+          this.replaying = true;
+          console.log("REPLAY", params)
+          var events = params.events;
+          sleep(this.config.GAMEOVER_CLEAR_TIME);
+          console.log("sleep done")
+          if(false){
+            var e = new KeyboardEvent('keyup',{'keyCode':32,'which':32});
+            //this.handleEvent(e);
+          } else {
+            this.replayEvents(events);
+            
+          }
+        }
+      },
+
+      replayEvents: function(events){
+        for(var i = 0; i < events.length; i++){
+          var event = events[i];
+          console.log("event", event)
+          // TODO: 
+          sleep(event[1]);
+          this.handleEvent(event[0])
+        }
+      },
       /**
        * Update the game frame and schedules the next one.
        */
@@ -491,7 +519,10 @@
               this.currentSpeed += this.config.ACCELERATION;
             }
           } else {
-            logger.gameOver(this.horizon.obstacles[0], this, this.tRex);
+            // if(!this.replaying) logger.gameOver(this.horizon.obstacles[0], this, this.tRex);
+            // var evt = document.createEvent("Event");
+            // evt.initEvent("GAMEOVER", true, true);
+            // document.dispatchEvent(evt);
             this.gameOver();
           }
           var playAchievementSound = this.distanceMeter.update(deltaTime,
@@ -534,7 +565,8 @@
        */
       handleEvent: function(e) {
         return (function(evtType, events) {
-          logger.addEvent(evtType);
+          if (!this.playing_replay) if(!this.replaying) logger.addEvent(e);
+          console.log("TYPE", evtType);
           switch (evtType) {
             case events.KEYDOWN:
             case events.TOUCHSTART:
@@ -623,6 +655,7 @@
           }
         } else if (this.crashed && e.type == Runner.events.TOUCHSTART &&
             e.currentTarget == this.containerEl) {
+              console.log("restart 2")
           this.restart();
         }
       },
@@ -658,6 +691,7 @@
     
                     if (this.crashed && e.type == Runner.events.TOUCHSTART &&
                         e.currentTarget == this.containerEl) {
+                        console.log("restart 3")
                         this.restart();
                     }
                 }
@@ -714,6 +748,7 @@
           }
         } else if (this.crashed && e.type == Runner.events.TOUCHSTART &&
             e.currentTarget == this.containerEl) {
+            console.log("restart 5")
           this.restart();
         }
       },
@@ -737,6 +772,7 @@
           if (Runner.keycodes.RESTART[keyCode] || this.isLeftClickOnCanvas(e) ||
               (deltaTime >= this.config.GAMEOVER_CLEAR_TIME &&
               Runner.keycodes.JUMP[keyCode])) {
+            console.log("restart 7")
             this.restart();
           }
         } else if (this.paused && isjumpKey) {
@@ -775,6 +811,7 @@
        * Game over state.
        */
       gameOver: function() {
+        if(!this.replaying) logger.gameOver(this.horizon.obstacles[0], this, this.tRex);
         this.playSound(this.soundFx.HIT);
         vibrate(200);
         
@@ -794,13 +831,16 @@
         }
         // Update the high score.
         if (this.distanceRan > this.highestScore) {
-          logger.store("newHighScore", true);
+          if(!this.replaying) logger.store("newHighScore", true);
           this.highestScore = Math.ceil(this.distanceRan);
           this.distanceMeter.setHighScore(this.highestScore);
         }
         // Reset the time clock.
         this.time = getTimeStamp();
-        replay(logger);
+
+        var evt = document.createEvent("Event");
+        evt.initEvent("GAMEOVER", true, true);
+        document.dispatchEvent(evt);
       },
       stop: function() {
         this.playing = false;
@@ -818,6 +858,7 @@
         }
       },
       restart: function() {
+        console.log("restart")
         if (!this.raqId) {
           this.playCount++;
           this.runningTime = 0;
@@ -872,7 +913,7 @@
           this.invertTimer = 0;
           this.inverted = false;
         } else {
-          logger.addLog("invert");
+          if(!this.replaying) logger.addLog("invert");
           this.inverted = document.body.classList.toggle(Runner.classes.INVERTED,
               this.invertTrigger);
         }
@@ -957,7 +998,6 @@
     function getRandomSquared(pow, min, max){
       var rand = Math.random();
       var sq = 1-Math.pow(rand, pow);
-      console.log(sq)
       return Math.floor(sq * (max - min + 1)) + min;
     }
 
@@ -966,7 +1006,6 @@
      * @param {number} spec distribution e.g. {'CACTUS_LARGE' : 0.35, 'CACTUS_SMALL': 0.35, 'PTERODACTYL': 0.3}
      */
     function getRandomWeighted(spec){
-      console.log("spec", spec)
       var i, j, table=[];
       for (i in spec) {
         // The constant 10 below should be computed based on the
@@ -1027,9 +1066,13 @@
       return IS_IOS ? new Date().getTime() : performance.now();
     }
 
-    function replay(params){
-      console.log("REPLAY", params)
-
+    function sleep(milliseconds) {
+      var start = new Date().getTime();
+      for (var i = 0; i < 1e7; i++) {
+        if ((new Date().getTime() - start) > milliseconds){
+          break;
+        }
+      }
     }
 
     /**
@@ -1275,20 +1318,20 @@
         this.dict[ "tRexConfig"] =  tRex.config,
         this.dict[ "inverted"] =  runner.inverted,
         this.dict[ "obstacleTypes"] =  Obstacle.types
-        this.log();
       },
       /** 
        * Log all the parameters stored in dict
        * @param {*} runner runner obj
        * @param {*} tRex trex obj
        */
-      log: function(){
-        console.log(this.dict);
+      getParams: function(){
+        return this.dict;
       }
 
     }
 
-    var logger = new Logger();
+    window["Logger"] = Logger;
+    //var logger = new Logger();
 
     //******************************************************************************
     /**
@@ -1552,7 +1595,7 @@
           "size": this.size, // for tree
           "yPos": this.yPos, // for pterodactyl
         }
-        logger.addObstacle(param_obstacle);
+        if(!this.replaying) logger.addObstacle(param_obstacle);
         
         this.draw();
         // Make collision box adjustments,
@@ -1644,12 +1687,10 @@
                 this.typeConfig.minGap * gapCoefficient);
           var maxGap = Math.round(minGap * Obstacle.MAX_GAP_COEFFICIENT);
           var r =  getRandomNum(minGap, maxGap);
-          console.log("r", r);
           return r
         } else {
           var minGap = this.runner.parameters.getMinGap();
           var maxGap = this.runner.parameters.getMaxGap();
-          console.log(minGap,maxGap)
           var r = getRandomSquared(this.runner.parameters.getGapDistributionPow(), minGap, maxGap);
           return r
         }
@@ -2053,7 +2094,7 @@
        */
       startJump: function(speed) {
         if (!this.jumping) {
-          logger.addLog("startJump")
+          if(!this.replaying) logger.addLog("startJump")
           this.update(0, Trex.status.JUMPING);
           // Tweak the jump velocity based on the speed.
           this.jumpVelocity = this.config.INIITAL_JUMP_VELOCITY - (speed / 10);
@@ -2068,7 +2109,7 @@
       endJump: function() {
         if (this.reachedMinHeight &&
             this.jumpVelocity < this.config.DROP_VELOCITY) {
-          logger.addLog("endJump");
+          if(!this.replaying) logger.addLog("endJump");
           this.jumpVelocity = this.config.DROP_VELOCITY;
         }
       },
@@ -2115,11 +2156,11 @@
        */
       setDuck: function(isDucking) {
         if (isDucking && this.status != Trex.status.DUCKING) {
-          logger.addLog("startDuck");
+          if(!this.replaying) logger.addLog("startDuck");
           this.update(0, Trex.status.DUCKING);
           this.ducking = true;
         } else if (this.status == Trex.status.DUCKING) {
-          logger.addLog("stopDuck");
+          if(!this.replaying) logger.addLog("stopDuck");
           this.update(0, Trex.status.RUNNING);
           this.ducking = false;
         }
@@ -2823,9 +2864,7 @@
         //var obstacleTypeIndex = getRandomNum(0, Obstacle.types.length - 1);
         //var obstacleType = Obstacle.types[obstacleTypeIndex];
         var type = getRandomWeighted(this.runner.parameters.getObstacleTypesSpec());
-        console.log("type", type)
         var obstacleType = Obstacle.types.filter(obj => {return obj.type == type})[0];
-        console.log("obstacletype", obstacleType)
         // Check for multiples of the same type of obstacle.
         // Also check obstacle is available at current speed.
         if ((this.duplicateObstacleCheck(obstacleType.type)) ||
@@ -2848,7 +2887,6 @@
        * @return {boolean}
        */
       duplicateObstacleCheck: function(nextObstacleType) {
-        console.log(this.runner)
         if(this.runner.parameters.checkDuplication()){
           var duplicateCount = 0;
           for (var i = 0; i < this.obstacleHistory.length; i++) {
@@ -2894,7 +2932,7 @@
     
     function onDocumentLoad() {
       var par = {
-        SPEED: 6, 
+        SPEED: 10, 
         ACCELERATION: 0.002,  
         MIN_GAP: 250,
         OBSTACLE_TYPES: [ 'CACTUS_LARGE', 'CACTUS_SMALL', 'PTERODACTYL'], 
@@ -2911,7 +2949,15 @@
         MAX_GAP: 400,
         GAP_DISTRIBUTION_POW: 2
       }
-      r = new Runner('.interstitial-wrapper', par);
+      var replay_logs = null;
+      r = new Runner('.interstitial-wrapper', par, replay_logs);
+      logger = new Logger();
+      window.logger = logger;
+      document.addEventListener("GAMEOVER", function(){
+        var p = logger.getParams()
+        console.log();
+        r.replay(p)
+      } ,false);
 
     }
     
