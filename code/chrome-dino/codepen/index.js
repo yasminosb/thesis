@@ -461,32 +461,25 @@
           this.replaying = true;
           console.log("REPLAY", params)
           var events = params.events;
-          sleep(this.config.GAMEOVER_CLEAR_TIME);
-          console.log("sleep done")
-          if(false){
-            var e = new KeyboardEvent('keyup',{'keyCode':32,'which':32});
-            //this.handleEvent(e);
-          } else {
-            this.replayEvents(events);
-            
-          }
+          this.GAMEOVER_CLEAR_TIME = 0;
+          this.replayEvents(events);
         }
       },
 
       replayEvents: function(events){
-        for(var i = 0; i < events.length; i++){
-          var event = events[i];
-          console.log("event", event)
-          // TODO: 
-          sleep(event[1]);
-          this.handleEvent(event[0])
+        console.log(events.map(x => [x[0].type, x[1]]))
+        for(let event of events){
+          setTimeout(() => {
+            this.handleEvent(event[0]);
+          }, event[1]);
         }
+        
       },
       /**
        * Update the game frame and schedules the next one.
        */
       update: function() {
-        //console.log("update - speed:", this.currentSpeed);
+        //console.log("update - time:", this.runningTime);
         this.updatePending = false;
         var now = getTimeStamp();
         var deltaTime = now - (this.time || now);
@@ -498,6 +491,9 @@
           }
           this.runningTime += deltaTime;
           var hasObstacles = this.runningTime > this.config.CLEAR_TIME;
+          if(hasObstacles){
+              //console.log("clear time" , this.config.CLEAR_TIME, "over");
+          }
           // First jump triggers the intro.
           if (this.tRex.jumpCount == 1 && !this.playingIntro) {
             this.playIntro();
@@ -795,6 +791,7 @@
        * RequestAnimationFrame wrapper.
        */
       scheduleNextUpdate: function() {
+        
         if (!this.updatePending) {
           this.updatePending = true;
           this.raqId = requestAnimationFrame(this.update.bind(this));
@@ -811,7 +808,7 @@
        * Game over state.
        */
       gameOver: function() {
-        if(!this.replaying) logger.gameOver(this.horizon.obstacles[0], this, this.tRex);
+        if(!this.replaying) logger.gameOver(this.horizon.obstacles[0], this, this.tRex, this.parameters);
         this.playSound(this.soundFx.HIT);
         vibrate(200);
         
@@ -1273,7 +1270,8 @@
       this.dict = {
         events: [],
         logs: [],
-        obstacles: []
+        obstacles: [],
+        nr_jumps: 0
       };
     }
 
@@ -1295,6 +1293,12 @@
         this.dict.obstacles.push([obstacle, getTimeStamp()]);
       },
       /**
+       * increment nr jumps 
+       */
+      addJump(){
+        this.dict.nr_jumps++;
+      },
+      /**
        * add log to logs
        * @param {*} log 
        */
@@ -1308,16 +1312,17 @@
       addEvent: function(eventType){
         this.dict.events.push([eventType, getTimeStamp()]);
       },
-      gameOver: function(obstacle, runner, tRex){
+      gameOver: function(obstacle, runner, tRex, parameters){
         this.dict["collisionObstacle"] = obstacle;
         var actualDistance = runner.distanceMeter.getActualDistance(Math.ceil(runner.distanceRan));
         
-        this.dict[ "distanceRan"] = runner.distanceRan,
-        this.dict[ "actualDistance" ] =  actualDistance,
-        this.dict[ "runnerConfig"] =  runner.config,
-        this.dict[ "tRexConfig"] =  tRex.config,
-        this.dict[ "inverted"] =  runner.inverted,
-        this.dict[ "obstacleTypes"] =  Obstacle.types
+        this.dict[ "distanceRan"] = runner.distanceRan;
+        this.dict[ "actualDistance" ] =  actualDistance;
+        this.dict[ "runnerConfig"] =  runner.config;
+        this.dict[ "tRexConfig"] =  tRex.config;
+        this.dict[ "inverted"] =  runner.inverted;
+        this.dict[ "obstacleTypes"] =  Obstacle.types;
+        this.dict[ "parameters"] = parameters;
       },
       /** 
        * Log all the parameters stored in dict
@@ -1541,24 +1546,25 @@
      */
     function Obstacle(canvasCtx, type, spriteImgPos, dimensions,
         gapCoefficient, speed, opt_xOffset, runner) {
-      this.runner = runner;
-      this.canvasCtx = canvasCtx;
-      this.spritePos = spriteImgPos;
-      this.typeConfig = type;
-      this.gapCoefficient = gapCoefficient;
-      this.size = getRandomNum(1, Obstacle.MAX_OBSTACLE_LENGTH);
-      this.dimensions = dimensions;
-      this.remove = false;
-      this.xPos = dimensions.WIDTH + (opt_xOffset || 0);
-      this.yPos = 0;
-      this.width = 0;
-      this.collisionBoxes = [];
-      this.gap = 0;
-      this.speedOffset = 0;
-      // For animated obstacles.
-      this.currentFrame = 0;
-      this.timer = 0;
-      this.init(speed);
+        this.runner = runner;
+        this.canvasCtx = canvasCtx;
+        this.spritePos = spriteImgPos;
+        this.typeConfig = type;
+        this.gapCoefficient = gapCoefficient;
+        this.size = getRandomNum(1, Obstacle.MAX_OBSTACLE_LENGTH);
+        this.dimensions = dimensions;
+        this.remove = false;
+        this.xPos = dimensions.WIDTH + (opt_xOffset || 0);
+        this.yPos = 0;
+        this.width = 0;
+        this.collisionBoxes = [];
+        this.gap = 0;
+        this.speedOffset = 0;
+        // For animated obstacles.
+        this.currentFrame = 0;
+        this.timer = 0;
+        this.init(speed);
+      
     };
     /**
      * Coefficient for calculating the maximum gap.
@@ -1590,12 +1596,7 @@
         } else {
           this.yPos = this.typeConfig.yPos;
         }
-        var param_obstacle = {
-          "typeConfig" : this.typeConfig,
-          "size": this.size, // for tree
-          "yPos": this.yPos, // for pterodactyl
-        }
-        if(!this.replaying) logger.addObstacle(param_obstacle);
+        
         
         this.draw();
         // Make collision box adjustments,
@@ -1617,6 +1618,57 @@
               -this.typeConfig.speedOffset;
         } // either x times slower or x times faster than horizon (0.8 for pterodactyl)
         this.gap = this.getGap(this.gapCoefficient, speed);
+        var param_obstacle = {
+          "typeConfig" : this.typeConfig,
+          "size": this.size, // for tree
+          "yPos": this.yPos, // for pterodactyl
+          "gap": this.gap,
+          "speedOffset": this.speedOffset
+        }
+        if(!this.replaying) logger.addObstacle(param_obstacle);
+      },
+
+
+
+      init_for_replay(speed, yPos, speedOffset, gap){
+        this.cloneCollisionBoxes();
+        // Only allow sizing if we're at the right speed.
+        if (this.size > 1 && this.typeConfig.multipleSpeed > speed) { // size is random but since pterodactyl has multipleSpeed 900 -> always size reset to 1
+          this.size = 1;
+        }
+        this.width = this.typeConfig.width * this.size;
+        // Check if obstacle can be positioned at various heights.
+        // if (Array.isArray(this.typeConfig.yPos))  {
+        //   var yPosConfig = IS_MOBILE ? this.typeConfig.yPosMobile :
+        //       this.typeConfig.yPos;
+        //   this.yPos = yPosConfig[getRandomNum(0, yPosConfig.length - 1)];
+        // } else {
+        //   this.yPos = this.typeConfig.yPos;
+        // }
+        this.yPos = yPos;
+        
+        
+        this.draw();
+        // Make collision box adjustments,
+        // Central box is adjusted to the size as one box.
+        //      ____        ______        ________
+        //    _|   |-|    _|     |-|    _|       |-|
+        //   | |<->| |   | |<--->| |   | |<----->| |
+        //   | | 1 | |   | |  2  | |   | |   3   | |
+        //   |_|___|_|   |_|_____|_|   |_|_______|_|
+        //
+        if (this.size > 1) {
+          this.collisionBoxes[1].width = this.width - this.collisionBoxes[0].width -
+              this.collisionBoxes[2].width;
+          this.collisionBoxes[2].x = this.width - this.collisionBoxes[2].width;
+        }
+        // For obstacles that go at a different speed from the horizon.
+        // if (this.typeConfig.speedOffset) {
+        //   this.speedOffset = Math.random() > 0.5 ? this.typeConfig.speedOffset :
+        //       -this.typeConfig.speedOffset;
+        // } // either x times slower or x times faster than horizon (0.8 for pterodactyl)
+        this.speedOffset = speedOffset;
+        this.gap = gap;
       },
       /**
        * Draw and crop based on size.
@@ -2094,7 +2146,8 @@
        */
       startJump: function(speed) {
         if (!this.jumping) {
-          if(!this.replaying) logger.addLog("startJump")
+          if(!this.replaying) {logger.addLog("startJump"); console.log("jump", getTimeStamp())}
+          if(!this.replaying) logger.addJump();
           this.update(0, Trex.status.JUMPING);
           // Tweak the jump velocity based on the speed.
           this.jumpVelocity = this.config.INIITAL_JUMP_VELOCITY - (speed / 10);
@@ -2860,26 +2913,27 @@
        * @param {number} currentSpeed
        */
       addNewObstacle: function(currentSpeed) {
-
-        //var obstacleTypeIndex = getRandomNum(0, Obstacle.types.length - 1);
-        //var obstacleType = Obstacle.types[obstacleTypeIndex];
-        var type = getRandomWeighted(this.runner.parameters.getObstacleTypesSpec());
-        var obstacleType = Obstacle.types.filter(obj => {return obj.type == type})[0];
-        // Check for multiples of the same type of obstacle.
-        // Also check obstacle is available at current speed.
-        if ((this.duplicateObstacleCheck(obstacleType.type)) ||
-            currentSpeed < obstacleType.minSpeed) {
-          this.addNewObstacle(currentSpeed);
-        } else {
-          var obstacleSpritePos = this.spritePos[obstacleType.type];
-          this.obstacles.push(new Obstacle(this.canvasCtx, obstacleType,
-              obstacleSpritePos, this.dimensions,
-              this.gapCoefficient, currentSpeed, obstacleType.width, this.runner));
-          this.obstacleHistory.unshift(obstacleType.type);
-          if (this.obstacleHistory.length > 1) {
-            this.obstacleHistory.splice(Runner.config.MAX_OBSTACLE_DUPLICATION);
+        
+          //var obstacleTypeIndex = getRandomNum(0, Obstacle.types.length - 1);
+          //var obstacleType = Obstacle.types[obstacleTypeIndex];
+          var type = getRandomWeighted(this.runner.parameters.getObstacleTypesSpec());
+          var obstacleType = Obstacle.types.filter(obj => {return obj.type == type})[0];
+          // Check for multiples of the same type of obstacle.
+          // Also check obstacle is available at current speed.
+          if ((this.duplicateObstacleCheck(obstacleType.type)) ||
+              currentSpeed < obstacleType.minSpeed) {
+            this.addNewObstacle(currentSpeed);
+          } else {
+            var obstacleSpritePos = this.spritePos[obstacleType.type];
+            this.obstacles.push(new Obstacle(this.canvasCtx, obstacleType,
+                obstacleSpritePos, this.dimensions,
+                this.gapCoefficient, currentSpeed, obstacleType.width, this.runner));
+            this.obstacleHistory.unshift(obstacleType.type);
+            if (this.obstacleHistory.length > 1) {
+              this.obstacleHistory.splice(Runner.config.MAX_OBSTACLE_DUPLICATION);
+            }
           }
-        }
+          
       },
       /**
        * Returns whether the previous two obstacles are the same as the next one.
@@ -2931,31 +2985,30 @@
     
     
     function onDocumentLoad() {
+      
       var par = {
         SPEED: 10, 
         ACCELERATION: 0.002,  
-        MIN_GAP: 250,
+        MIN_GAP: 400,
         OBSTACLE_TYPES: [ 'CACTUS_LARGE', 'CACTUS_SMALL', 'PTERODACTYL'], 
-        OBSTACLE_TYPES_SPEC: {'CACTUS_LARGE' : 0.35, 'CACTUS_SMALL': 0.35, 'PTERODACTYL': 0.3}, 
+        OBSTACLE_TYPES_SPEC: {'CACTUS_LARGE' : 1, 'CACTUS_SMALL': 0, 'PTERODACTYL': 0}, 
         NIGHT_MODE_ENABLED: true, 
         NIGHT_MODE_DISTANCE: 700, 
-        CLEAR_TIME: 1000, 
-        MAX_OBSTACLE_LENGTH: 3, 
+        CLEAR_TIME: 0, 
+        MAX_OBSTACLE_LENGTH: 1, 
         MAX_SPEED: 10, 
         PTERODACTYL_YPOS: [ 50, 75, 100 ], 
-        CHECK_DUPLICATION: true,
+        CHECK_DUPLICATION: false,
         MAX_OBSTACLE_DUPLICATION: 2,
         USE_GAME_GAP: false,
         MAX_GAP: 400,
-        GAP_DISTRIBUTION_POW: 2
+        GAP_DISTRIBUTION_POW: 2,
       }
-      var replay_logs = null;
-      r = new Runner('.interstitial-wrapper', par, replay_logs);
+      r = new Runner('.interstitial-wrapper', par);
       logger = new Logger();
       window.logger = logger;
       document.addEventListener("GAMEOVER", function(){
         var p = logger.getParams()
-        console.log();
         r.replay(p)
       } ,false);
 
