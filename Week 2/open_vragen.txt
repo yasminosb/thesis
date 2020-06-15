@@ -1,3 +1,0 @@
-1. Context en scope: kan je je vinden in de scope dat we besproken hebben (i.e. relative labelling methods)? Zijn er nog insteken of pistes dat je graag bewandeld?
-2. Wat is de output en hoe gaan we deze meten zodat we een leersignaal hebben?
-3. Welke games komen in aanmerking?
