@@ -406,6 +406,7 @@
        */
       playIntro: function() {
         if (!this.activated && !this.crashed) {
+          console.log("playintro")
           if(!this.replaying) logger.addLog("playIntro");
           this.playingIntro = true;
           this.tRex.playingIntro = true;
@@ -475,6 +476,19 @@
         }
         
       },
+
+      replayEvents2(events){
+        var i = 0;
+        this.restart()
+        while( i < events.length){
+          console.log(this.runningTime)
+          if(this.runningtime >= events[i][1]){
+            this.handleEvent(events[i][0]);
+            i++;
+          }
+        }
+
+      },
       /**
        * Update the game frame and schedules the next one.
        */
@@ -491,9 +505,7 @@
           }
           this.runningTime += deltaTime;
           var hasObstacles = this.runningTime > this.config.CLEAR_TIME;
-          if(hasObstacles){
-              //console.log("clear time" , this.config.CLEAR_TIME, "over");
-          }
+
           // First jump triggers the intro.
           if (this.tRex.jumpCount == 1 && !this.playingIntro) {
             this.playIntro();
@@ -515,10 +527,6 @@
               this.currentSpeed += this.config.ACCELERATION;
             }
           } else {
-            // if(!this.replaying) logger.gameOver(this.horizon.obstacles[0], this, this.tRex);
-            // var evt = document.createEvent("Event");
-            // evt.initEvent("GAMEOVER", true, true);
-            // document.dispatchEvent(evt);
             this.gameOver();
           }
           var playAchievementSound = this.distanceMeter.update(deltaTime,
