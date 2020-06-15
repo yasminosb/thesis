@@ -1628,48 +1628,6 @@
         if(!this.replaying) logger.addObstacle(param_obstacle);
       },
 
-
-
-      init_for_replay(speed, yPos, speedOffset, gap){
-        this.cloneCollisionBoxes();
-        // Only allow sizing if we're at the right speed.
-        if (this.size > 1 && this.typeConfig.multipleSpeed > speed) { // size is random but since pterodactyl has multipleSpeed 900 -> always size reset to 1
-          this.size = 1;
-        }
-        this.width = this.typeConfig.width * this.size;
-        // Check if obstacle can be positioned at various heights.
-        // if (Array.isArray(this.typeConfig.yPos))  {
-        //   var yPosConfig = IS_MOBILE ? this.typeConfig.yPosMobile :
-        //       this.typeConfig.yPos;
-        //   this.yPos = yPosConfig[getRandomNum(0, yPosConfig.length - 1)];
-        // } else {
-        //   this.yPos = this.typeConfig.yPos;
-        // }
-        this.yPos = yPos;
-        
-        
-        this.draw();
-        // Make collision box adjustments,
-        // Central box is adjusted to the size as one box.
-        //      ____        ______        ________
-        //    _|   |-|    _|     |-|    _|       |-|
-        //   | |<->| |   | |<--->| |   | |<----->| |
-        //   | | 1 | |   | |  2  | |   | |   3   | |
-        //   |_|___|_|   |_|_____|_|   |_|_______|_|
-        //
-        if (this.size > 1) {
-          this.collisionBoxes[1].width = this.width - this.collisionBoxes[0].width -
-              this.collisionBoxes[2].width;
-          this.collisionBoxes[2].x = this.width - this.collisionBoxes[2].width;
-        }
-        // For obstacles that go at a different speed from the horizon.
-        // if (this.typeConfig.speedOffset) {
-        //   this.speedOffset = Math.random() > 0.5 ? this.typeConfig.speedOffset :
-        //       -this.typeConfig.speedOffset;
-        // } // either x times slower or x times faster than horizon (0.8 for pterodactyl)
-        this.speedOffset = speedOffset;
-        this.gap = gap;
-      },
       /**
        * Draw and crop based on size.
        */
