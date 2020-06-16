@@ -31,6 +31,13 @@ Parameters.prototype = {
         this.setParameters();
     },
     generateObstacleTypes() {
+        /**
+         * Obstacle definitions.
+         * minGap: minimum pixel space betweeen obstacles.
+         * multipleSpeed: Speed at which multiples are allowed.
+         * speedOffset: speed faster / slower than the horizon.
+         * minSpeed: Minimum speed which the obstacle can make an appearance.
+         */
         var minGap_default = this.getMinGap();
         /** declarations of possible obstacle types */
         var CACTUS_SMALL = {
