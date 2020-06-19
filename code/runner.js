@@ -421,7 +421,6 @@ Runner.prototype = {
             this.playing = true;
             this.activated = true;
         } else if (this.crashed) {
-            console.log("restart 1")
             this.restart();
         }
     },
@@ -455,19 +454,41 @@ Runner.prototype = {
     replay: function (params) {
         if (this.replaying == false) {
             this.replaying = true;
-            console.log("REPLAY", params)
             var events = params.events;
             this.GAMEOVER_CLEAR_TIME = 0;
             this.replayEvents(events);
         }
     },
 
+    replayJumps: function(logs) {
+        console.log(logs)
+        for (let log of logs) {
+            var logtype = log[0];
+            if(logtype == "startJump"){
+                setTimeout(() => {
+                   this.tRex.startJump(this.currentSpeed) 
+                }, log[1]);
+            } else if (logtype == "endJump"){
+                setTimeout(() => {
+                    this.tRex.endJump(this.currentSpeed) 
+                 }, log[1]);
+            } else if (logtype == "resetTRex"){
+                setTimeout(() => {
+                    this.tRex.reset()
+                }, log[1]);
+            }
+        }
+    },
+
     replayEvents: function (events) {
         console.log(events.map(x => [x[0].type, x[1]]))
+        //var restart_triggered = false;
         for (let event of events) {
+            if(event[0].type == "keyup") restart_triggered = true;
+            var time = event[1] // - (restart_triggered ?  400 : 0);
             setTimeout(() => {
                 this.handleEvent(event[0]);
-            }, event[1]);
+            }, time);
         }
 
     },
@@ -482,7 +503,6 @@ Runner.prototype = {
                 i++;
             }
         }
-
     },
     /**
      * Update the game frame and schedules the next one.
@@ -616,7 +636,7 @@ Runner.prototype = {
         }
     },
     /**
-     * Process keydown.
+     * Process keydown. OVERWRITTEN (why?)
      * @param {Event} e
      */
     onKeyDown: function (e) {
@@ -654,14 +674,13 @@ Runner.prototype = {
             }
         } else if (this.crashed && e.type == Runner.events.TOUCHSTART &&
             e.currentTarget == this.containerEl) {
-            console.log("restart 2")
             this.restart();
         }
     },
 
 
     /**
-     * Process keydown.
+     * Process keydown. OVERWRITTEN (why?)
      * @param {Event} e
      */
     onKeyDown: function (e) {
@@ -690,7 +709,6 @@ Runner.prototype = {
 
             if (this.crashed && e.type == Runner.events.TOUCHSTART &&
                 e.currentTarget == this.containerEl) {
-                console.log("restart 3")
                 this.restart();
             }
         }
@@ -747,7 +765,6 @@ Runner.prototype = {
             }
         } else if (this.crashed && e.type == Runner.events.TOUCHSTART &&
             e.currentTarget == this.containerEl) {
-            console.log("restart 5")
             this.restart();
         }
     },
@@ -771,7 +788,7 @@ Runner.prototype = {
             if (Runner.keycodes.RESTART[keyCode] || this.isLeftClickOnCanvas(e) ||
                 (deltaTime >= this.config.GAMEOVER_CLEAR_TIME &&
                     Runner.keycodes.JUMP[keyCode])) {
-                console.log("restart 7")
+                console.log("restart called")
                 this.restart();
             }
         } else if (this.paused && isjumpKey) {
@@ -794,7 +811,6 @@ Runner.prototype = {
      * RequestAnimationFrame wrapper.
      */
     scheduleNextUpdate: function () {
-
         if (!this.updatePending) {
             this.updatePending = true;
             this.raqId = requestAnimationFrame(this.update.bind(this));

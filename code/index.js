@@ -32,6 +32,7 @@ function onDocumentLoad() {
   window.logger = logger;
   document.addEventListener("GAMEOVER", function () {
     var p = logger.getParams()
+    console.log(p);
     r.replay(p)
   }, false);
 

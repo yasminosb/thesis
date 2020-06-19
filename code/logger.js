@@ -67,7 +67,6 @@ Logger.prototype = {
      * @param {*} tRex trex obj
      */
     getParams: function(){
-        console.log("logger.getparams")
         return this.dict;
     }
 }
