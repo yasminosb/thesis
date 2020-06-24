@@ -9,14 +9,16 @@ function Runner(outerContainerId, opt_param_config) {
     this.parameters = new Parameters(opt_param_config);
     this.parameters.initialise();
     this.replaying = false;
+    this.outerContainerEl = document.querySelector(outerContainerId);
     // Singleton
     if (Runner.instance_) {
-        return Runner.instance_;
+        //return Runner.instance_;
     }
     Runner.instance_ = this;
     this.containerEl = null;
     this.snackbarEl = null;
-    this.config = opt_runner_config || Runner.config; 
+    //this.config = opt_runner_config || Runner.config; 
+    this.config = Runner.config;
     // Logical dimensions of the container.
     this.dimensions = Runner.defaultDimensions;
     this.canvas = null;
@@ -46,9 +48,11 @@ function Runner(outerContainerId, opt_param_config) {
     // Images.
     this.images = {};
     this.imagesLoaded = 0;
+    console.log('ey')
     if (this.isDisabled()) { // false - hardcoded
         this.setupDisabledRunner();
     } else {
+        console.log('oi')
         this.loadImages();
     }
 }
@@ -308,13 +312,30 @@ Runner.prototype = {
      * Game initialiser.
      */
     init: function () {
+        this.initStaticIcon();
+        this.adjustDimensions();
+        this.setSpeed();
+        this.initContainerEl();
+        this.initCanvas();
+        this.initHorizon();
+        this.initDistanceMeter();
+        this.initTRex();
+        this.initListening();
+        this.update();
+    },
+
+    initStaticIcon(){
         // Hide the static icon.
         document.querySelector('.' + Runner.classes.ICON).style.visibility =
             'hidden';
-        this.adjustDimensions();
-        this.setSpeed();
+    },
+
+    initContainerEl(){
         this.containerEl = document.createElement('div');
         this.containerEl.className = Runner.classes.CONTAINER;
+    },
+
+    initCanvas(){
         // Player canvas container.
         this.canvas = createCanvas(this.containerEl, this.dimensions.WIDTH,
             this.dimensions.HEIGHT, Runner.classes.PLAYER);
@@ -322,20 +343,31 @@ Runner.prototype = {
         this.canvasCtx.fillStyle = '#f7f7f7'; // does not change anything?
         this.canvasCtx.fill();
         Runner.updateCanvasScaling(this.canvas);
-        // Horizon contains clouds, obstacles and the ground.
-        this.horizon = new Horizon(this.canvas, this.spriteDef, this.dimensions,
-            this.config.GAP_COEFFICIENT, this);
-        // Distance meter
-        this.distanceMeter = new DistanceMeter(this.canvas,
-            this.spriteDef.TEXT_SPRITE, this.dimensions.WIDTH);
-        // Draw t-rex
-        this.tRex = new Trex(this.canvas, this.spriteDef.TREX);
         this.outerContainerEl.appendChild(this.containerEl);
         if (IS_MOBILE) {
             this.createTouchController();
         }
+    },
+
+    initHorizon(){
+        // Horizon contains clouds, obstacles and the ground.
+        this.horizon = new Horizon(this.canvas, this.spriteDef, this.dimensions,
+            this.config.GAP_COEFFICIENT, this);
+    },
+    
+    initDistanceMeter(){
+        // Distance meter
+        this.distanceMeter = new DistanceMeter(this.canvas,
+            this.spriteDef.TEXT_SPRITE, this.dimensions.WIDTH);
+    },
+
+    initTRex(){
+        // Draw t-rex
+        this.tRex = new Trex(this.canvas, this.spriteDef.TREX);
+    },
+
+    initListening(){
         this.startListening();
-        this.update();
         window.addEventListener(Runner.events.RESIZE,
             this.debounceResize.bind(this));
     },
