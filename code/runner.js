@@ -5,8 +5,7 @@
      * @constructor
      * @export
      */
-function Runner(outerContainerId, opt_param_config, opt_runner_config) {
-
+function Runner(outerContainerId, opt_param_config) {
     this.parameters = new Parameters(opt_param_config);
     this.parameters.initialise();
     this.replaying = false;
@@ -15,10 +14,9 @@ function Runner(outerContainerId, opt_param_config, opt_runner_config) {
         return Runner.instance_;
     }
     Runner.instance_ = this;
-    this.outerContainerEl = document.querySelector(outerContainerId);
     this.containerEl = null;
     this.snackbarEl = null;
-    this.config = opt_runner_config || Runner.config;
+    this.config = opt_runner_config || Runner.config; 
     // Logical dimensions of the container.
     this.dimensions = Runner.defaultDimensions;
     this.canvas = null;
@@ -456,7 +454,7 @@ Runner.prototype = {
             this.replaying = true;
             var events = params.events;
             this.GAMEOVER_CLEAR_TIME = 0;
-            this.replayEvents(events);
+            this.replayEvents2(events);
         }
     },
 
@@ -495,10 +493,9 @@ Runner.prototype = {
 
     replayEvents2(events) {
         var i = 0;
-        this.restart()
+        var starttime = getTimeStamp();
         while (i < events.length) {
-            console.log(this.runningTime)
-            if (this.runningtime >= events[i][1]) {
+            if (getTimeStamp() - starttime >= events[i][1]) {
                 this.handleEvent(events[i][0]);
                 i++;
             }
@@ -508,70 +505,98 @@ Runner.prototype = {
      * Update the game frame and schedules the next one.
      */
     update: function () {
-        //console.log("update - time:", this.runningTime);
         this.updatePending = false;
         var now = getTimeStamp();
         var deltaTime = now - (this.time || now);
         this.time = now;
         if (this.playing) {
             this.clearCanvas();
-            if (this.tRex.jumping) {
-                this.tRex.updateJump(deltaTime);
-            }
+            this.updateTRex(deltaTime);
             this.runningTime += deltaTime;
             var hasObstacles = this.runningTime > this.config.CLEAR_TIME;
+            this.updateIntro();
+            this.updateHorizon(deltaTime, hasObstacles);
+            this.updateCollisions(deltaTime, hasObstacles);
+            this.updateAchievementSound(deltaTime);
+            this.updateNightMode(deltaTime);
+            
+        }
+        this.finishUpdate(deltaTime);
+        
+    },
 
-            // First jump triggers the intro.
-            if (this.tRex.jumpCount == 1 && !this.playingIntro) {
-                this.playIntro();
-            }
-            // The horizon doesn't move until the intro is over.
-            if (this.playingIntro) {
-                this.horizon.update(0, this.currentSpeed, hasObstacles);
+    updateNightMode(deltaTime){
+        // Night mode.
+        if (this.parameters.isNightModeEnabled()) {
+            if (this.invertTimer > this.config.INVERT_FADE_DURATION) {
+                this.invertTimer = 0;
+                this.invertTrigger = false;
+                this.invert();
+            } else if (this.invertTimer) {
+                this.invertTimer += deltaTime;
             } else {
-                deltaTime = !this.activated ? 0 : deltaTime;
-                this.horizon.update(deltaTime, this.currentSpeed, hasObstacles,
-                    this.inverted);
-            }
-            // Check for collisions.
-            var collision = hasObstacles &&
-                checkForCollision(this.horizon.obstacles[0], this.tRex);
-            if (!collision) {
-                this.distanceRan += this.currentSpeed * deltaTime / this.msPerFrame;
-                if (this.currentSpeed < this.config.MAX_SPEED) {
-                    this.currentSpeed += this.config.ACCELERATION;
-                }
-            } else {
-                this.gameOver();
-            }
-            var playAchievementSound = this.distanceMeter.update(deltaTime,
-                Math.ceil(this.distanceRan));
-            if (playAchievementSound) {
-                this.playSound(this.soundFx.SCORE);
-            }
-
-            // Night mode.
-            if (this.parameters.isNightModeEnabled()) {
-                if (this.invertTimer > this.config.INVERT_FADE_DURATION) {
-                    this.invertTimer = 0;
-                    this.invertTrigger = false;
-                    this.invert();
-                } else if (this.invertTimer) {
-                    this.invertTimer += deltaTime;
-                } else {
-                    var actualDistance =
-                        this.distanceMeter.getActualDistance(Math.ceil(this.distanceRan));
-                    if (actualDistance > 0) {
-                        this.invertTrigger = !(actualDistance %
-                            this.config.INVERT_DISTANCE);
-                        if (this.invertTrigger && this.invertTimer === 0) {
-                            this.invertTimer += deltaTime;
-                            this.invert();
-                        }
+                var actualDistance =
+                    this.distanceMeter.getActualDistance(Math.ceil(this.distanceRan));
+                if (actualDistance > 0) {
+                    this.invertTrigger = !(actualDistance %
+                        this.config.INVERT_DISTANCE);
+                    if (this.invertTrigger && this.invertTimer === 0) {
+                        this.invertTimer += deltaTime;
+                        this.invert();
                     }
                 }
             }
         }
+    },
+
+    updateAchievementSound(deltaTime){
+        var playAchievementSound = this.distanceMeter.update(deltaTime,
+            Math.ceil(this.distanceRan));
+        if (playAchievementSound) {
+            this.playSound(this.soundFx.SCORE);
+        }
+    },
+
+    updateCollisions(deltaTime, hasObstacles){
+        // Check for collisions.
+        var collision = hasObstacles &&
+        checkForCollision(this.horizon.obstacles[0], this.tRex);
+        if (!collision) {
+            this.distanceRan += this.currentSpeed * deltaTime / this.msPerFrame;
+            if (this.currentSpeed < this.config.MAX_SPEED) {
+                this.currentSpeed += this.config.ACCELERATION;
+            }
+        } else {
+            this.gameOver();
+        }
+    },
+
+    updateHorizon(deltaTime, hasObstacles){
+        // The horizon doesn't move until the intro is over.
+        if (this.playingIntro) {
+            this.horizon.update(0, this.currentSpeed, hasObstacles);
+        } else {
+            deltaTime = !this.activated ? 0 : deltaTime;
+            this.horizon.update(deltaTime, this.currentSpeed, hasObstacles,
+                this.inverted);
+        }
+    },
+
+    updateIntro(){
+        // First jump triggers the intro.
+        if (this.tRex.jumpCount == 1 && !this.playingIntro) {
+            this.playIntro();
+        }
+    },
+
+    updateTRex(deltaTime){
+        // update trex
+        if (this.tRex.jumping) {
+            this.tRex.updateJump(deltaTime);
+        }
+    },
+
+    finishUpdate(deltaTime){
         if (this.playing || (!this.activated &&
             this.tRex.blinkCount < Runner.config.MAX_BLINK_COUNT)) {
             this.tRex.update(deltaTime);
