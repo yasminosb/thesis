@@ -47,7 +47,8 @@ Logger.prototype = {
      * @param {*} eventType 
      */
     addEvent: function(eventType){
-        this.dict.events.push([eventType, getTimeStamp()]);
+        var d = {time : getTimeStamp(), event: eventType};
+        this.dict.events.push(d);
     },
     gameOver: function(obstacle, runner, tRex, parameters){
         this.dict["collisionObstacle"] = obstacle;

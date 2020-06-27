@@ -13,6 +13,7 @@ function Runner(outerContainerId, opt_param_config) {
     // Singleton
     if (Runner.instance_) {
         //return Runner.instance_;
+        this.outerContainerEl.innerHTML  = '';
     }
     Runner.instance_ = this;
     this.containerEl = null;
@@ -321,6 +322,10 @@ Runner.prototype = {
         this.initDistanceMeter();
         this.initTRex();
         this.initListening();
+        this.initUpdate();
+    },
+
+    initUpdate(){
         this.update();
     },
 
