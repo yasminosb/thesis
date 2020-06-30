@@ -1,20 +1,20 @@
 class ReplayRunner extends Runner {
     constructor(outerContainerId, opt_param_config, replay_events){
-        console.log('ReplayRunner constructor')
         super(outerContainerId, opt_param_config);
+        this.replaying = true;
         this.initEvents(replay_events);
         this.update()
     }
 
     initEvents(replay_events){
-        console.log(replay_events)
         this.replay_events = replay_events;
-
         this.replay_index = 0;
+        this.gameOverTime = getTimeStamp();
     }
 
     initListening(){
-        //this.startListening();
+        // don't listen, fire handleEvent manually
+        //this.startListening(); 
         window.addEventListener(Runner.events.RESIZE,
             this.debounceResize.bind(this));
     }
@@ -24,11 +24,11 @@ class ReplayRunner extends Runner {
     }
 
     update(){
-        console.log(this.time)
         var replay_event = this.replay_events[this.replay_index]
-        if(this.replay_index < this.replay_events.length && this.time > replay_event[1] ){
-            this.handleEvent(replay_event[0]);
+        if((this.replay_index < this.replay_events.length) && (this.time - this.gameOverTime > replay_event.time)){
+            this.handleEvent(replay_event.event);
             this.replay_index++;
+            replay_event = this.replay_events[this.replay_index];
         }
         super.update();
     }

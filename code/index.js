@@ -28,20 +28,21 @@ function onDocumentLoad() {
     GAP_DISTRIBUTION_POW: 2,
   }
 
-  var events_3jumps = [[{"isTrusted":true},206.9599999995262],[{"isTrusted":true},274.45999999872583],[{"isTrusted":true},312.08999999944353],[{"isTrusted":true},406.3899999982823],[{"isTrusted":true},2006.7399999988993],[{"isTrusted":true},2134.569999998348],[{"isTrusted":true},2854.779999999664],[{"isTrusted":true},3022.6549999988492],[{"isTrusted":true},3705.1049999990937],[{"isTrusted":true},3862.439999998969]];
+  var events = [];
   var replay = false;
   if(replay){
-    var r = new ReplayRunner('.interstitial-wrapper', par, events_3jumps);
+    var r = new ReplayRunner('.interstitial-wrapper', par, events);
   } else {
     var r = new Runner('.interstitial-wrapper', par);
   }
   var logger = new Logger();
   window.logger = logger;
   document.addEventListener("GAMEOVER", function () {
-    var p = logger.getParams()
-    console.log(p)
-    console.log(JSON.stringify(p.events));
-    r = new Runner('.interstitial-wrapper', par, p.events);
+    var p = logger.getParams(); 
+    console.log(p);
+    var serial = logger.serialize();
+    console.log(p.events);
+    r = new ReplayRunner('.interstitial-wrapper', par, p.events, p.gameOverTime);
   }, false);
 }
 

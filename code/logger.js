@@ -53,14 +53,14 @@ Logger.prototype = {
     gameOver: function(obstacle, runner, tRex, parameters){
         this.dict["collisionObstacle"] = obstacle;
         var actualDistance = runner.distanceMeter.getActualDistance(Math.ceil(runner.distanceRan));
-        
         this.dict[ "distanceRan"] = runner.distanceRan;
         this.dict[ "actualDistance" ] =  actualDistance;
         this.dict[ "runnerConfig"] =  runner.config;
         this.dict[ "tRexConfig"] =  tRex.config;
-        this.dict[ "inverted"] =  runner.inverted;
+        this.dict[ "invertedGameOver"] =  runner.inverted;
         this.dict[ "obstacleTypes"] =  Obstacle.types;
         this.dict[ "parameters"] = parameters;
+        this.dict[ "gameOverTime"] = runner.time;
     },
     /** 
      * Log all the parameters stored in dict
@@ -69,5 +69,24 @@ Logger.prototype = {
      */
     getParams: function(){
         return this.dict;
+    },
+
+    serialize: function(){
+        var serialized_dict = this.dict;
+        serialized_dict.events.map(event => {event.type});
+        var collisionObstacle = serialized_dict.collisionObstacle;
+        serialized_dict.collisionObstacle = {
+            "typeConfig": collisionObstacle.typeConfig,
+            "dimensions": collisionObstacle.dimensions,
+            "size": collisionObstacle.size,
+            "width": collisionObstacle.width,
+            "xPos": collisionObstacle.xPos,
+            "yPos": collisionObstacle.yPos,
+            "collisionBoxes": collisionObstacle.collisionBoxes,
+            "speedOffset": collisionObstacle.speedOffset,
+            "gap": collisionObstacle.gap
+        };
+        return JSON.stringify(this.dict);
     }
+
 }

@@ -49,11 +49,9 @@ function Runner(outerContainerId, opt_param_config) {
     // Images.
     this.images = {};
     this.imagesLoaded = 0;
-    console.log('ey')
     if (this.isDisabled()) { // false - hardcoded
         this.setupDisabledRunner();
     } else {
-        console.log('oi')
         this.loadImages();
     }
 }
@@ -646,7 +644,7 @@ Runner.prototype = {
      */
     handleEvent: function (e) {
         return (function (evtType, events) {
-            if (!this.playing_replay) if (!this.replaying) logger.addEvent(e);
+            if (!this.replaying) logger.addEvent(e);
             console.log("TYPE", evtType);
             switch (evtType) {
                 case events.KEYDOWN:
@@ -917,8 +915,10 @@ Runner.prototype = {
         this.time = getTimeStamp();
 
         var evt = document.createEvent("Event");
-        evt.initEvent("GAMEOVER", true, true);
-        document.dispatchEvent(evt);
+        if(!this.replaying) {
+            evt.initEvent("GAMEOVER", true, true);
+            document.dispatchEvent(evt);
+        }
     },
     stop: function () {
         this.playing = false;
