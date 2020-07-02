@@ -1,12 +1,14 @@
 class ReplayRunner extends Runner {
-    constructor(outerContainerId, opt_param_config, replay_events){
+    constructor(outerContainerId, opt_param_config, replay_events, replay_obstacles){
         super(outerContainerId, opt_param_config);
         this.replaying = true;
-        this.initEvents(replay_events);
+        this.replay_obstacles = replay_obstacles;
+        this.initReplayEvents(replay_events);
+        this.loadImages();
         this.update()
     }
 
-    initEvents(replay_events){
+    initReplayEvents(replay_events){
         this.replay_events = replay_events;
         this.replay_index = 0;
         this.gameOverTime = getTimeStamp();
@@ -19,8 +21,19 @@ class ReplayRunner extends Runner {
             this.debounceResize.bind(this));
     }
 
+    initHorizon(){
+        console.log("inithorizon", this.replay_obstacles);
+        // Horizon contains clouds, obstacles and the ground.
+        this.horizon = new ReplayHorizon(this.canvas, this.spriteDef, this.dimensions,
+            this.config.GAP_COEFFICIENT, this, this.replay_obstacles);
+    }
+
     initUpdate(){
         // empty - start update only after init
+    }
+
+    launch(){
+        // empty - start launch after init
     }
 
     update(){

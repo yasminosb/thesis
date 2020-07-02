@@ -16,7 +16,7 @@ function Obstacle(canvasCtx, type, spriteImgPos, dimensions,
     this.spritePos = spriteImgPos;
     this.typeConfig = type;
     this.gapCoefficient = gapCoefficient;
-    this.size = getRandomNum(1, Obstacle.MAX_OBSTACLE_LENGTH);
+    
     this.dimensions = dimensions;
     this.remove = false;
     this.xPos = dimensions.WIDTH + (opt_xOffset || 0);
@@ -28,8 +28,7 @@ function Obstacle(canvasCtx, type, spriteImgPos, dimensions,
     // For animated obstacles.
     this.currentFrame = 0;
     this.timer = 0;
-    this.init(speed);
-
+    this.launchInit(speed);
 };
 /**
  * Coefficient for calculating the maximum gap.
@@ -42,17 +41,34 @@ Obstacle.MAX_GAP_COEFFICIENT = 1.5;
  */
 Obstacle.MAX_OBSTACLE_LENGTH = (typeof Obstacle.MAX_OBSTACLE_LENGTH == 'undefined') ? 3 : Obstacle.MAX_OBSTACLE_LENGTH,
     Obstacle.prototype = {
+        launchInit(speed){
+            this.init(speed);
+        },
         /**
          * Initialise the DOM for the obstacle.
          * @param {number} speed
          */
         init: function (speed) {
             this.cloneCollisionBoxes();
+            this.setDimensions(speed);
+            this.setHeight();
+            this.draw();
+            this.adjustCollisionBoxes();
+            this.setSpeedOffset();
+            this.setGap(speed);
+            this.logParameters();
+        },
+
+        setDimensions(speed){
+            this.size = getRandomNum(1, Obstacle.MAX_OBSTACLE_LENGTH);
             // Only allow sizing if we're at the right speed.
             if (this.size > 1 && this.typeConfig.multipleSpeed > speed) { // size is random but since pterodactyl has multipleSpeed 900 -> always size reset to 1
                 this.size = 1;
             }
             this.width = this.typeConfig.width * this.size;
+        },
+
+        setHeight(){
             // Check if obstacle can be positioned at various heights.
             if (Array.isArray(this.typeConfig.yPos)) {
                 var yPosConfig = IS_MOBILE ? this.typeConfig.yPosMobile :
@@ -61,10 +77,10 @@ Obstacle.MAX_OBSTACLE_LENGTH = (typeof Obstacle.MAX_OBSTACLE_LENGTH == 'undefine
             } else {
                 this.yPos = this.typeConfig.yPos;
             }
+        },
 
-
-            this.draw();
-            // Make collision box adjustments,
+        adjustCollisionBoxes(){
+             // Make collision box adjustments,
             // Central box is adjusted to the size as one box.
             //      ____        ______        ________
             //    _|   |-|    _|     |-|    _|       |-|
@@ -77,12 +93,23 @@ Obstacle.MAX_OBSTACLE_LENGTH = (typeof Obstacle.MAX_OBSTACLE_LENGTH == 'undefine
                     this.collisionBoxes[2].width;
                 this.collisionBoxes[2].x = this.width - this.collisionBoxes[2].width;
             }
+        },
+
+        setSpeedOffset(){
             // For obstacles that go at a different speed from the horizon.
             if (this.typeConfig.speedOffset) {
                 this.speedOffset = Math.random() > 0.5 ? this.typeConfig.speedOffset :
                     -this.typeConfig.speedOffset;
-            } // either x times slower or x times faster than horizon (0.8 for pterodactyl)
+            } 
+            // either x times slower or x times faster than horizon (0.8 for pterodactyl)
+        },
+
+        setGap(speed){
             this.gap = this.getGap(this.gapCoefficient, speed);
+            console.log("setgap", this.gap)
+        },
+
+        logParameters(){
             var param_obstacle = {
                 "typeConfig": this.typeConfig,
                 "size": this.size, // for tree

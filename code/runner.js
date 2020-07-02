@@ -6,54 +6,8 @@
      * @export
      */
 function Runner(outerContainerId, opt_param_config) {
-    this.parameters = new Parameters(opt_param_config);
-    this.parameters.initialise();
-    this.replaying = false;
-    this.outerContainerEl = document.querySelector(outerContainerId);
-    // Singleton
-    if (Runner.instance_) {
-        //return Runner.instance_;
-        this.outerContainerEl.innerHTML  = '';
-    }
-    Runner.instance_ = this;
-    this.containerEl = null;
-    this.snackbarEl = null;
-    //this.config = opt_runner_config || Runner.config; 
-    this.config = Runner.config;
-    // Logical dimensions of the container.
-    this.dimensions = Runner.defaultDimensions;
-    this.canvas = null;
-    this.canvasCtx = null;
-    this.tRex = null;
-    this.distanceMeter = null;
-    this.distanceRan = 0;
-    this.highestScore = 0;
-    this.time = 0;
-    this.runningTime = 0;
-    this.msPerFrame = 1000 / FPS;
-    this.currentSpeed = this.config.SPEED;
-    this.obstacles = [];
-    this.activated = false; // Whether the easter egg has been activated.
-    this.playing = false; // Whether the game is currently in play state.
-    this.crashed = false;
-    this.paused = false;
-    this.inverted = false;
-    this.invertTimer = 0;
-    this.resizeTimerId_ = null;
-    this.playCount = 0;
-    // Sound FX.
-    this.audioBuffer = null;
-    this.soundFx = {};
-    // Global web audio context for playing sounds.
-    this.audioContext = null;
-    // Images.
-    this.images = {};
-    this.imagesLoaded = 0;
-    if (this.isDisabled()) { // false - hardcoded
-        this.setupDisabledRunner();
-    } else {
-        this.loadImages();
-    }
+    this.setup(outerContainerId, opt_param_config);
+    this.launch();
 }
 
 /**
@@ -198,6 +152,62 @@ Runner.events = {
 
 
 Runner.prototype = {
+
+    setup: function(outerContainerId, opt_param_config){
+        this.parameters = new Parameters(opt_param_config);
+        this.parameters.initialise();
+        this.replaying = false;
+        this.outerContainerEl = document.querySelector(outerContainerId);
+        // Singleton
+        if (Runner.instance_) {
+            //return Runner.instance_;
+            this.outerContainerEl.innerHTML  = '';
+        }
+        Runner.instance_ = this;
+        this.containerEl = null;
+        this.snackbarEl = null;
+        //this.config = opt_runner_config || Runner.config; 
+        this.config = Runner.config;
+        // Logical dimensions of the container.
+        this.dimensions = Runner.defaultDimensions;
+        this.canvas = null;
+        this.canvasCtx = null;
+        this.tRex = null;
+        this.distanceMeter = null;
+        this.distanceRan = 0;
+        this.highestScore = 0;
+        this.time = 0;
+        this.runningTime = 0;
+        this.msPerFrame = 1000 / FPS;
+        this.currentSpeed = this.config.SPEED;
+        this.obstacles = [];
+        this.activated = false; // Whether the easter egg has been activated.
+        this.playing = false; // Whether the game is currently in play state.
+        this.crashed = false;
+        this.paused = false;
+        this.inverted = false;
+        this.invertTimer = 0;
+        this.resizeTimerId_ = null;
+        this.playCount = 0;
+        // Sound FX.
+        this.audioBuffer = null;
+        this.soundFx = {};
+        // Global web audio context for playing sounds.
+        this.audioContext = null;
+        // Images.
+        this.images = {};
+        this.imagesLoaded = 0;
+    },
+
+    launch: function(){
+        console.log("launch")
+        if (this.isDisabled()) { // false - hardcoded
+            this.setupDisabledRunner();
+        } else {
+            this.loadImages();
+        }
+    },
+    
     /**
      * Whether the easter egg has been disabled. CrOS enterprise enrolled devices.
      * @return {boolean}
@@ -255,6 +265,7 @@ Runner.prototype = {
      * definition.
      */
     loadImages: function () {
+        console.log("loadimages")
         if (IS_HIDPI) {
             Runner.imageSprite = document.getElementById('offline-resources-2x');
             this.spriteDef = Runner.spriteDefinition.HDPI;
@@ -311,6 +322,7 @@ Runner.prototype = {
      * Game initialiser.
      */
     init: function () {
+        console.log("init")
         this.initStaticIcon();
         this.adjustDimensions();
         this.setSpeed();
@@ -366,6 +378,7 @@ Runner.prototype = {
 
     initTRex(){
         // Draw t-rex
+        console.log("inittrex")
         this.tRex = new Trex(this.canvas, this.spriteDef.TREX);
     },
 

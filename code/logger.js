@@ -27,7 +27,7 @@ Logger.prototype = {
      * @param {*} obstacle 
      */
     addObstacle(obstacle){
-        this.dict.obstacles.push([obstacle, getTimeStamp()]);
+        this.dict.obstacles.push({obstacle: obstacle, time: getTimeStamp()});
     },
     /**
      * increment nr jumps 
@@ -40,7 +40,7 @@ Logger.prototype = {
      * @param {*} log 
      */
     addLog: function(log){
-        this.dict.logs.push([log, getTimeStamp()]);
+        this.dict.logs.push({log: log, time: getTimeStamp()});
     },
     /**
      * add event to events

@@ -131,11 +131,7 @@ Horizon.prototype = {
      * @param {number} currentSpeed
      */
     addNewObstacle: function (currentSpeed) {
-
-        //var obstacleTypeIndex = getRandomNum(0, Obstacle.types.length - 1);
-        //var obstacleType = Obstacle.types[obstacleTypeIndex];
-        var type = getRandomWeighted(this.runner.parameters.getObstacleTypesSpec());
-        var obstacleType = Obstacle.types.filter(obj => { return obj.type == type })[0];
+        obstacleType = this.determineObstacleType();
         // Check for multiples of the same type of obstacle.
         // Also check obstacle is available at current speed.
         if ((this.duplicateObstacleCheck(obstacleType.type)) ||
@@ -143,7 +139,7 @@ Horizon.prototype = {
             this.addNewObstacle(currentSpeed);
         } else {
             var obstacleSpritePos = this.spritePos[obstacleType.type];
-            this.obstacles.push(new Obstacle(this.canvasCtx, obstacleType,
+            this.obstacles.push(this.createNewObstacle(this.canvasCtx, obstacleType,
                 obstacleSpritePos, this.dimensions,
                 this.gapCoefficient, currentSpeed, obstacleType.width, this.runner));
             this.obstacleHistory.unshift(obstacleType.type);
@@ -152,6 +148,19 @@ Horizon.prototype = {
             }
         }
 
+    },
+
+    createNewObstacle: function(canvasCtx, obstacleType, obstacleSpritePos, dimensions, gapCoefficient, currentSpeed, width, runner){
+        return new Obstacle(canvasCtx, obstacleType, obstacleSpritePos, dimensions, gapCoefficient, currentSpeed, width, runner)
+    },
+
+    
+    determineObstacleType(){
+        //var obstacleTypeIndex = getRandomNum(0, Obstacle.types.length - 1);
+        //var obstacleType = Obstacle.types[obstacleTypeIndex];
+        var type = getRandomWeighted(this.runner.parameters.getObstacleTypesSpec());
+        var obstacleType = Obstacle.types.filter(obj => { return obj.type == type })[0];
+        return obstacleType;
     },
     /**
      * Returns whether the previous two obstacles are the same as the next one.

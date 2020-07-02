@@ -12,13 +12,13 @@ function onDocumentLoad() {
   var par = {
     SPEED: 10,
     ACCELERATION: 0.002,
-    MIN_GAP: 400,
+    MIN_GAP: 200,
     OBSTACLE_TYPES: ['CACTUS_LARGE', 'CACTUS_SMALL', 'PTERODACTYL'],
-    OBSTACLE_TYPES_SPEC: { 'CACTUS_LARGE': 1, 'CACTUS_SMALL': 0, 'PTERODACTYL': 0 },
+    OBSTACLE_TYPES_SPEC: { 'CACTUS_LARGE': 0.35, 'CACTUS_SMALL': 0.35, 'PTERODACTYL': 0.3 },
     NIGHT_MODE_ENABLED: true,
     NIGHT_MODE_DISTANCE: 100,
     CLEAR_TIME: 0,
-    MAX_OBSTACLE_LENGTH: 1,
+    MAX_OBSTACLE_LENGTH: 3,
     MAX_SPEED: 10,
     PTERODACTYL_YPOS: [50, 75, 100],
     CHECK_DUPLICATION: false,
@@ -42,7 +42,7 @@ function onDocumentLoad() {
     console.log(p);
     var serial = logger.serialize();
     console.log(p.events);
-    r = new ReplayRunner('.interstitial-wrapper', par, p.events, p.gameOverTime);
+    r = new ReplayRunner('.interstitial-wrapper', par, p.events, p.obstacles);
   }, false);
 }
 
