@@ -187,6 +187,7 @@ Runner.prototype = {
         this.paused = false;
         this.inverted = false;
         this.invertTimer = 0;
+        this.invert(true);
         this.resizeTimerId_ = null;
         this.playCount = 0;
         // Sound FX.
@@ -575,6 +576,7 @@ Runner.prototype = {
 
     updateNightMode(deltaTime){
         // Night mode.
+        console.log("updateNightMode")
         if (this.parameters.isNightModeEnabled()) {
             if (this.invertTimer > this.config.INVERT_FADE_DURATION) {
                 this.invertTimer = 0;

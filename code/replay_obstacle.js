@@ -10,7 +10,7 @@ class ReplayObstacle extends Obstacle {
     }
 
     launchInit(){
-        return;
+        // launch init after adjustments in replay constructor
     }
 
     setGap(speed){

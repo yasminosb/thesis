@@ -9,12 +9,21 @@ window["Logger"] = Logger;
 
 function onDocumentLoad() {
 
+  var xhr = new XMLHttpRequest();
+  var yourUrl = 'http://127.0.0.1:3000';
+  var value = "value";
+  xhr.open("POST", yourUrl, true);
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.send(JSON.stringify({
+      value: value
+  }));
+
   var par = {
     SPEED: 10,
     ACCELERATION: 0.002,
     MIN_GAP: 200,
     OBSTACLE_TYPES: ['CACTUS_LARGE', 'CACTUS_SMALL', 'PTERODACTYL'],
-    OBSTACLE_TYPES_SPEC: { 'CACTUS_LARGE': 0.35, 'CACTUS_SMALL': 0.35, 'PTERODACTYL': 0.3 },
+    OBSTACLE_TYPES_SPEC: { 'CACTUS_LARGE': 0, 'CACTUS_SMALL': 0, 'PTERODACTYL': 1 },
     NIGHT_MODE_ENABLED: true,
     NIGHT_MODE_DISTANCE: 100,
     CLEAR_TIME: 0,
@@ -42,6 +51,7 @@ function onDocumentLoad() {
     console.log(p);
     var serial = logger.serialize();
     console.log(p.events);
+    console.log(p.obstacles);
     r = new ReplayRunner('.interstitial-wrapper', par, p.events, p.obstacles);
   }, false);
 }
