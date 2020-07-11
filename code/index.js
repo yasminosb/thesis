@@ -9,15 +9,6 @@ window["Logger"] = Logger;
 
 function onDocumentLoad() {
 
-  var xhr = new XMLHttpRequest();
-  var yourUrl = 'http://127.0.0.1:3000';
-  var value = "value";
-  xhr.open("POST", yourUrl, true);
-  xhr.setRequestHeader('Content-Type', 'application/json');
-  xhr.send(JSON.stringify({
-      value: value
-  }));
-
   var par = {
     SPEED: 10,
     ACCELERATION: 0.002,
@@ -53,7 +44,19 @@ function onDocumentLoad() {
     console.log(p.events);
     console.log(p.obstacles);
     r = new ReplayRunner('.interstitial-wrapper', par, p.events, p.obstacles);
+    postToServer(serial);
   }, false);
+}
+
+function postToServer(value){
+  console.log("POSTING TO SERVER")
+  console.log(value)
+  var xhr = new XMLHttpRequest();
+  var yourUrl = 'http://127.0.0.1:3000';
+  //var value = "value";
+  xhr.open("POST", yourUrl, true);
+  xhr.setRequestHeader('Content-Type', 'application/json');
+  xhr.send(value);
 }
 
 document.addEventListener('DOMContentLoaded', onDocumentLoad);

@@ -46,8 +46,8 @@ Logger.prototype = {
      * add event to events
      * @param {*} eventType 
      */
-    addEvent: function(eventType){
-        var d = {time : getTimeStamp(), event: eventType};
+    addEvent: function(event){
+        var d = {time : getTimeStamp(), event: event};
         this.dict.events.push(d);
     },
     gameOver: function(obstacle, runner, tRex, parameters){
@@ -72,10 +72,24 @@ Logger.prototype = {
     },
 
     serialize: function(){
+        console.log("serialize", this.dict);
         var serialized_dict = this.dict;
-        serialized_dict.events.map(event => {event.type});
-        var collisionObstacle = serialized_dict.collisionObstacle;
-        serialized_dict.collisionObstacle = {
+        serialized_dict.events = this.serializeEvents(serialized_dict.events);
+        serialized_dict.collisionObstacle = this.serializeCollisionObstacle(serialized_dict.collisionObstacle);
+        return JSON.stringify(serialized_dict);
+    },
+
+    serializeEvents(events){
+        return events.map(et => (
+            {time: et.time, 
+             event: et.event.type}
+
+            )
+        );
+    },
+
+    serializeCollisionObstacle(collisionObstacle){
+        return {
             "typeConfig": collisionObstacle.typeConfig,
             "dimensions": collisionObstacle.dimensions,
             "size": collisionObstacle.size,
@@ -86,7 +100,5 @@ Logger.prototype = {
             "speedOffset": collisionObstacle.speedOffset,
             "gap": collisionObstacle.gap
         };
-        return JSON.stringify(this.dict);
     }
-
 }

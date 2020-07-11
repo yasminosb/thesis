@@ -1,7 +1,6 @@
 var http = require('http');
 
 const server = http.createServer(function(request, response) {
-    console.dir(request.param)
     console.log("request", request.method);
     if (request.method == 'OPTIONS') {
         console.log('OPTIONS')
@@ -22,11 +21,25 @@ const server = http.createServer(function(request, response) {
         console.log('Body: ' + body)
         response.writeHead(200, {'Content-Type': 'text/html'})
         response.end('post received')
+        writeToFile(body);
       })
     } else {
-      console.log('TIS GENE JUSTE REQUEST')
+      console.log('WRONG REQUEST', request.method)
     }
   })
+
+fs = require('fs');
+
+function writeToFile(data){
+  var filename = "helloworld.txt";
+  //var data = 'Hello World!';
+  fs.writeFile(filename, data, function (err) {
+    if (err){ 
+      return console.log(err);
+    }
+    console.log('Hello World > helloworld.txt');
+  });
+}
   
   const port = 3000
   const host = '127.0.0.1'
