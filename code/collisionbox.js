@@ -59,7 +59,6 @@ function checkForCollision(obstacle, tRex, opt_canvasCtx) {
                     drawCollisionBoxes(opt_canvasCtx, adjTrexBox, adjObstacleBox);
                 }
                 if (crashed) {
-                    console.log('collision detected')
                     return [adjTrexBox, adjObstacleBox];
                 }
             }

@@ -237,8 +237,12 @@ Trex.prototype = {
    */
   startJump: function (speed) {
     if (!this.jumping) {
-      if (!this.replaying) { logger.addLog("startJump"); console.log("jump", getTimeStamp()) }
-      if (!this.replaying) logger.addJump();
+      if (!this.replaying) { 
+        logger.addLog("startJump");
+      }
+      if (!this.replaying) {
+        logger.addJump();
+      } 
       this.update(0, Trex.status.JUMPING);
       // Tweak the jump velocity based on the speed.
       this.jumpVelocity = this.config.INIITAL_JUMP_VELOCITY - (speed / 10);
@@ -253,7 +257,9 @@ Trex.prototype = {
   endJump: function () {
     if (this.reachedMinHeight &&
       this.jumpVelocity < this.config.DROP_VELOCITY) {
-      if (!this.replaying) logger.addLog("endJump");
+      if (!this.replaying) { 
+        logger.addLog("endJump"); 
+      }
       this.jumpVelocity = this.config.DROP_VELOCITY;
     }
   },

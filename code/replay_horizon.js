@@ -20,7 +20,6 @@ class ReplayHorizon extends Horizon {
 
     createNewObstacle(canvasCtx, obstacleType, obstacleSpritePos, dimensions, gapCoefficient, currentSpeed, width, runner){
         var obstacle = this.getCurrentReplayObstacle();
-        console.log("create", obstacle);
         this.replay_obstacle_index++;
         return new ReplayObstacle(canvasCtx, obstacleType, obstacleSpritePos, dimensions, gapCoefficient, currentSpeed, width, runner,
             obstacle.gap, obstacle.size, obstacle.speedOffset, obstacle.yPos);

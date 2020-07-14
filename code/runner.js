@@ -201,7 +201,6 @@ Runner.prototype = {
     },
 
     launch: function(){
-        console.log("launch")
         if (this.isDisabled()) { // false - hardcoded
             this.setupDisabledRunner();
         } else {
@@ -266,7 +265,6 @@ Runner.prototype = {
      * definition.
      */
     loadImages: function () {
-        console.log("loadimages")
         if (IS_HIDPI) {
             Runner.imageSprite = document.getElementById('offline-resources-2x');
             this.spriteDef = Runner.spriteDefinition.HDPI;
@@ -323,7 +321,6 @@ Runner.prototype = {
      * Game initialiser.
      */
     init: function () {
-        console.log("init")
         this.initStaticIcon();
         this.adjustDimensions();
         this.setSpeed();
@@ -379,7 +376,6 @@ Runner.prototype = {
 
     initTRex(){
         // Draw t-rex
-        console.log("inittrex")
         this.tRex = new Trex(this.canvas, this.spriteDef.TREX);
     },
 
@@ -448,7 +444,6 @@ Runner.prototype = {
      */
     playIntro: function () {
         if (!this.activated && !this.crashed) {
-            console.log("playintro")
             if (!this.replaying) logger.addLog("playIntro");
             this.playingIntro = true;
             this.tRex.playingIntro = true;
@@ -508,7 +503,6 @@ Runner.prototype = {
     },
 
     replayJumps: function(logs) {
-        console.log(logs)
         for (let log of logs) {
             var logtype = log[0];
             if(logtype == "startJump"){
@@ -528,7 +522,6 @@ Runner.prototype = {
     },
 
     replayEvents: function (events) {
-        console.log(events.map(x => [x[0].type, x[1]]))
         //var restart_triggered = false;
         for (let event of events) {
             if(event[0].type == "keyup") restart_triggered = true;
@@ -576,7 +569,6 @@ Runner.prototype = {
 
     updateNightMode(deltaTime){
         // Night mode.
-        console.log("updateNightMode")
         if (this.parameters.isNightModeEnabled()) {
             if (this.invertTimer > this.config.INVERT_FADE_DURATION) {
                 this.invertTimer = 0;
@@ -806,17 +798,21 @@ Runner.prototype = {
      * @param {Event} e
      */
     onKeyDown: function (e) {
+        console.log("onkeydown")
         // Prevent native page scrolling whilst tapping on mobile.
         if (IS_MOBILE && this.playing) {
             e.preventDefault();
         }
         if (!this.crashed && !this.paused) {
+            console.log("OOOOO0O0O0O0O0O0O0O A")
             if (Runner.keycodes.JUMP[e.keyCode] ||
                 e.type == Runner.events.TOUCHSTART) {
+                console.log("OOOOO0O0O0O0O0O0O0O B")
                 e.preventDefault();
                 // Starting the game for the first time.
                 if (!this.playing) {
                     this.loadSounds();
+                    console.log("PLAYING")
                     this.playing = true;
                     this.update();
                     if (window.errorPageController) {
@@ -848,6 +844,7 @@ Runner.prototype = {
      * @param {Event} e
      */
     onKeyUp: function (e) {
+        console.log("onkeyup")
         var keyCode = String(e.keyCode);
         var isjumpKey = Runner.keycodes.JUMP[keyCode] ||
             e.type == Runner.events.TOUCHEND ||
@@ -863,7 +860,6 @@ Runner.prototype = {
             if (Runner.keycodes.RESTART[keyCode] || this.isLeftClickOnCanvas(e) ||
                 (deltaTime >= this.config.GAMEOVER_CLEAR_TIME &&
                     Runner.keycodes.JUMP[keyCode])) {
-                console.log("restart called")
                 this.restart();
             }
         } else if (this.paused && isjumpKey) {
@@ -951,7 +947,6 @@ Runner.prototype = {
         }
     },
     restart: function () {
-        console.log("restart")
         if (!this.raqId) {
             this.playCount++;
             this.runningTime = 0;

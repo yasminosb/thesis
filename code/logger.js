@@ -72,7 +72,6 @@ Logger.prototype = {
     },
 
     serialize: function(){
-        console.log("serialize", this.dict);
         var serialized_dict = this.dict;
         serialized_dict.events = this.serializeEvents(serialized_dict.events);
         serialized_dict.collisionObstacle = this.serializeCollisionObstacle(serialized_dict.collisionObstacle);
@@ -80,11 +79,21 @@ Logger.prototype = {
     },
 
     serializeEvents(events){
-        return events.map(et => (
-            {time: et.time, 
-             event: et.event.type}
-
-            )
+        var events_copy = [...events]
+        return events_copy.map(et => {
+                if(et.event.keyCode){
+                    return Object.assign({}, et, 
+                        {time: et.time, 
+                        event: {type: et.event.type, keyCode: et.event.keyCode}}
+                        );
+                } else {
+                    return Object.assign({}, et, 
+                        {time: et.time, 
+                        event: {type: et.event.type}}
+                        );
+                    
+                }
+            }
         );
     },
 

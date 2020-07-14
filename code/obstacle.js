@@ -106,7 +106,6 @@ Obstacle.MAX_OBSTACLE_LENGTH = (typeof Obstacle.MAX_OBSTACLE_LENGTH == 'undefine
 
         setGap(speed){
             this.gap = this.getGap(this.gapCoefficient, speed);
-            console.log("setgap", this.gap)
         },
 
         logParameters(){
