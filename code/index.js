@@ -79,6 +79,7 @@ function onDocumentLoad() {
 
   function handleServerResponse(response){
     console.log("HANDLE SERVER RESPONSE")
+    console.log(response)
     var response = JSON.parse(response);
     response.events = fixEvents(response.events);
     console.log(response);
