@@ -3,8 +3,9 @@
  * dict: stores the parameters that have been used
  * everything nevessary to replay a game
  */
-function Logger(){
+function Logger(UUID){
     this.dict = {
+        UUID: UUID,
         events: [],
         logs: [],
         obstacles: [],

@@ -798,21 +798,17 @@ Runner.prototype = {
      * @param {Event} e
      */
     onKeyDown: function (e) {
-        console.log("onkeydown")
         // Prevent native page scrolling whilst tapping on mobile.
         if (IS_MOBILE && this.playing) {
             e.preventDefault();
         }
         if (!this.crashed && !this.paused) {
-            console.log("OOOOO0O0O0O0O0O0O0O A")
             if (Runner.keycodes.JUMP[e.keyCode] ||
                 e.type == Runner.events.TOUCHSTART) {
-                console.log("OOOOO0O0O0O0O0O0O0O B")
                 e.preventDefault();
                 // Starting the game for the first time.
                 if (!this.playing) {
                     this.loadSounds();
-                    console.log("PLAYING")
                     this.playing = true;
                     this.update();
                     if (window.errorPageController) {
@@ -844,7 +840,6 @@ Runner.prototype = {
      * @param {Event} e
      */
     onKeyUp: function (e) {
-        console.log("onkeyup")
         var keyCode = String(e.keyCode);
         var isjumpKey = Runner.keycodes.JUMP[keyCode] ||
             e.type == Runner.events.TOUCHEND ||
@@ -898,7 +893,7 @@ Runner.prototype = {
      * Game over state.
      */
     gameOver: function () {
-        if (!this.replaying) logger.gameOver(this.horizon.obstacles[0], this, this.tRex, this.parameters);
+        if (!this.replaying) logger.gameOver(this.horizon.obstacles[0], this, this.tRex, this.parameters.config);
         this.playSound(this.soundFx.HIT);
         vibrate(200);
 
@@ -984,6 +979,7 @@ Runner.prototype = {
      * @param {SoundBuffer} soundBuffer
      */
     playSound: function (soundBuffer) {
+        console.log("playsound")
         if (soundBuffer) {
             var sourceNode = this.audioContext.createBufferSource();
             sourceNode.buffer = soundBuffer;

@@ -28,14 +28,13 @@ function onDocumentLoad() {
     GAP_DISTRIBUTION_POW: 2,
   }
 
-  var events = [];
-  var replay = false;
-  if(replay){
-    var r = new ReplayRunner('.interstitial-wrapper', par, events);
+  var startwithreplay = false;
+  if(startwithreplay){
+    getFromServer();
   } else {
     var r = new Runner('.interstitial-wrapper', par);
   }
-  var logger = new Logger();
+  var logger = new Logger(getCookie("UUID"));
   window.logger = logger;
   document.addEventListener("GAMEOVER", function () {
     console.log("GAMEOVER triggered")
@@ -78,12 +77,10 @@ function onDocumentLoad() {
   }
 
   function handleServerResponse(response){
-    console.log("HANDLE SERVER RESPONSE")
-    console.log(response)
     var response = JSON.parse(response);
+    console.log(response)
     response.events = fixEvents(response.events);
-    console.log(response);
-    r = new ReplayRunner('.interstitial-wrapper', par, response.events, response.obstacles);
+    r = new ReplayRunner('.interstitial-wrapper', response.parameters, response.events, response.obstacles);
   }
 
   function fixEvents(events){
