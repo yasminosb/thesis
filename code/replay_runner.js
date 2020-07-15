@@ -1,6 +1,5 @@
 class ReplayRunner extends Runner {
     constructor(outerContainerId, opt_param_config, replay_events, replay_obstacles){
-        console.log("replayrunner constructor")
         super(outerContainerId, opt_param_config);
         this.replaying = true;
         this.replay_obstacles = replay_obstacles;
@@ -39,7 +38,6 @@ class ReplayRunner extends Runner {
     update(){
         var replay_event = this.replay_events[this.replay_index]
         if((this.replay_index < this.replay_events.length) && (this.time - this.gameOverTime > replay_event.time)){
-            console.log("handleevent", replay_event)
             this.handleEvent(replay_event.event);
             this.replay_index++;
             replay_event = this.replay_events[this.replay_index];

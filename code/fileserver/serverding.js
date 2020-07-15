@@ -24,12 +24,13 @@ const server = http.createServer(async function(request, response) {
           'Access-Control-Allow-Origin': '*',
           'Access-Control-Allow-Headers': '*'
         });
-        response.end('post received')
         if(use_database){
           insertParametersIntoDB(JSON.parse(body))  ;
         } else {
           writeToFile(body);
         }
+
+        response.end('post received')
       })
     } else if(request.method == 'GET'){
       response.writeHead(200, { 

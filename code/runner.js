@@ -979,7 +979,6 @@ Runner.prototype = {
      * @param {SoundBuffer} soundBuffer
      */
     playSound: function (soundBuffer) {
-        console.log("playsound")
         if (soundBuffer) {
             var sourceNode = this.audioContext.createBufferSource();
             sourceNode.buffer = soundBuffer;
