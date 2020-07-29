@@ -112,3 +112,7 @@ function sleep(milliseconds) {
         }
     }
 }
+
+function addUserCookieToJSON(json){
+    json.cookie = getUserCookie();
+}

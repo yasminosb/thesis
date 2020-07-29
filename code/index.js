@@ -32,11 +32,23 @@ function onDocumentLoad() {
     var logger = new Logger(getCookie("UUID"));
     window.logger = logger;
 
-    document.addEventListener("GAMEOVER", function () {
+    document.addEventListener("GAMEOVER", async function () {
         console.log("GAMEOVER triggered")
-        document.getElementsByClassName("onlyforchrome")[0].style.display = 'none';
-        document.getElementsByClassName("runner-container")[0].style.display = 'none';
-        document.getElementById('form').style.display = 'block';
+        // post game to server
+        var serial = logger.serialize();
+        postGameplayToServer(serial);
+
+        // handle form
+        var userHasPlayed2Games = await getUserHasPlayed2GamesFromServer();
+        userHasPlayed2Games = (userHasPlayed2Games === "true");
+        console.log(userHasPlayed2Games)
+        if(userHasPlayed2Games){
+            console.log("HIDE GAME - SHOW FORM")
+            console.log(userHasPlayed2Games)
+            document.getElementsByClassName("onlyforchrome")[0].style.display = 'none';
+            document.getElementsByClassName("runner-container")[0].style.display = 'none';
+            document.getElementById('form').style.display = 'block';
+        }
     }, false);
 
 

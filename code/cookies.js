@@ -14,11 +14,15 @@ function generateUUID() { // Public Domain/MIT
     });
 }
 
-var cookie = getCookie("UUID");
-if(cookie === ""){
-    var UUID = generateUUID()
-    document.cookie = "UUID=".concat(UUID);
+// set cookie if empty
+function setCookie(key, value){
+  var cookie = getCookie(key);
+  if(cookie === ""){
+      document.cookie = key.concat("=").concat(UUID);
+  }
 }
+
+
 
 function getCookie(cname) {
     var name = cname + "=";
@@ -34,4 +38,13 @@ function getCookie(cname) {
       }
     }
     return "";
-  }
+}
+
+
+function setUserCookie(){
+  setCookie("UUID", generateUUID());
+}
+
+function getUserCookie(){
+  return getCookie("UUID");
+}

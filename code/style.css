@@ -1,6 +1,28 @@
 .center {
-    margin: auto;
-    width: 50%;
-    border: 3px solid;
-    padding: 10px;
+  margin: auto;
+  width: 50%;
+  border: 3px solid;
+  padding: 10px;
+  margin-bottom: 50px;
+}
+
+@media only screen and (max-width: 900px) {
+  .center {
+      width: 80%;
   }
+}
+
+@media only screen and (max-width: 600px) {
+  .center {
+      width: 100%;
+  }
+}
+
+.form-group select{
+  width: 100%;
+}
+
+#submitbutton{
+  float: right;
+  margin-top: -20px;
+}

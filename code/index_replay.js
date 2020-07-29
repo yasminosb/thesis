@@ -30,7 +30,7 @@ async function onDocumentLoad() {
 
   var startwithreplay = false;
   if(startwithreplay){
-    getFromServer();
+    getLastGameFromServer();
   } else {
     var r = new Runner('.interstitial-wrapper', par);
   }

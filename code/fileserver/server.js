@@ -4,56 +4,87 @@ var file = 'jason.json'
 
 var use_database = true;
 
-const server = http.createServer(async function(request, response) {
-    console.log(request.method, request.url);
-    if (request.method == 'OPTIONS') {
-      writeHeadersToResponse(response);
-      response.end('options received')
+const server = http.createServer(async function (request, response) {
+  console.log(request.method, request.url);
+  var url = parseUrl(request.url);
+  console.log(url)
+  if (request.method == 'OPTIONS') {
+    writeHeadersToResponse(response);
+    response.end('options received')
 
 
-    } else if (request.method == 'POST') {
-      // get full request body
-      var body = ''
-      request.on('data', function(data) {
-        body += data
-      })
-      // POST /gameplay
-      if(request.url === '/gameplay'){
-        request.on('end', function() {
-          writeHeadersToResponse(response);
-          insertJSONIntoDB("gameplays",JSON.parse(body))  ;
-          response.end('post received')
-        })
-      }
-      // POST /questionresponse
-      else if(request.url === '/questionresponse'){
-        request.on('end', function() {
-          writeHeadersToResponse(response);
-          insertJSONIntoDB("questionresponses",JSON.parse(body))  ;
-          response.end('post received')
-        })
-      }
+  } else if (request.method == 'POST') {
+    // get full request body
+    var body = ''
+    request.on('data', function (data) {
+      body += data
+    })
 
-
-    } else if(request.method == 'GET'){
-      // GET /lastgameplay
-      if(request.url === '/lastgameplay'){
-        writeHeadersToResponse(response);
-        var lastentry = await getLastInsertedFromDB("gameplays");
-        response.end(JSON.stringify(lastentry));
-      
-      // GET /Last2entryids
-      } else if(request.url === '/last2gameplayids'){
-        writeHeadersToResponse(response);
-        var last2entryids = await getLast2EntryIdsFromDB("gameplays");
-        response.end(JSON.stringify(last2entryids));
-      }
-        
-
-
-    } else {
-      console.log('WRONG REQUEST:', request.method)
+    if (url.length < 2 || url[1] === '') {
+      console.log("USERID UNDEFINED: format should be POST /<request>/USERID")
     }
+    var USERID = url[1];
+
+    switch (url[0]) {
+      // POST /gameplay/USERID
+      case "gameplay":
+        request.on('end', function () {
+          writeHeadersToResponse(response);
+          var json = parseJSON_addUSERID(body, USERID);
+          insertJSONIntoDB("gameplays", json);
+          response.end('post received')
+        })
+
+        break;
+      // POST /questionresponse/USERID
+      case "questionresponse":
+        request.on('end', function () {
+          writeHeadersToResponse(response);
+          var json = parseJSON_addUSERID(body, USERID);
+          insertJSONIntoDB("questionresponses", json);
+          response.end('post received')
+        })
+
+        break;
+      default:
+        console.log("WRONG POST REQUEST")
+    }
+  } else if (request.method == 'GET') {
+
+    if (url.length < 2 || url[1] === '') {
+      console.log("USERID UNDEFINED: format should be GET /<request>/USERID")
+    }
+    var USERID = url[1];
+
+    switch (url[0]) {
+      // GET /lastgameplay/USERID
+      case "lastgameplay":
+        writeHeadersToResponse(response);
+        var lastentry = await getLastInsertedFromDB("gameplays", USERID);
+        response.end(JSON.stringify(lastentry));
+
+        break;
+      // GET /last2gameplayids/USERID
+      case "last2gameplayids":
+        writeHeadersToResponse(response);
+        var last2entryids = await getLast2EntryIdsFromDB("gameplays", USERID);
+        response.end(JSON.stringify(last2entryids));
+
+        break;
+      // GET /hasplayed2games/USERID
+      case "hasplayed2games":
+        writeHeadersToResponse(response);
+        var result = await userHasPlayed2Games(USERID)
+        response.end(result.toString());
+        break;
+      default:
+        console.log("WRONG GET REQUEST")
+    }
+
+
+  } else {
+    console.log('WRONG REQUEST:', request.method)
+  }
 })
 
 const port = 3000
@@ -61,34 +92,34 @@ const host = '127.0.0.1'
 server.listen(port, host)
 console.log(`Listening at http://${host}:${port}`);
 
-function writeToFile(data){
+function writeToFile(data) {
   fs.writeFile(file, data, function (err) {
-    if (err){ 
+    if (err) {
       return console.log(err);
     }
   });
 }
-  
+
 var MongoClient = require('mongodb').MongoClient;
 var url = "mongodb://localhost:27017/";
 
-function insertJSONIntoDB(database, parameters){
-  MongoClient.connect(url, { useUnifiedTopology: true}, function(err, db) {
+function insertJSONIntoDB(database, parameters) {
+  MongoClient.connect(url, { useUnifiedTopology: true }, function (err, db) {
     if (err) throw err;
     var dbo = db.db("mydb");
-    dbo.collection(database).insertOne(parameters, function(err, res) {
+    dbo.collection(database).insertOne(parameters, function (err, res) {
       if (err) throw err;
       db.close();
     });
   });
 }
 
-function getLastInsertedFromDB(database){
+function getLastInsertedFromDB(database, USERID) {
   return new Promise((resolve, reject) => {
-    MongoClient.connect(url, { useUnifiedTopology: true}, function(err, db) {
+    MongoClient.connect(url, { useUnifiedTopology: true }, function (err, db) {
       var dbo = db.db("mydb");
       var collection = dbo.collection(database);
-      collection.find({}).toArray(function(err, docs) {
+      collection.find({ USERID: USERID }).toArray(function (err, docs) {
         if (err) throw err;
         var lastentry = docs[docs.length - 1];
         db.close();
@@ -96,19 +127,37 @@ function getLastInsertedFromDB(database){
       });
     });
   })
-} 
+}
 
-function getLast2EntryIdsFromDB(database){
+function getLast2EntryIdsFromDB(database, USERID) {
   return new Promise((resolve, reject) => {
-    MongoClient.connect(url, { useUnifiedTopology: true}, function(err, db) {
+    MongoClient.connect(url, { useUnifiedTopology: true }, function (err, db) {
       var dbo = db.db("mydb");
       var collection = dbo.collection(database);
-      collection.find({}).toArray(function(err, docs) {
+      collection.find({ USERID: USERID }).toArray(function (err, docs) {
         if (err) throw err;
         var lastentry = docs[docs.length - 1];
-        var secondlastentry = docs[docs.length -2];
+        var secondlastentry = docs[docs.length - 2];
         db.close();
-        resolve({lastentry: lastentry._id, secondlastentry: secondlastentry._id});
+        resolve({ lastentry: lastentry._id, secondlastentry: secondlastentry._id });
+      });
+    });
+  })
+}
+
+function userHasPlayed2Games(USERID){
+  return has2EntriesInDB("gameplays", USERID);
+}
+
+function has2EntriesInDB(database, USERID){
+  return new Promise((resolve, reject) => {
+    MongoClient.connect(url, { useUnifiedTopology: true }, function (err, db) {
+      var dbo = db.db("mydb");
+      var collection = dbo.collection(database);
+      collection.find({ USERID: USERID }).toArray(function (err, docs) {
+        if (err) throw err;
+        db.close();
+        resolve(docs.length >= 2);
       });
     });
   })
@@ -118,14 +167,24 @@ function getLast2EntryIdsFromDB(database){
 
 
 
-function writeHeadersToResponse(response){
+function writeHeadersToResponse(response) {
   response.writeHead(200, {
-    'Content-Type': 'text/html', 
+    'Content-Type': 'text/html',
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Headers': '*'
   });
 }
 
+function parseUrl(url) {
+  var split = url.split("/");
+  split.shift();
+  return split;
+}
 
+function parseJSON_addUSERID(json_string, USERID) {
+  var json = JSON.parse(json_string);
+  json["USERID"] = USERID;
+  return json;
+}
 
 
