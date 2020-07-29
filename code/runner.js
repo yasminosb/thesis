@@ -925,6 +925,7 @@ Runner.prototype = {
             evt.initEvent("GAMEOVER", true, true);
             document.dispatchEvent(evt);
         }
+        this.invert(true)
     },
     stop: function () {
         this.playing = false;

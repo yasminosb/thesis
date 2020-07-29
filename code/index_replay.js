@@ -40,9 +40,9 @@ async function onDocumentLoad() {
     console.log("GAMEOVER triggered")
     if(true){
       var serial = logger.serialize();
-      postToServer(serial);
-      var response = await getFromServer();
-      handleServerResponse(response);
+      postGameplayToServer(serial);
+      var response = await getLastGameFromServer();
+      handleServerGameplayResponse(response);
     } else {
       r = new ReplayRunner('.interstitial-wrapper', par, p.events, p.obstacles);
     }

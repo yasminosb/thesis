@@ -1,18 +1,27 @@
 
-  function postToServer(value){
-    console.log("POST TO SERVER");
+  function postGameplayToServer(value){
+    console.log("POST GAME TO SERVER");
     var xhr = new XMLHttpRequest();
-    var yourUrl = 'http://127.0.0.1:3000';
+    var yourUrl = 'http://127.0.0.1:3000/gameplay';
     xhr.open("POST", yourUrl, true);
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.send(value);
   }
 
-  function getFromServer(){
-    console.log("GET FROM SERVER");
+  function postQuestionResponseToServer(value){
+    console.log("POST QUESTIONRESPONSE TO SERVER");
+    var xhr = new XMLHttpRequest();
+    var yourUrl = 'http://127.0.0.1:3000/questionresponse';
+    xhr.open("POST", yourUrl, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send(value);
+  }
+
+  function getLastGameFromServer(){
+    console.log("GET LASTGAME FROM SERVER");
     return new Promise((resolve, reject) => {
         var xhr = new XMLHttpRequest();
-        var yourUrl = 'http://127.0.0.1:3000';
+        var yourUrl = 'http://127.0.0.1:3000/lastgameplay';
 
         xhr.onreadystatechange = function() {
             if (xhr.readyState === 4) {
@@ -26,13 +35,33 @@
     });
   }
 
-  function handleServerResponse(response){
+  function getLast2GameplayIdsFromServer(){
+    console.log("GET LASTGAME2GAMEPLAYIDS FROM SERVER");
+    return new Promise((resolve, reject) => {
+        var xhr = new XMLHttpRequest();
+        var yourUrl = 'http://127.0.0.1:3000/last2gameplayids';
+
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState === 4) {
+                resolve(xhr.response);
+            }
+        }
+
+        xhr.open("GET", yourUrl, true);
+        xhr.setRequestHeader('Content-Type', 'application/json');
+        xhr.send('');
+    });
+  }
+
+
+
+  function handleServerGameplayResponse(response){
     var response = JSON.parse(response);
-    response.events = fixEvents(response.events);
+    response.events = fixEventsObjects(response.events);
     r = new ReplayRunner('.interstitial-wrapper', response.parameters, response.events, response.obstacles);
   }
 
-  function fixEvents(events){
+  function fixEventsObjects(events){
     return events.map(ev => {
       if(ev.event.keyCode){
         var keyboardevent = new KeyboardEvent(ev.event.type);
@@ -41,7 +70,8 @@
         });
         return {time: ev.time, event: keyboardevent};
       } else {
-        return {time: ev.time, event: new MouseEvent(ev.event.type)};
+        var mouseevent = new MouseEvent(ev.event.type)
+        return {time: ev.time, event: mouseevent};
       }
     })
   }

@@ -40,7 +40,7 @@ function onDocumentLoad() {
     }, false);
 
 
-    document.getElementById ("submitbutton").addEventListener("click", submitForm, false);
+    document.getElementById("submitbutton").addEventListener("click", submitForm, false);
 }
 
 document.addEventListener('DOMContentLoaded', onDocumentLoad);
