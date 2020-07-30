@@ -3,55 +3,59 @@
  * dict: stores the parameters that have been used
  * everything nevessary to replay a game
  */
-function Logger(UUID){
-    this.dict = {
-        UUID: UUID,
-        events: [],
-        logs: [],
-        obstacles: [],
-        nr_jumps: 0
-    };
-}
+class Logger{
+    constructor(UUID){
+        this.dict = {
+            UUID: UUID,
+            events: [],
+            logs: [],
+            obstacles: [],
+            nr_jumps: 0
+        };
+    }
 
-/**
- * Store events the dict
- */
-Logger.prototype = {
-    /**
+     /**
      * Store new value in dict
      */
-    store: function(key, value){
+    store(key, value){
         this.dict[key] = value;
-    },
+    }
+
     /**
      * add obstacle to obstacles
      * @param {*} obstacle 
      */
     addObstacle(obstacle){
         this.dict.obstacles.push({obstacle: obstacle, time: getTimeStamp()});
-    },
+    }
+
+
     /**
      * increment nr jumps 
      */
     addJump(){
         this.dict.nr_jumps++;
-    },
+    }
+
     /**
      * add log to logs
      * @param {*} log 
      */
-    addLog: function(log){
+    addLog(log){
         this.dict.logs.push({log: log, time: getTimeStamp()});
-    },
+    }
+
+     
     /**
      * add event to events
      * @param {*} eventType 
      */
-    addEvent: function(event){
+    addEvent(event){
         var d = {time : getTimeStamp(), event: event};
         this.dict.events.push(d);
-    },
-    gameOver: function(obstacle, runner, tRex, parameters){
+    }
+
+    gameOver(obstacle, runner, tRex, parameters){
         this.dict["collisionObstacle"] = obstacle;
         var actualDistance = runner.distanceMeter.getActualDistance(Math.ceil(runner.distanceRan));
         this.dict[ "distanceRan"] = runner.distanceRan;
@@ -62,22 +66,24 @@ Logger.prototype = {
         this.dict[ "obstacleTypes"] =  Obstacle.types;
         this.dict[ "parameters"] = parameters;
         this.dict[ "gameOverTime"] = runner.time;
-    },
+    }
+
+
     /** 
      * Log all the parameters stored in dict
      * @param {*} runner runner obj
      * @param {*} tRex trex obj
      */
-    getParams: function(){
+    getParams(){
         return this.dict;
-    },
+    }
 
-    serialize: function(){
+    serialize(){
         var serialized_dict = this.dict;
         serialized_dict.events = this.serializeEvents(serialized_dict.events);
         serialized_dict.collisionObstacle = this.serializeCollisionObstacle(serialized_dict.collisionObstacle);
         return JSON.stringify(serialized_dict);
-    },
+    }
 
     serializeEvents(events){
         var events_copy = [...events]
@@ -96,7 +102,7 @@ Logger.prototype = {
                 }
             }
         );
-    },
+    }
 
     serializeCollisionObstacle(collisionObstacle){
         return {
@@ -111,4 +117,5 @@ Logger.prototype = {
             "gap": collisionObstacle.gap
         };
     }
+
 }
