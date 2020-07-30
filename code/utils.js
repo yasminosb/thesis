@@ -1,12 +1,13 @@
 /**
-     * Get random number.
-     * @param {number} min
-     * @param {number} max
-     * @param {number}
-     */
+ * Get random number.
+ * @param {number} min
+ * @param {number} max
+ * @param {number}
+ */
 function getRandomNum(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+
 /**
  * Get random number in gaussian distribution
  * @param {number} min
@@ -15,6 +16,7 @@ function getRandomNum(min, max) {
 function getRandomGaussian(min, max) {
     return Math.floor(min + gaussianRand() * (min - max + 1));
 }
+
 function gaussianRand() {
     var rand = 0;
 
@@ -113,6 +115,6 @@ function sleep(milliseconds) {
     }
 }
 
-function addUserCookieToJSON(json){
+function addUserCookieToJSON(json) {
     json.cookie = getUserCookie();
 }
