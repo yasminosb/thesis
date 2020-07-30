@@ -1,35 +1,39 @@
-/**
- * Parameters that we want to be adjustable
- * default config
- */
-Parameters.default_config = {
-    SPEED: 6,
-    ACCELERATION: 0.002,
-    MIN_GAP: 200,
-    OBSTACLE_TYPES: ['CACTUS_LARGE', 'CACTUS_SMALL', 'PTERODACTYL'],
-    OBSTACLE_TYPES_SPEC: { 'CACTUS_LARGE': 0.33, 'CACTUS_SMALL': 0.33, 'PTERODACTYL': 0.33 },
-    NIGHT_MODE_ENABLED: true,
-    NIGHT_MODE_DISTANCE: 700,
-    CLEAR_TIME: 3000,
-    MAX_OBSTACLE_LENGTH: 3,
-    MAX_SPEED: 10,
-    PTERODACTYL_YPOS: [100, 75, 50],
-    CHECK_DUPLICATION: false,
-    MAX_DUPLICATION: 2,
-    USE_GAME_GAP: false,
-    MAX_GAP: 400,
-    GAP_DISTRIBUTION_POW: 2
-}
 
-function Parameters(opt_config) {
-    this.config = opt_config ? opt_config : Parameters.default_config;
-}
 
-Parameters.prototype = {
+class Parameters{
+    /**
+     * Parameters that we want to be adjustable
+     * default config
+     */
+    static default_config = {
+        SPEED: 6,
+        ACCELERATION: 0.002,
+        MIN_GAP: 200,
+        OBSTACLE_TYPES: ['CACTUS_LARGE', 'CACTUS_SMALL', 'PTERODACTYL'],
+        OBSTACLE_TYPES_SPEC: { 'CACTUS_LARGE': 0.33, 'CACTUS_SMALL': 0.33, 'PTERODACTYL': 0.33 },
+        NIGHT_MODE_ENABLED: true,
+        NIGHT_MODE_DISTANCE: 700,
+        CLEAR_TIME: 3000,
+        MAX_OBSTACLE_LENGTH: 3,
+        MAX_SPEED: 10,
+        PTERODACTYL_YPOS: [100, 75, 50],
+        CHECK_DUPLICATION: false,
+        MAX_DUPLICATION: 2,
+        USE_GAME_GAP: false,
+        MAX_GAP: 400,
+        GAP_DISTRIBUTION_POW: 2
+    }
+
+    constructor(opt_config) {
+        this.config = opt_config ? opt_config : Parameters.default_config;
+    }
+
     initialise() {
         this.generateObstacleTypes();
         this.setParameters();
-    },
+    }
+
+    /** TODO: ugly */
     generateObstacleTypes() {
         /**
          * Obstacle definitions.
@@ -124,8 +128,9 @@ Parameters.prototype = {
          * 2 types : max obstacle duplication = 7
          * 1 type  : max obstacle duplication = infinite
          */
-    },
-    setParameters: function () {
+    }
+
+    setParameters(){
         /**
          * Overwrite necessary parameters:
          * - Runner.config specific parameters
@@ -142,53 +147,72 @@ Parameters.prototype = {
         Runner.config.MAX_SPEED = this.getMaxSpeed();
         Obstacle.MAX_OBSTACLE_LENGTH = this.getMaxObstacleLength();
         Obstacle.MAX_OBSTACLE_DUPLICATION = this.getMaxObstacleDuplication();
-    },
+    }
+
     getSpeed() {
         return this.config.SPEED;
-    },
+    }
+
     getAcceleration() {
         return this.config.ACCELERATION;
-    },
+    }
+
     getMinGap() {
         return this.config.MIN_GAP;
-    },
+    }
+
     getObstacleTypes() {
         return this.config.OBSTACLE_TYPES;
-    },
+    }
+
     isNightModeEnabled() {
         return this.config.NIGHT_MODE_ENABLED;
-    },
+    }
+
     getNightModeDistance() {
         return this.config.NIGHT_MODE_DISTANCE;
-    },
+    }
+
     getClearTime() {
         return this.config.CLEAR_TIME;
-    },
+    }
+
     getMaxObstacleLength() {
         return this.config.MAX_OBSTACLE_LENGTH;
-    },
+    }
+
     getMaxSpeed() {
         return this.config.MAX_SPEED;
-    },
+    }
+
     getPterodactylYPOS() {
         return this.config.PTERODACTYL_YPOS;
-    },
+    }
+
     getObstacleTypesSpec() {
         return this.config.OBSTACLE_TYPES_SPEC;
-    },
+    }
+
     getMaxGap() {
         return this.config.MAX_GAP;
-    },
+    }
+
     getUseGameGap() {
         return this.config.USE_GAME_GAP;
-    },
+    }
+
     getGapDistributionPow() {
         return this.config.GAP_DISTRIBUTION_POW;
-    },
+    }
+
     getMaxObstacleDuplication() {
         return this.config.MAX_OBSTACLE_DUPLICATION;
-    },
+    }
+
     checkDuplication() {
         return this.config.CHECK_DUPLICATION;
     }
+
+
+
 }

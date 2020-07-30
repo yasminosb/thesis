@@ -2,40 +2,43 @@
 /**
  * Nightmode shows a moon and stars on the horizon.
  */
-function NightMode(canvas, spritePos, containerWidth) {
-    this.spritePos = spritePos;
-    this.canvas = canvas;
-    this.canvasCtx = canvas.getContext('2d');
-    this.xPos = containerWidth - 50;
-    this.yPos = 30;
-    this.currentPhase = 0;
-    this.opacity = 0;
-    this.containerWidth = containerWidth;
-    this.stars = [];
-    this.drawStars = false;
-    this.placeStars();
-};
-/**
- * @enum {number}
- */
-NightMode.config = {
-    FADE_SPEED: 0.035,
-    HEIGHT: 40,
-    MOON_SPEED: 0.25,
-    NUM_STARS: 2,
-    STAR_SIZE: 9,
-    STAR_SPEED: 0.3,
-    STAR_MAX_Y: 70,
-    WIDTH: 20
-};
-NightMode.phases = [140, 120, 100, 60, 40, 20, 0];
-NightMode.prototype = {
+class NightMode{
+    /**
+     * @enum {number}
+     */
+    static config = {
+        FADE_SPEED: 0.035,
+        HEIGHT: 40,
+        MOON_SPEED: 0.25,
+        NUM_STARS: 2,
+        STAR_SIZE: 9,
+        STAR_SPEED: 0.3,
+        STAR_MAX_Y: 70,
+        WIDTH: 20
+    }
+
+    static phases = [140, 120, 100, 60, 40, 20, 0];
+
+    constructor(canvas, spritePos, containerWidth) {
+        this.spritePos = spritePos;
+        this.canvas = canvas;
+        this.canvasCtx = canvas.getContext('2d');
+        this.xPos = containerWidth - 50;
+        this.yPos = 30;
+        this.currentPhase = 0;
+        this.opacity = 0;
+        this.containerWidth = containerWidth;
+        this.stars = [];
+        this.drawStars = false;
+        this.placeStars();
+    }
+
     /**
      * Update moving moon, changing phases.
      * @param {boolean} activated Whether night mode is activated.
      * @param {number} delta
      */
-    update: function (activated, delta) {
+    update(activated, delta){
         // Moon phase.
         if (activated && this.opacity == 0) {
             this.currentPhase++;
@@ -65,16 +68,18 @@ NightMode.prototype = {
             this.placeStars();
         }
         this.drawStars = true;
-    },
-    updateXPos: function (currentPos, speed) {
+    }
+
+    updateXPos(currentPos, speed){
         if (currentPos < -NightMode.config.WIDTH) {
             currentPos = this.containerWidth;
         } else {
             currentPos -= speed;
         }
         return currentPos;
-    },
-    draw: function () {
+    }
+   
+    draw(){
         var moonSourceWidth = this.currentPhase == 3 ? NightMode.config.WIDTH * 2 :
             NightMode.config.WIDTH;
         var moonSourceHeight = NightMode.config.HEIGHT;
@@ -108,9 +113,11 @@ NightMode.prototype = {
             moonOutputWidth, NightMode.config.HEIGHT);
         this.canvasCtx.globalAlpha = 1;
         this.canvasCtx.restore();
-    },
+    }
+
+
     // Do star placement.
-    placeStars: function () {
+    placeStars(){
         var segmentSize = Math.round(this.containerWidth /
             NightMode.config.NUM_STARS);
         for (var i = 0; i < NightMode.config.NUM_STARS; i++) {
@@ -125,10 +132,13 @@ NightMode.prototype = {
                     NightMode.config.STAR_SIZE * i;
             }
         }
-    },
-    reset: function () {
+    }
+
+    reset(){
         this.currentPhase = 0;
         this.opacity = 0;
         this.update(false);
     }
-};
+
+}
+
