@@ -7,47 +7,51 @@
  * @param {number} gapCoefficient
  * @constructor
  */
-function Horizon(canvas, spritePos, dimensions, gapCoefficient, runner) {
-    this.canvas = canvas;
-    this.canvasCtx = this.canvas.getContext('2d');
-    this.config = Horizon.config;
-    this.dimensions = dimensions;
-    this.gapCoefficient = gapCoefficient;
-    this.obstacles = [];
-    this.obstacleHistory = [];
-    this.horizonOffsets = [0, 0];
-    this.cloudFrequency = this.config.CLOUD_FREQUENCY;
-    this.spritePos = spritePos;
-    this.nightMode = null;
-    // Cloud
-    this.clouds = [];
-    this.cloudSpeed = this.config.BG_CLOUD_SPEED;
-    // Horizon
-    this.horizonLine = null;
-    this.runner = runner;
-    this.init();
-};
-/**
- * Horizon config.
- * @enum {number}
- */
-Horizon.config = {
-    BG_CLOUD_SPEED: 0.2,
-    BUMPY_THRESHOLD: .3,
-    CLOUD_FREQUENCY: .5,
-    HORIZON_HEIGHT: 16,
-    MAX_CLOUDS: 6
-};
-Horizon.prototype = {
+class Horizon{
+
+    /**
+     * Horizon config.
+     * @enum {number}
+     */
+    static config = {
+        BG_CLOUD_SPEED: 0.2,
+        BUMPY_THRESHOLD: .3,
+        CLOUD_FREQUENCY: .5,
+        HORIZON_HEIGHT: 16,
+        MAX_CLOUDS: 6
+    }
+
+    constructor(canvas, spritePos, dimensions, gapCoefficient, runner) {
+        this.canvas = canvas;
+        this.canvasCtx = this.canvas.getContext('2d');
+        this.config = Horizon.config;
+        this.dimensions = dimensions;
+        this.gapCoefficient = gapCoefficient;
+        this.obstacles = [];
+        this.obstacleHistory = [];
+        this.horizonOffsets = [0, 0];
+        this.cloudFrequency = this.config.CLOUD_FREQUENCY;
+        this.spritePos = spritePos;
+        this.nightMode = null;
+        // Cloud
+        this.clouds = [];
+        this.cloudSpeed = this.config.BG_CLOUD_SPEED;
+        // Horizon
+        this.horizonLine = null;
+        this.runner = runner;
+        this.init();
+    }
+
     /**
      * Initialise the horizon. Just add the line and a cloud. No obstacles.
      */
-    init: function () {
+    init(){
         this.addCloud();
         this.horizonLine = new HorizonLine(this.canvas, this.spritePos.HORIZON);
         this.nightMode = new NightMode(this.canvas, this.spritePos.MOON,
             this.dimensions.WIDTH);
-    },
+    }
+
     /**
      * @param {number} deltaTime
      * @param {number} currentSpeed
@@ -56,7 +60,7 @@ Horizon.prototype = {
      *     ease in section.
      * @param {boolean} showNightMode Night mode activated.
      */
-    update: function (deltaTime, currentSpeed, updateObstacles, showNightMode) {
+    update(deltaTime, currentSpeed, updateObstacles, showNightMode){
         this.runningTime += deltaTime;
         this.horizonLine.update(deltaTime, currentSpeed);
         this.nightMode.update(showNightMode);
@@ -64,13 +68,14 @@ Horizon.prototype = {
         if (updateObstacles) {
             this.updateObstacles(deltaTime, currentSpeed);
         }
-    },
+    }
+
     /**
      * Update the cloud positions.
      * @param {number} deltaTime
      * @param {number} currentSpeed
      */
-    updateClouds: function (deltaTime, speed) {
+    updateClouds(deltaTime, speed){
         var cloudSpeed = this.cloudSpeed / 1000 * deltaTime * speed;
         var numClouds = this.clouds.length;
         if (numClouds) {
@@ -91,13 +96,14 @@ Horizon.prototype = {
         } else {
             this.addCloud();
         }
-    },
-    /**
+    }
+
+     /**
      * Update the obstacle positions.
      * @param {number} deltaTime
      * @param {number} currentSpeed
      */
-    updateObstacles: function (deltaTime, currentSpeed) {
+    updateObstacles(deltaTime, currentSpeed){
         // Obstacles, move to Horizon layer.
         var updatedObstacles = this.obstacles.slice(0);
         for (var i = 0; i < this.obstacles.length; i++) {
@@ -122,16 +128,18 @@ Horizon.prototype = {
             // Create new obstacles.
             this.addNewObstacle(currentSpeed);
         }
-    },
-    removeFirstObstacle: function () {
+    }
+
+    removeFirstObstacle(){
         this.obstacles.shift();
-    },
+    }
+
     /**
      * Add a new obstacle.
      * @param {number} currentSpeed
      */
-    addNewObstacle: function (currentSpeed) {
-        obstacleType = this.determineObstacleType();
+    addNewObstacle(currentSpeed){
+        var obstacleType = this.determineObstacleType();
         // Check for multiples of the same type of obstacle.
         // Also check obstacle is available at current speed.
         if ((this.duplicateObstacleCheck(obstacleType.type)) ||
@@ -148,26 +156,26 @@ Horizon.prototype = {
             }
         }
 
-    },
+    }
 
-    createNewObstacle: function(canvasCtx, obstacleType, obstacleSpritePos, dimensions, gapCoefficient, currentSpeed, width, runner){
+    createNewObstacle(canvasCtx, obstacleType, obstacleSpritePos, dimensions, gapCoefficient, currentSpeed, width, runner){
         return new Obstacle(canvasCtx, obstacleType, obstacleSpritePos, dimensions, gapCoefficient, currentSpeed, width, runner)
-    },
+    }
 
-    
     determineObstacleType(){
         //var obstacleTypeIndex = getRandomNum(0, Obstacle.types.length - 1);
         //var obstacleType = Obstacle.types[obstacleTypeIndex];
         var type = getRandomWeighted(this.runner.parameters.getObstacleTypesSpec());
         var obstacleType = Obstacle.types.filter(obj => { return obj.type == type })[0];
         return obstacleType;
-    },
+    }
+
     /**
      * Returns whether the previous two obstacles are the same as the next one.
      * Maximum duplication is set in config value MAX_OBSTACLE_DUPLICATION.
      * @return {boolean}
      */
-    duplicateObstacleCheck: function (nextObstacleType) {
+    duplicateObstacleCheck(nextObstacleType){
         if (this.runner.parameters.checkDuplication()) {
             var duplicateCount = 0;
             for (var i = 0; i < this.obstacleHistory.length; i++) {
@@ -178,30 +186,34 @@ Horizon.prototype = {
         } else {
             return false;
         }
-    },
+    }
+
     /**
      * Reset the horizon layer.
      * Remove existing obstacles and reposition the horizon line.
      */
-    reset: function () {
+    reset(){
         this.obstacles = [];
         this.horizonLine.reset();
         this.nightMode.reset();
-    },
+    }
+
     /**
      * Update the canvas width and scaling.
      * @param {number} width Canvas width.
      * @param {number} height Canvas height.
      */
-    resize: function (width, height) {
+    resize(width, height){
         this.canvas.width = width;
         this.canvas.height = height;
-    },
+    }
+
     /**
      * Add a new cloud to the horizon.
      */
-    addCloud: function () {
+    addCloud(){
         this.clouds.push(new Cloud(this.canvas, this.spritePos.CLOUD,
             this.dimensions.WIDTH));
     }
-};
+    
+}
