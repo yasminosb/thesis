@@ -6,12 +6,14 @@
  * @param {number} w Width.
  * @param {number} h Height.
  */
-function CollisionBox(x, y, w, h) {
-    this.x = x;
-    this.y = y;
-    this.width = w;
-    this.height = h;
-};
+class CollisionBox{
+    constructor(x, y, w, h) {
+        this.x = x;
+        this.y = y;
+        this.width = w;
+        this.height = h;
+    }
+}
 
 //******************************************************************************
 /**
