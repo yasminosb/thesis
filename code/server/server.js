@@ -5,9 +5,9 @@ var file = 'jason.json'
 var use_database = true;
 
 const server = http.createServer(async function (request, response) {
-  console.log(request.method, request.url);
+  console.log(request.method, request.url)
   var url = parseUrl(request.url);
-  console.log(url)
+
   if (request.method == 'OPTIONS') {
     writeHeadersToResponse(response);
     response.end('options received')
