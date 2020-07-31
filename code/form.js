@@ -11,6 +11,9 @@ async function submitForm(){
         frustrating: frustrating,
     }
     postQuestionResponseToServer(JSON.stringify(response));
+    var evt = document.createEvent("Event");
+    evt.initEvent("FORMSUBMIT", true, true);
+    document.dispatchEvent(evt);
 }
 
 function get_value_by_id(id){
