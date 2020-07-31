@@ -45,11 +45,15 @@ function onDocumentLoad() {
         if(userHasPlayed2Games){
             console.log("HIDE GAME - SHOW FORM")
             console.log(userHasPlayed2Games)
-            document.getElementsByClassName("onlyforchrome")[0].style.display = 'none';
-            document.getElementsByClassName("runner-container")[0].style.display = 'none';
-            document.getElementById('form').style.display = 'block';
+            hideGame_showForm();
         }
     }, false);
+
+    document.addEventListener("FORMSUBMIT", function(){
+        console.log(par)
+        hideForm_showGame();
+        //var r = new Runner('.interstitial-wrapper', par); 
+    }, false)
 
 
     document.getElementById("submitbutton").addEventListener("click", submitForm, false);
