@@ -18,7 +18,7 @@ function generateUUID() { // Public Domain/MIT
 function setCookie(key, value){
   var cookie = getCookie(key);
   if(cookie === ""){
-      document.cookie = key.concat("=").concat(UUID);
+      document.cookie = key.concat("=").concat(value);
   }
 }
 
@@ -45,6 +45,15 @@ function setUserCookie(){
   setCookie("UUID", generateUUID());
 }
 
+
 function getUserCookie(){
   return getCookie("UUID");
 }
+
+// -------------------
+// ****** SETUP ******
+// -------------------
+
+setUserCookie();
+var usercookie = getUserCookie();
+console.log("User Cookie is: ", usercookie);
