@@ -60,22 +60,29 @@ const server = http.createServer(async function (request, response) {
       // GET /lastgameplay/USERID
       case "lastgameplay":
         writeHeadersToResponse(response);
-        var lastentry = await getLastInsertedFromDB("gameplays", USERID);
+        var lastentry = await getLastEntryFromDB("gameplays", USERID);
         response.end(JSON.stringify(lastentry));
-
         break;
+
       // GET /last2gameplayids/USERID
       case "last2gameplayids":
         writeHeadersToResponse(response);
         var last2entryids = await getLast2EntryIdsFromDB("gameplays", USERID);
         response.end(JSON.stringify(last2entryids));
-
         break;
+
       // GET /hasplayed2games/USERID
       case "hasplayed2games":
         writeHeadersToResponse(response);
         var result = await userHasPlayed2Games(USERID)
         response.end(result.toString());
+        break;
+
+      // GET /last2gameplays/USERID
+      case "last2gameplays":
+        writeHeadersToResponse(response);
+        var last2entryids = await getLast2EntriesFromDB("gameplays", USERID);
+        response.end(JSON.stringify(last2entryids));
         break;
       default:
         console.log("WRONG GET REQUEST")
@@ -114,7 +121,7 @@ function insertJSONIntoDB(database, parameters) {
   });
 }
 
-function getLastInsertedFromDB(database, USERID) {
+function getLastEntryFromDB(database, USERID) {
   return new Promise((resolve, reject) => {
     MongoClient.connect(url, { useUnifiedTopology: true }, function (err, db) {
       var dbo = db.db("mydb");
@@ -140,6 +147,22 @@ function getLast2EntryIdsFromDB(database, USERID) {
         var secondlastentry = docs[docs.length - 2];
         db.close();
         resolve({ lastentry: lastentry._id, secondlastentry: secondlastentry._id });
+      });
+    });
+  })
+}
+
+function getLast2EntriesFromDB(database, USERID){
+  return new Promise((resolve, reject) => {
+    MongoClient.connect(url, { useUnifiedTopology: true }, function (err, db) {
+      var dbo = db.db("mydb");
+      var collection = dbo.collection(database);
+      collection.find({ USERID: USERID }).toArray(function (err, docs) {
+        if (err) throw err;
+        var lastentry = docs[docs.length - 1];
+        var secondlastentry = docs[docs.length - 2];
+        db.close();
+        resolve({ lastentry: lastentry, secondlastentry: secondlastentry});
       });
     });
   })

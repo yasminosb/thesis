@@ -1,5 +1,5 @@
 async function submitForm(){
-    var lats2ids = JSON.parse(await getLast2GameplayIdsFromServer());
+    var lats2ids = JSON.parse(await getLast2GameplayIdsFromServer());  
     var fun = get_value_by_id("fun");
     var challenging = get_value_by_id("challenging");
     var frustrating = get_value_by_id("frustrating");

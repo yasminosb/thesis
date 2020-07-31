@@ -1,3 +1,5 @@
+
+
 /**
  * Logging module
  * dict: stores the parameters that have been used
@@ -5,8 +7,19 @@
  */
 class Logger{
     constructor(UUID){
+        this.UUID = UUID;
         this.dict = {
             UUID: UUID,
+            events: [],
+            logs: [],
+            obstacles: [],
+            nr_jumps: 0
+        };
+    }
+
+    init_dict(){
+        this.dict = {
+            UUID: this.UUID,
             events: [],
             logs: [],
             obstacles: [],
@@ -79,6 +92,7 @@ class Logger{
     }
 
     serialize(){
+        console.log(this.dict)
         var serialized_dict = this.dict;
         serialized_dict.events = this.serializeEvents(serialized_dict.events);
         serialized_dict.collisionObstacle = this.serializeCollisionObstacle(serialized_dict.collisionObstacle);
@@ -116,6 +130,10 @@ class Logger{
             "speedOffset": collisionObstacle.speedOffset,
             "gap": collisionObstacle.gap
         };
+    }
+
+    reset(){
+        this.init_dict();
     }
 
 }

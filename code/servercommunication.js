@@ -6,20 +6,21 @@ var server_url = "http://127.0.0.1:3000/"
 
 function postGameplayToServer(value) {
   console.log("POST GAME TO SERVER");
-  var xhr = new XMLHttpRequest();
-  var yourUrl = server_url.concat('gameplay/',getUserCookie());
-  xhr.open("POST", yourUrl, true);
-  xhr.setRequestHeader('Content-Type', 'application/json');
-  xhr.send(value);
+  var url = server_url.concat('gameplay/',getUserCookie());
+  postJSONtoServer(value, url);
 }
 
 function postQuestionResponseToServer(value) {
   console.log("POST QUESTIONRESPONSE TO SERVER");
+  var url = server_url.concat('questionresponse/', getUserCookie());
+  postJSONtoServer(value, url);
+}
+
+function postJSONtoServer(json, url){
   var xhr = new XMLHttpRequest();
-  var yourUrl = server_url.concat('questionresponse/', getUserCookie());
-  xhr.open("POST", yourUrl, true);
+  xhr.open("POST", url, true);
   xhr.setRequestHeader('Content-Type', 'application/json');
-  xhr.send(value);
+  xhr.send(json);
 }
 
 // ------------------------
@@ -28,22 +29,9 @@ function postQuestionResponseToServer(value) {
 
 function getLastGameFromServer() {
   console.log("GET LASTGAME FROM SERVER");
-  return new Promise((resolve, reject) => {
-    var xhr = new XMLHttpRequest();
-    var yourUrl = server_url.concat('lastgameplay/',getUserCookie());
-
-    xhr.onreadystatechange = function () {
-      if (xhr.readyState === 4) {
-        resolve(xhr.response);
-      }
-    }
-
-    xhr.open("GET", yourUrl, true);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.send('');
-  });
+  var url = server_url.concat('lastgameplay/',getUserCookie());
+  return getUrlFromServer(url);
 }
-
 
 function handleServerGameplayResponse(response) {
   var response = JSON.parse(response);
@@ -53,27 +41,25 @@ function handleServerGameplayResponse(response) {
 
 function getLast2GameplayIdsFromServer() {
   console.log("GET LASTGAME2GAMEPLAYIDS FROM SERVER");
-  return new Promise((resolve, reject) => {
-    var xhr = new XMLHttpRequest();
-    var yourUrl = server_url.concat('last2gameplayids/', getUserCookie());
+  var url = server_url.concat('last2gameplayids/', getUserCookie());
+  return getUrlFromServer(url);
+}
 
-    xhr.onreadystatechange = function () {
-      if (xhr.readyState === 4) {
-        resolve(xhr.response);
-      }
-    }
-
-    xhr.open("GET", yourUrl, true);
-    xhr.setRequestHeader('Content-Type', 'application/json');
-    xhr.send('');
-  });
+function getLast2GameplaysFromServer() {
+  console.log("GET LASTGAME2GAMEPLAYS FROM SERVER");
+  var url = server_url.concat('last2gameplays/', getUserCookie());
+  return getUrlFromServer(url);
 }
 
 function getUserHasPlayed2GamesFromServer(){
   console.log("GET USERHASPLAYED2GAMES FROM SERVER");
+  var url = server_url.concat('hasplayed2games/', getUserCookie());
+  return getUrlFromServer(url);
+}
+
+function getUrlFromServer(url){
   return new Promise((resolve, reject) => {
     var xhr = new XMLHttpRequest();
-    var yourUrl = server_url.concat('hasplayed2games/', getUserCookie());
 
     xhr.onreadystatechange = function () {
       if (xhr.readyState === 4) {
@@ -81,17 +67,15 @@ function getUserHasPlayed2GamesFromServer(){
       }
     }
 
-    xhr.open("GET", yourUrl, true);
+    xhr.open("GET", url, true);
     xhr.setRequestHeader('Content-Type', 'application/json');
     xhr.send('');
   });
 }
 
-
-
-// -----------------
-// ***** UTILS *****
-// -----------------
+// ---------------------
+// ******* UTILS *******
+// ---------------------
 
 function fixEventsObjects(events) {
   return events.map(ev => {

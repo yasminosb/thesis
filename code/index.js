@@ -43,16 +43,20 @@ function onDocumentLoad() {
         userHasPlayed2Games = (userHasPlayed2Games === "true");
         console.log(userHasPlayed2Games)
         if(userHasPlayed2Games){
+            await new Promise(r => setTimeout(r, 2000));
+            r.stopListening();
             console.log("HIDE GAME - SHOW FORM")
             console.log(userHasPlayed2Games)
             hideGame_showForm();
+        } else {
+            Runner.config.GAMEOVER_CLEAR_TIME = 2000;
         }
     }, false);
 
     document.addEventListener("FORMSUBMIT", function(){
-        console.log(par)
-        hideForm_showGame();
-        //var r = new Runner('.interstitial-wrapper', par); 
+        hideForm_showGame(); 
+        r.startListening();
+        logger.reset();
     }, false)
 
 

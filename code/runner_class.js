@@ -129,7 +129,7 @@ class Runner {
         this.launch();
     }
 
-    setup(outerContainerId, opt_param_config) {
+    async setup(outerContainerId, opt_param_config) {
         this.parameters = new Parameters(opt_param_config);
         this.parameters.initialise();
         this.replaying = false;
@@ -174,6 +174,10 @@ class Runner {
         // Images.
         this.images = {};
         this.imagesLoaded = 0;
+        var userhasplayed2games = await getUserHasPlayed2GamesFromServer();
+        if(userhasplayed2games){
+            this.config.GAMEOVER_CLEAR_TIME = 2000;
+        }
     }
 
     launch() {
