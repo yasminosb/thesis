@@ -38,15 +38,13 @@ function onDocumentLoad() {
         var serial = logger.serialize();
         postGameplayToServer(serial);
 
-        // handle form
+        // handle form only on ≥ second game
         var userHasPlayed2Games = await getUserHasPlayed2GamesFromServer();
         userHasPlayed2Games = (userHasPlayed2Games === "true");
-        console.log(userHasPlayed2Games)
         if(userHasPlayed2Games){
-            await new Promise(r => setTimeout(r, 2000));
+            await new Promise(r => setTimeout(r, 2000)); 
             r.stopListening();
-            console.log("HIDE GAME - SHOW FORM")
-            console.log(userHasPlayed2Games)
+            generate_form();
             hideGame_showForm();
         } else {
             Runner.config.GAMEOVER_CLEAR_TIME = 2000;
@@ -64,3 +62,12 @@ function onDocumentLoad() {
 }
 
 document.addEventListener('DOMContentLoaded', onDocumentLoad);
+
+async function generate_form(){
+    // dynamically generate form based on 2 past games
+    console.log("generate form");
+    var last2games = JSON.parse(await getLast2GameplaysFromServer());
+    console.log(last2games);
+
+    //TODO: load image from server intro form
+}

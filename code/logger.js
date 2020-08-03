@@ -1,5 +1,3 @@
-
-
 /**
  * Logging module
  * dict: stores the parameters that have been used
@@ -79,6 +77,10 @@ class Logger{
         this.dict[ "obstacleTypes"] =  Obstacle.types;
         this.dict[ "parameters"] = parameters;
         this.dict[ "gameOverTime"] = runner.time;
+        this.dict[ "gameOverScreen" ] = "loading";
+        var canvasurl = runner.canvas.toDataURL();
+        console.log("canvas url", canvasurl);
+        this.dict[ "gameOverScreen"] = runner.canvas.toDataURL();
     }
 
 
