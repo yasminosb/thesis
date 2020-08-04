@@ -28,9 +28,12 @@ async function onDocumentLoad() {
     GAP_DISTRIBUTION_POW: 2,
   }
 
-  var startwithreplay = false;
+  var startwithreplay = true;
+  var game;
   if(startwithreplay){
-    getLastGameFromServer();
+    var response = await getLastGameFromServer();
+    game = handleServerGameplayResponse(response);
+    r = new ReplayRunner('.interstitial-wrapper', game.parameters, game.events, game.obstacles);
   } else {
     var r = new Runner('.interstitial-wrapper', par);
   }
@@ -38,14 +41,15 @@ async function onDocumentLoad() {
   window.logger = logger;
   document.addEventListener("GAMEOVER", async function () {
     console.log("GAMEOVER triggered")
-    if(true){
-      var serial = logger.serialize();
-      postGameplayToServer(serial);
-      var response = await getLastGameFromServer();
-      handleServerGameplayResponse(response);
-    } else {
-      r = new ReplayRunner('.interstitial-wrapper', par, p.events, p.obstacles);
-    }
+    if(startwithreplay){
+        //r = new ReplayRunner('.interstitial-wrapper', game.parameters, game.events, game.obstacles);
+      } else {
+        var serial = logger.serialize();
+        postGameplayToServer(serial);
+        var response = await getLastGameFromServer();
+        respsone = handleServerGameplayResponse(response);
+        r = new ReplayRunner('.interstitial-wrapper', response.parameters, response.events, response.obstacles);
+      }
   }, false);
 
 }

@@ -120,14 +120,4 @@ function addUserCookieToJSON(json) {
 }
 
 
-function hideGame_showForm(){
-    document.getElementsByClassName("onlyforchrome")[0].style.display = 'none';
-    document.getElementsByClassName("runner-container")[0].style.display = 'none';
-    document.getElementById('form').style.display = 'block';
-}
 
-function hideForm_showGame(){
-    document.getElementsByClassName("onlyforchrome")[0].style.display = 'block';
-    document.getElementsByClassName("runner-container")[0].style.display = 'block';
-    document.getElementById('form').style.display = 'none';
-}

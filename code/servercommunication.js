@@ -36,7 +36,8 @@ function getLastGameFromServer() {
 function handleServerGameplayResponse(response) {
   var response = JSON.parse(response);
   response.events = fixEventsObjects(response.events);
-  r = new ReplayRunner('.interstitial-wrapper', response.parameters, response.events, response.obstacles);
+  return response;
+//  r = new ReplayRunner('.interstitial-wrapper', response.parameters, response.events, response.obstacles);
 }
 
 function getLast2GameplayIdsFromServer() {

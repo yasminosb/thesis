@@ -577,7 +577,7 @@ class Runner {
             if(this.gameover){
                 logger.gameOver(this.horizon.obstacles[0], this, this.tRex, this.parameters.config);
                 var evt = document.createEvent("Event");
-                if (!this.replaying) {
+                if (true){//!this.replaying) {
                     evt.initEvent("GAMEOVER", true, true);
                     document.dispatchEvent(evt);
                 }
@@ -704,7 +704,7 @@ class Runner {
         } else if (this.crashed) {
             // Check that enough time has elapsed before allowing jump key to restart.
             var deltaTime = getTimeStamp() - this.time;
-            if (Runner.keycodes.RESTART[keyCode] || this.isLeftClickOnCanvas(e) ||
+            if (Runner.keycodes.RESTART[keyCode] || // removed: this.isLeftClickOnCanvas(e) ||
                 (deltaTime >= this.config.GAMEOVER_CLEAR_TIME &&
                     Runner.keycodes.JUMP[keyCode])) {
                 this.restart();
@@ -748,7 +748,7 @@ class Runner {
      * Game over state.
      */
     gameOver() {
-        if (!this.replaying) {
+        if (true){//!this.replaying) {
             this.gameover = true;
             // now wait for last updates to finish to launch actual gameover event
             // we need to wait for the canvas to update to gameover

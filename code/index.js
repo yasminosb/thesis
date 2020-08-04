@@ -7,6 +7,8 @@ window['Runner'] = Runner;
 Runner.parameters = new Parameters();
 window["Logger"] = Logger;
 
+var form_timeout = 2000;
+
 function onDocumentLoad() {
 
     var par = {
@@ -42,17 +44,19 @@ function onDocumentLoad() {
         var userHasPlayed2Games = await getUserHasPlayed2GamesFromServer();
         userHasPlayed2Games = (userHasPlayed2Games === "true");
         if(userHasPlayed2Games){
-            await new Promise(r => setTimeout(r, 2000)); 
+            await new Promise(r => setTimeout(r, form_timeout)); 
+            // stop handling events when the form is displayed
             r.stopListening();
             generate_form();
             hideGame_showForm();
+            start_form_timer();
         } else {
-            Runner.config.GAMEOVER_CLEAR_TIME = 2000;
+            Runner.config.GAMEOVER_CLEAR_TIME = form_timeout;
         }
     }, false);
 
     document.addEventListener("FORMSUBMIT", function(){
-        hideForm_showGame(); 
+        hideForm_showGame();    
         r.startListening();
         logger.reset();
     }, false)
@@ -63,25 +67,6 @@ function onDocumentLoad() {
 
 document.addEventListener('DOMContentLoaded', onDocumentLoad);
 
-async function generate_form(){
-    // dynamically generate form based on 2 past games
-    console.log("generate form");
-    var last2games = JSON.parse(await getLast2GameplaysFromServer());
-    console.log(last2games);
 
-    //TODO: load image from server intro form
-    add_image_to_element(last2games.lastentry.gameOverScreen, "screenA");
-    add_image_to_element(last2games.secondlastentry.gameOverScreen, "screenB");
-    
-    
-}
-
-function add_image_to_element(img_src, element_id){
-    var img = document.createElement("img");
-    img.src = img_src;
-    var element = document.getElementById(element_id);
-    element.innerHTML = "";
-    element.append(img);
-}
 
 
