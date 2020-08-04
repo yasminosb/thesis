@@ -5,6 +5,7 @@ class ReplayRunner extends Runner {
         this.replay_obstacles = replay_obstacles;
         this.initReplayEvents(replay_events);
         this.loadImages();
+        this.tRex.replaying = true;
         this.update();
     }
 

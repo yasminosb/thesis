@@ -58,6 +58,12 @@ function getUserHasPlayed2GamesFromServer(){
   return getUrlFromServer(url);
 }
 
+function getGameplayFromServer(game_id){
+  console.log("GET USERHASPLAYED2GAMES FROM SERVER");
+  var url = server_url.concat('gameplay/', game_id);
+  return getUrlFromServer(url);
+}
+
 function getUrlFromServer(url){
   return new Promise((resolve, reject) => {
     var xhr = new XMLHttpRequest();

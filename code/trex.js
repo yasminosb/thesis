@@ -7,6 +7,7 @@
  */
 class Trex{
 
+    replaying = false;
 
     /**
      * T-rex player config.

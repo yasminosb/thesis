@@ -28,28 +28,19 @@ async function onDocumentLoad() {
     GAP_DISTRIBUTION_POW: 2,
   }
 
-  var startwithreplay = true;
-  var game;
-  if(startwithreplay){
-    var response = await getLastGameFromServer();
-    game = handleServerGameplayResponse(response);
-    r = new ReplayRunner('.interstitial-wrapper', game.parameters, game.events, game.obstacles);
-  } else {
-    var r = new Runner('.interstitial-wrapper', par);
-  }
+  var startwithreplay = false;
+  var r = new Runner('.interstitial-wrapper', par);
   var logger = new Logger(getCookie("UUID"));
+  
   window.logger = logger;
   document.addEventListener("GAMEOVER", async function () {
     console.log("GAMEOVER triggered")
-    if(startwithreplay){
-        //r = new ReplayRunner('.interstitial-wrapper', game.parameters, game.events, game.obstacles);
-      } else {
-        var serial = logger.serialize();
-        postGameplayToServer(serial);
-        var response = await getLastGameFromServer();
-        respsone = handleServerGameplayResponse(response);
-        r = new ReplayRunner('.interstitial-wrapper', response.parameters, response.events, response.obstacles);
-      }
+    var serial = logger.serialize();
+    postGameplayToServer(serial);
+    var response = await getLastGameFromServer();
+    response = handleServerGameplayResponse(response);
+    r = new ReplayRunner('.interstitial-wrapper', response.parameters, response.events, response.obstacles);
+      
   }, false);
 
 }

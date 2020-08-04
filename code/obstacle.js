@@ -120,7 +120,9 @@ class Obstacle{
             "gap": this.gap,
             "speedOffset": this.speedOffset
         }
-        if (!this.replaying) logger.addObstacle(param_obstacle);
+        if (!this.runner.replaying) {
+            logger.addObstacle(param_obstacle);
+        } 
     }
 
     /**

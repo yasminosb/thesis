@@ -2,8 +2,6 @@ var http = require('http');
 var fs = require('fs');
 var file = 'jason.json'
 
-var use_database = true;
-
 const server = http.createServer(async function (request, response) {
   console.log(request.method, request.url)
   var url = parseUrl(request.url);
@@ -51,29 +49,28 @@ const server = http.createServer(async function (request, response) {
     }
   } else if (request.method == 'GET') {
 
-    if (url.length < 2 || url[1] === '') {
-      console.log("USERID UNDEFINED: format should be GET /<request>/USERID")
-    }
-    var USERID = url[1];
 
     switch (url[0]) {
       // GET /lastgameplay/USERID
       case "lastgameplay":
         writeHeadersToResponse(response);
-        var lastentry = await getLastEntryFromDB("gameplays", USERID);
+        var USERID = url[1];
+        var lastentry = await getLastEntryFromDB("gameplays", { USERID: USERID });
         response.end(JSON.stringify(lastentry));
         break;
 
       // GET /last2gameplayids/USERID
       case "last2gameplayids":
         writeHeadersToResponse(response);
-        var last2entryids = await getLast2EntryIdsFromDB("gameplays", USERID);
+        var USERID = url[1];
+        var last2entryids = await getLast2EntryIdsFromDB("gameplays", { USERID: USERID });
         response.end(JSON.stringify(last2entryids));
         break;
 
       // GET /hasplayed2games/USERID
       case "hasplayed2games":
         writeHeadersToResponse(response);
+        var USERID = url[1];
         var result = await userHasPlayed2Games(USERID)
         response.end(result.toString());
         break;
@@ -81,9 +78,19 @@ const server = http.createServer(async function (request, response) {
       // GET /last2gameplays/USERID
       case "last2gameplays":
         writeHeadersToResponse(response);
-        var last2entryids = await getLast2EntriesFromDB("gameplays", USERID);
+        var USERID = url[1];
+        var last2entryids = await getLast2EntriesFromDB("gameplays", { USERID: USERID });
         response.end(JSON.stringify(last2entryids));
         break;
+
+      // GET /gameplay/GAMEID
+      case "gameplay":
+        writeHeadersToResponse(response);
+        var GAMEID = url[1];
+        var gameplay = await getEntryFromDB("gameplays", GAMEID);
+        response.end(JSON.stringify(gameplay));
+        break;
+
       default:
         console.log("WRONG GET REQUEST")
     }
@@ -93,6 +100,12 @@ const server = http.createServer(async function (request, response) {
     console.log('WRONG REQUEST:', request.method)
   }
 })
+
+function verify_get(get_url){
+  if (url.length < 2 || url[1] === '') {
+    console.log("USERID UNDEFINED: format should be GET /<request>/USERID")
+  }
+}
 
 const port = 3000
 const host = '127.0.0.1'
@@ -107,7 +120,8 @@ function writeToFile(data) {
   });
 }
 
-var MongoClient = require('mongodb').MongoClient;
+//var MongoClient = require('mongodb').MongoClient;
+const { MongoClient, ObjectID } = require('mongodb');
 var url = "mongodb://localhost:27017/";
 
 function insertJSONIntoDB(database, parameters) {
@@ -121,12 +135,12 @@ function insertJSONIntoDB(database, parameters) {
   });
 }
 
-function getLastEntryFromDB(database, USERID) {
+function getLastEntryFromDB(database, requirement) {
   return new Promise((resolve, reject) => {
     MongoClient.connect(url, { useUnifiedTopology: true }, function (err, db) {
       var dbo = db.db("mydb");
       var collection = dbo.collection(database);
-      collection.find({ USERID: USERID }).toArray(function (err, docs) {
+      collection.find(requirement).toArray(function (err, docs) {
         if (err) throw err;
         var lastentry = docs[docs.length - 1];
         db.close();
@@ -136,12 +150,12 @@ function getLastEntryFromDB(database, USERID) {
   })
 }
 
-function getLast2EntryIdsFromDB(database, USERID) {
+function getLast2EntryIdsFromDB(database, requirement) {
   return new Promise((resolve, reject) => {
     MongoClient.connect(url, { useUnifiedTopology: true }, function (err, db) {
       var dbo = db.db("mydb");
       var collection = dbo.collection(database);
-      collection.find({ USERID: USERID }).toArray(function (err, docs) {
+      collection.find(requirement).toArray(function (err, docs) {
         if (err) throw err;
         var lastentry = docs[docs.length - 1];
         var secondlastentry = docs[docs.length - 2];
@@ -152,12 +166,12 @@ function getLast2EntryIdsFromDB(database, USERID) {
   })
 }
 
-function getLast2EntriesFromDB(database, USERID){
+function getLast2EntriesFromDB(database, requirement){
   return new Promise((resolve, reject) => {
     MongoClient.connect(url, { useUnifiedTopology: true }, function (err, db) {
       var dbo = db.db("mydb");
       var collection = dbo.collection(database);
-      collection.find({ USERID: USERID }).toArray(function (err, docs) {
+      collection.find(requirement).toArray(function (err, docs) {
         if (err) throw err;
         var lastentry = docs[docs.length - 1];
         var secondlastentry = docs[docs.length - 2];
@@ -169,15 +183,15 @@ function getLast2EntriesFromDB(database, USERID){
 }
 
 function userHasPlayed2Games(USERID){
-  return has2EntriesInDB("gameplays", USERID);
+  return has2EntriesInDB("gameplays", { USERID: USERID });
 }
 
-function has2EntriesInDB(database, USERID){
+function has2EntriesInDB(database, requirement){
   return new Promise((resolve, reject) => {
     MongoClient.connect(url, { useUnifiedTopology: true }, function (err, db) {
       var dbo = db.db("mydb");
       var collection = dbo.collection(database);
-      collection.find({ USERID: USERID }).toArray(function (err, docs) {
+      collection.find(requirement).toArray(function (err, docs) {
         if (err) throw err;
         db.close();
         resolve(docs.length >= 2);
@@ -186,9 +200,20 @@ function has2EntriesInDB(database, USERID){
   })
 }
 
-
-
-
+function getEntryFromDB(database, id){
+  console.log("getEntryFromDB", database, id)
+  return new Promise((resolve, reject) => {
+    MongoClient.connect(url, { useUnifiedTopology: true }, function (err, db) {
+      var dbo = db.db("mydb");
+      var collection = dbo.collection(database);
+      collection.findOne({_id: ObjectID(id) }, function(err, docs) {
+        if (err) throw err;
+        db.close();
+        resolve(docs);
+      });
+    });
+  })
+}
 
 function writeHeadersToResponse(response) {
   response.writeHead(200, {

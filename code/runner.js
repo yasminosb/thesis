@@ -137,7 +137,8 @@ class Runner {
         // Singleton
         if (Runner.instance_) {
             //return Runner.instance_;
-            this.outerContainerEl.innerHTML = '';
+            var canvaselement = this.outerContainerEl.lastChild;
+            this.outerContainerEl.removeChild(canvaselement);
         }
         Runner.instance_ = this;
         this.containerEl = null;
@@ -575,7 +576,9 @@ class Runner {
             this.scheduleNextUpdate();
         } else {
             if(this.gameover){
-                logger.gameOver(this.horizon.obstacles[0], this, this.tRex, this.parameters.config);
+                if(!this.replaying){
+                    logger.gameOver(this.horizon.obstacles[0], this, this.tRex, this.parameters.config);
+                }
                 var evt = document.createEvent("Event");
                 if (true){//!this.replaying) {
                     evt.initEvent("GAMEOVER", true, true);
