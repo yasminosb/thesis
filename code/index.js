@@ -70,4 +70,18 @@ async function generate_form(){
     console.log(last2games);
 
     //TODO: load image from server intro form
+    add_image_to_element(last2games.lastentry.gameOverScreen, "screenA");
+    add_image_to_element(last2games.secondlastentry.gameOverScreen, "screenB");
+    
+    
 }
+
+function add_image_to_element(img_src, element_id){
+    var img = document.createElement("img");
+    img.src = img_src;
+    var element = document.getElementById(element_id);
+    element.innerHTML = "";
+    element.append(img);
+}
+
+
