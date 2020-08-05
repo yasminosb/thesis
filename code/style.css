@@ -4,25 +4,25 @@
   border: 3px solid;
   padding: 10px;
   margin-bottom: 50px;
+  height: 100%;
+  float: left;
+  margin-left: 25%;
+}
+
+label:hover{
+  cursor: pointer;
 }
 
 @media only screen and (max-width: 900px) {
   .center {
       width: 80%;
+      margin-left: 10%;
   }
 }
 
 @media only screen and (max-width: 600px) {
   .center {
       width: 100%;
+      margin-left: 0;
   }
-}
-
-.form-group select{
-  width: 100%;
-}
-
-#submitbutton{
-  float: right;
-  margin-top: -20px;
 }

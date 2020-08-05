@@ -7,7 +7,7 @@ window['Runner'] = Runner;
 Runner.parameters = new Parameters();
 window["Logger"] = Logger;
 
-var form_timeout = 2000;
+var form_timeout = 0;
 
 function onDocumentLoad() {
 

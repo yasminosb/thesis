@@ -119,5 +119,7 @@ function addUserCookieToJSON(json) {
     json.cookie = getUserCookie();
 }
 
-
+function normalizeEvents(events){
+    
+}
 

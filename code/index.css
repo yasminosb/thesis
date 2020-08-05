@@ -4,6 +4,10 @@
 
 /* Don't use the main frame div when the error is in a subframe. */
 /* Background color */
+form{
+  font-size: 1.2em;
+}
+
 a {
   color: rgb(88, 88, 88);
 }
