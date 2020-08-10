@@ -1,22 +1,96 @@
 async function submitForm(){
-    var time = stop_form_timer();
-    var lats2ids = JSON.parse(await getLast2GameplayIdsFromServer());  
-    var fun = get_radiobutton_value_by_name("fun");
-    var challenging = get_radiobutton_value_by_name("challenging");
-    var frustrating = get_radiobutton_value_by_name("frustrating");
-    var response = {
-        A: lats2ids.secondlastentry,
-        B: lats2ids.lastentry,
-        fun: fun,
-        challenging: challenging,
-        frustrating: frustrating,
-        time: time
+    validation = check_all_radiobuttons();
+    if(validation){
+        var time = stop_form_timer();
+        var lats2ids = JSON.parse(await getLast2GameplayIdsFromServer());  
+        var values = get_form_values();
+        var response = {
+            A: lats2ids.secondlastentry,
+            B: lats2ids.lastentry,
+            fun: values.fun,
+            challenging: values.challenging,
+            frustrating: values.frustrating,
+            time: time
+        }
+        reset_form();
+        postQuestionResponseToServer(JSON.stringify(response));
+        dispatchDocumentEvent("FORMSUBMIT");
+    } else {
+        show_warning();
+    }   
+}
+
+
+var radiobutton_names = ["fun", "challenging","frustrating"];
+
+function get_form_values(){
+    var dict = {};
+    for(var i = 0; i < radiobutton_names.length; i++){
+        var name = radiobutton_names[i];
+        var value = get_radiobutton_value_by_name(name);
+        dict[name] = value;
     }
+    return dict;
+}
+
+function reset_form(){
     clear_screens();
-    postQuestionResponseToServer(JSON.stringify(response));
-    var evt = document.createEvent("Event");
-    evt.initEvent("FORMSUBMIT", true, true);
-    document.dispatchEvent(evt);
+    clear_all_radio_buttons();
+    hide_warning();
+}
+
+function show_warning(){
+    document.getElementsByClassName("warning-message")[0].style.display = 'block';
+}
+
+function hide_warning(){
+    document.getElementsByClassName("warning-message")[0].style.display = 'none';
+}
+
+function clear_all_radio_buttons(){
+    var tags = document.getElementsByTagName("input");
+    for(i = 0; i < tags.length; i++){
+        if(tags[i].type === 'radio'){
+            tags[i].checked = false;
+        }
+    }
+}
+
+function radiobuttons_checked(){
+    var dict = {}
+    for(var i = 0; i < radiobutton_names.length; i++){
+        var checked = is_radiobutton_checked(radiobutton_names[i])
+        dict[radiobutton_names[i]] = checked;
+    }
+    return dict;
+}
+
+function all_dictvalues_true(dict){
+    var keys = Object.keys(dict);
+    for(var i = 0; i < keys.length; i++){
+        var key = keys[i];
+        var value = dict[key];
+        if(!value){
+            return false;
+        }
+    }
+    return true;
+}
+
+function check_all_radiobuttons(){
+    var checked = radiobuttons_checked();
+    var validation = all_dictvalues_true(checked);
+    return validation;
+}
+
+function is_radiobutton_checked(radio_name){
+    var r = document.getElementsByName(radio_name);
+    for(var i = 0; i < r.length; i++){
+        if(r[i].checked){
+            return true;
+        }
+    }
+    return false;
 }
 
 function clear_screens(){
@@ -47,15 +121,14 @@ async function generate_form(){
     // dynamically generate form based on 2 past games
     var last2games = JSON.parse(await getLast2GameplaysFromServer());
 
-    add_image_to_element(last2games.secondlastentry.gameOverScreen, "screenA");
-    add_image_to_element(last2games.lastentry.gameOverScreen, "screenB");
+    add_image_to_element(last2games.lastentry.gameOverScreen, "screenA");
+    add_image_to_element(last2games.secondlastentry.gameOverScreen, "screenB");
 }
 
 function add_image_to_element(img_src, element_id){
     var img = document.createElement("img");
     img.src = img_src;
     var element = document.getElementById(element_id);
-    // element.innerHTML += img;
     element.append(img);
 }
 

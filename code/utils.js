@@ -123,3 +123,9 @@ function normalizeEvents(events){
     
 }
 
+function dispatchDocumentEvent(event_name){
+    var evt = document.createEvent("Event");
+    evt.initEvent(event_name, true, true);
+    document.dispatchEvent(evt);
+}
+

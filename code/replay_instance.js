@@ -30,7 +30,6 @@ async function onDocumentLoad() {
 
   var url = window.location.href;
   var game_id = new URL(url).searchParams.get("id")
-  console.log("game_id", game_id)
 
   var response = await getGameplayFromServer(game_id);
   var game = handleServerGameplayResponse(response);

@@ -1,3 +1,3 @@
 # code
-`python -m SimpleHTTPServer`
+`python -m SimpleHTTPServer`  
 `node server/server.js`

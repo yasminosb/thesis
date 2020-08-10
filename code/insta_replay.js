@@ -28,7 +28,6 @@ async function onDocumentLoad() {
     GAP_DISTRIBUTION_POW: 2,
   }
 
-  var startwithreplay = false;
   var r = new Runner('.interstitial-wrapper', par);
   var logger = new Logger(getCookie("UUID"));
   
@@ -39,6 +38,7 @@ async function onDocumentLoad() {
     postGameplayToServer(serial);
     var response = await getLastGameFromServer();
     response = handleServerGameplayResponse(response);
+    console.log("hier", response)
     r = new ReplayRunner('.interstitial-wrapper', response.parameters, response.events, response.obstacles);
       
   }, false);

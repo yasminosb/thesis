@@ -12,7 +12,7 @@ class ReplayRunner extends Runner {
     initReplayEvents(replay_events){
         this.replay_events = replay_events;
         this.replay_index = 0;
-        //this.gameOverTime = getTimeStamp();
+        this.gameOverTime = getTimeStamp();
     }
 
     initListening(){

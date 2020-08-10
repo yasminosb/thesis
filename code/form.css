@@ -1,12 +1,32 @@
 :root {
   /* --green: #2ECC71; */
   --light: #efefef;
+  --A-color: darkorange;
+  --B-color: dodgerblue;
+  --both-color: olivedrab;
+  --neither-color: firebrick; 
 }
 
 .radio-input:checked + .radio-label {
-    background: var(--green);
-    color: var(--light);
+  color: var(--light);
 }
+
+.A:checked + .radio-label{
+  background: var(--A-color);
+}
+
+.B:checked + .radio-label{
+  background: var(--B-color);
+}
+
+.both:checked + .radio-label{
+  background: var(--both-color);
+}
+
+.neither:checked + .radio-label{
+  background: var(--neither-color);
+}
+
 
 .form-group{
   width: 100%;
@@ -77,8 +97,35 @@
   }
 }
 
-#A, #B{
+.screen-text{
   position: absolute;
   z-index: 100;
+}
+
+.letter{
   font-size: 2em;
+}
+
+.letter-subtext{
+    font-size: 1.2em;
+}
+
+form{
+  font-size: 1.3em;
+}
+
+.A{
+  color: var(--A-color);
+}
+.B{
+  color: var(--B-color);
+}
+
+.warning-message{
+  float: left;
+  color: red;
+  border: solid 2px red;
+  width: 100%;
+  padding: 1px;
+  text-align: center;
 }

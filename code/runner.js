@@ -579,10 +579,10 @@ class Runner {
                 if(!this.replaying){
                     logger.gameOver(this.horizon.obstacles[0], this, this.tRex, this.parameters.config);
                 }
-                var evt = document.createEvent("Event");
-                if (true){//!this.replaying) {
-                    evt.initEvent("GAMEOVER", true, true);
-                    document.dispatchEvent(evt);
+                if(!this.replaying){
+                    if (true){//!this.replaying) {
+                        dispatchDocumentEvent("GAMEOVER");
+                    }
                 }
             }
         }
