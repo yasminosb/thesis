@@ -93,9 +93,13 @@ function is_radiobutton_checked(radio_name){
     return false;
 }
 
+
+var screen_ids = ["screenA", "screenB"];
 function clear_screens(){
-    remove_last_child("screenA");
-    remove_last_child("screenB");
+    for(var i = 0; i < screen_ids.length; i++){
+        var screen_id = screen_ids[i];
+        remove_last_child(screen_id);
+    }
 }
 
 function remove_last_child(element_id){
@@ -120,14 +124,27 @@ function get_radiobutton_value_by_name(name){
 async function generate_form(){
     // dynamically generate form based on 2 past games
     var last2games = JSON.parse(await getLast2GameplaysFromServer());
+    var gameA = last2games.lastentry;
+    var gameB = last2games.secondlastentry;
+    console.log("last2games", last2games);
+    
+    add_image_to_element(gameA.gameOverScreen, "screenA", gameA.invertedGameOver);
+    add_image_to_element(gameB.gameOverScreen, "screenB", gameB.invertedGameOver);
 
-    add_image_to_element(last2games.lastentry.gameOverScreen, "screenA");
-    add_image_to_element(last2games.secondlastentry.gameOverScreen, "screenB");
+    var dict_screen_inverts  = {
+        screenA: gameA.invertedGameOver,
+        screenB: gameB.invertedGameOver
+    }
+    
+    //invert_screens(dict_screen_inverts);
 }
 
-function add_image_to_element(img_src, element_id){
+function add_image_to_element(img_src, element_id, inverted){
     var img = document.createElement("img");
     img.src = img_src;
+    if(inverted){
+        img.classList.add("inverted");
+    }
     var element = document.getElementById(element_id);
     element.append(img);
 }

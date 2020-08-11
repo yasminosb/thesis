@@ -578,6 +578,8 @@ class Runner {
             if(this.gameover){
                 if(!this.replaying){
                     logger.gameOver(this.horizon.obstacles[0], this, this.tRex, this.parameters.config);
+                    // only invert after log
+                    this.invert(true);
                 }
                 if(!this.replaying){
                     if (true){//!this.replaying) {
@@ -783,7 +785,7 @@ class Runner {
         this.time = getTimeStamp();
 
         
-        this.invert(true)
+        // this.invert(true)
 
         
     }

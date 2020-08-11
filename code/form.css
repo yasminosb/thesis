@@ -90,7 +90,7 @@
   width: 100%;
 }
 
-@media only screen and (min-width: 1400px) {
+@media only screen and (min-width: 1600px) {
   #screenA, #screenB {
     width: 50%;
     float: left;
@@ -100,6 +100,7 @@
 .screen-text{
   position: absolute;
   z-index: 100;
+  padding-left: 10px;
 }
 
 .letter{
@@ -117,6 +118,7 @@ form{
 .A{
   color: var(--A-color);
 }
+
 .B{
   color: var(--B-color);
 }

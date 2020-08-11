@@ -34,6 +34,11 @@ body {
   background-color: #000;
 }
 
+.inverted{
+  -webkit-filter: invert(100%);
+  background-color: #fff; /* white inverted to black */
+}
+
 .offline #main-message > p {
   display: none;
 }
