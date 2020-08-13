@@ -1,6 +1,6 @@
 var http = require('http');
-var fs = require('fs');
-var file = 'jason.json'
+// var fs = require('fs');
+// var file = 'jason.json'
 
 const server = http.createServer(async function (request, response) {
   console.log(request.method, request.url)
@@ -112,13 +112,13 @@ const host = '127.0.0.1'
 server.listen(port, host)
 console.log(`Listening at http://${host}:${port}`);
 
-function writeToFile(data) {
-  fs.writeFile(file, data, function (err) {
-    if (err) {
-      return console.log(err);
-    }
-  });
-}
+// function writeToFile(data) {
+//   fs.writeFile(file, data, function (err) {
+//     if (err) {
+//       return console.log(err);
+//     }
+//   });
+// }
 
 //var MongoClient = require('mongodb').MongoClient;
 const { MongoClient, ObjectID } = require('mongodb');

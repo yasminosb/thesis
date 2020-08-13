@@ -7,20 +7,27 @@ var server_url = "http://127.0.0.1:3000/"
 function postGameplayToServer(value) {
   console.log("POST GAME TO SERVER");
   var url = server_url.concat('gameplay/',getUserCookie());
-  postJSONtoServer(value, url);
+  return postJSONtoServer(value, url);
 }
 
 function postQuestionResponseToServer(value) {
   console.log("POST QUESTIONRESPONSE TO SERVER");
   var url = server_url.concat('questionresponse/', getUserCookie());
-  postJSONtoServer(value, url);
+  return postJSONtoServer(value, url);
 }
 
 function postJSONtoServer(json, url){
-  var xhr = new XMLHttpRequest();
-  xhr.open("POST", url, true);
-  xhr.setRequestHeader('Content-Type', 'application/json');
-  xhr.send(json);
+  return new Promise((resolve, reject) => {
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatechange = function () {
+      if (xhr.readyState === 4) {
+        resolve(xhr.response);
+      }
+    }
+    xhr.open("POST", url, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.send(json);
+  });
 }
 
 // ------------------------

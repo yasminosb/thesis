@@ -38,15 +38,17 @@ function onDocumentLoad() {
         console.log("GAMEOVER triggered")
         // post game to server
         var serial = logger.serialize();
-        postGameplayToServer(serial);
+        await postGameplayToServer(serial);
 
         // handle form only on ≥ second game
         var userHasPlayed2Games = await getUserHasPlayed2GamesFromServer();
         userHasPlayed2Games = (userHasPlayed2Games === "true");
         if(userHasPlayed2Games){
+            // wait a few secs before showing form
             await new Promise(r => setTimeout(r, form_timeout)); 
             // stop handling events when the form is displayed
             r.stopListening();
+            // show form
             generate_form();
             hideGame_showForm();
             start_form_timer();
