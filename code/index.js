@@ -14,7 +14,7 @@ function onDocumentLoad() {
     var par = {
         SPEED: 10,
         ACCELERATION: 0.002,
-        MIN_GAP: 200,
+        MIN_GAP: 230,
         OBSTACLE_TYPES: ['CACTUS_LARGE', 'CACTUS_SMALL', 'PTERODACTYL'],
         OBSTACLE_TYPES_SPEC: { 'CACTUS_LARGE': 0.35, 'CACTUS_SMALL': 0.35, 'PTERODACTYL': 0.3 },
         NIGHT_MODE_ENABLED: true,
@@ -29,6 +29,9 @@ function onDocumentLoad() {
         MAX_GAP: 400,
         GAP_DISTRIBUTION_POW: 2,
     }
+
+    var par = generate_random_parameters();
+    console.log(par)
 
     var r = new Runner('.interstitial-wrapper', par);
     var logger = new Logger(getCookie("UUID"));

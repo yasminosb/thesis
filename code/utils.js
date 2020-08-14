@@ -8,6 +8,25 @@ function getRandomNum(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+function getRandomNum0_1(min,max){
+    var num = Math.random() * (max - min) + min;
+    return roundFirstDecimal(num);
+}
+
+function roundFirstDecimal(num){
+    return Math.round(num * 10) / 10;
+}
+
+function getRandomFromRange(range) {
+    var min = range[0]
+    var max = range[1];
+    return getRandomNum(min, max);
+}
+
+function getRandomFromArray(array) {
+    return array[Math.floor(Math.random() * array.length)];
+}
+
 /**
  * Get random number in gaussian distribution
  * @param {number} min
@@ -57,6 +76,29 @@ function getRandomWeighted(spec) {
     }
     return table[Math.floor(Math.random() * table.length)];
 
+}
+
+function getRandomSpec(values){
+    var n = values.length;
+    var d = {}
+    if(n == 1){
+        d[values[0]] = 1;
+    } else {
+        var total = 0;
+        for(var i = 0; i < n; i++){
+            if(i == n - 1){
+                var rest = roundFirstDecimal(1 - total);
+                d[values[i]] = rest;
+                console.log(rest)
+            } else {
+                var random = getRandomNum0_1(0.1, 1-((n - 1 - i)/10)-total );
+                console.log(0.1, 1-((n - 1 - i)/10), random)
+                total += random;
+                d[values[i]] = random;
+            }
+        }
+    }
+    return d;
 }
 /**
  * Vibrate on mobile devices.
@@ -129,3 +171,37 @@ function dispatchDocumentEvent(event_name){
     document.dispatchEvent(evt);
 }
 
+function permute(xs) {
+    let ret = [];
+  
+    for (let i = 0; i < xs.length; i = i + 1) {
+      let rest = permute(xs.slice(0, i).concat(xs.slice(i + 1)));
+  
+      if(!rest.length) {
+        ret.push([xs[i]])
+      } else {
+        for(let j = 0; j < rest.length; j = j + 1) {
+          ret.push([xs[i]].concat(rest[j]))
+        }
+      }
+    }
+    return ret;
+}
+
+function combinations( list ){
+    var set = [],
+        listSize = list.length,
+        combinationsCount = (1 << listSize),
+        combination;
+
+    for (var i = 1; i < combinationsCount ; i++ ){
+        var combination = [];
+        for (var j=0;j<listSize;j++){
+            if ((i & (1 << j))){
+                combination.push(list[j]);
+            }
+        }
+        set.push(combination);
+    }
+    return set;
+}

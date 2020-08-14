@@ -216,3 +216,51 @@ class Parameters{
 
 
 }
+
+
+// -------------------------
+// ******* GENERATOR *******
+// -------------------------
+var parameters_ranges = {
+    SPEED:                  [3,10],
+    ACCELERATION:           [0.002, 0.01],
+    MIN_GAP:                [0,400],
+    OBSTACLE_TYPES:         combinations(['CACTUS_LARGE', 'CACTUS_SMALL', 'PTERODACTYL']),
+    OBSTACLE_TYPES_SPEC:    { 'CACTUS_LARGE': [0,1], 'CACTUS_SMALL': [0,1], 'PTERODACTYL': [0,1] }, //together 1
+    NIGHT_MODE_ENABLED:     [true,false],
+    NIGHT_MODE_DISTANCE:    [200,300,400,500,600,700,800,900,1000],
+    CLEAR_TIME:             [0,6000],
+    MAX_OBSTACLE_LENGTH:    [1,2,3],
+    MAX_SPEED:              15, // speed - 15
+    PTERODACTYL_YPOS:       combinations([100, 75, 50]),
+    CHECK_DUPLICATION:      false, // NOT USED
+    MAX_DUPLICATION:        2,
+    USE_GAME_GAP:           false, // NOT USED
+    MAX_GAP:                600, // min gap - 600
+    GAP_DISTRIBUTION_POW:   [2,4]
+}
+
+function generate_random_parameters(){
+    var p = parameters_ranges;
+    var d = {}
+    d.SPEED =                   getRandomFromRange(p.SPEED);
+    d.ACCELERATION =            getRandomFromRange(p.ACCELERATION);
+    d.MIN_GAP =                 getRandomFromRange(p.MIN_GAP);
+    d.OBSTACLE_TYPES =          getRandomFromArray(p.OBSTACLE_TYPES);
+    d.OBSTACLE_TYPES_SPEC =     getRandomSpec(d.OBSTACLE_TYPES);
+    d.NIGHT_MODE_ENABLED =      getRandomFromArray(p.NIGHT_MODE_ENABLED);
+    d.NIGHT_MODE_DISTANCE =     getRandomFromArray(p.NIGHT_MODE_DISTANCE);
+    d.CLEAR_TIME =              getRandomFromRange(p.CLEAR_TIME);
+    d.MAX_OBSTACLE_LENGTH =     getRandomFromArray(p.MAX_OBSTACLE_LENGTH);
+    d.MAX_SPEED =               getRandomFromRange([d.SPEED,p.MAX_SPEED]);
+    d.PTERODACTYL_YPOS =        getRandomFromArray(p.PTERODACTYL_YPOS);
+    d.CHECK_DUPLICATION =       p.CHECK_DUPLICATION;
+    d.MAX_DUPLICATION =         p.MAX_DUPLICATION;
+    d.USE_GAME_GAP =            p.USE_GAME_GAP;
+    d.MAX_GAP =                 getRandomFromRange([d.MIN_GAP, p.MAX_GAP]);
+    d.GAP_DISTRIBUTION_POW =    getRandomFromRange(p.GAP_DISTRIBUTION_POW);
+
+    return d;
+}
+
+// TODO: EASY - MEDIUM - HARD
