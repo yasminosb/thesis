@@ -65,9 +65,21 @@ function getUserHasPlayed2GamesFromServer(){
   return getUrlFromServer(url);
 }
 
+function getDashboardInfoFromServer(){
+  console.log("GET DASHBOARDINFO FROM SERVER");
+  var url = server_url.concat('dashboardinfo/');
+  return getUrlFromServer(url);
+}
+
 function getGameplayFromServer(game_id){
   console.log("GET USERHASPLAYED2GAMES FROM SERVER");
   var url = server_url.concat('gameplay/', game_id);
+  return getUrlFromServer(url);
+}
+
+function getNumberOfGameplaysFromServer(){
+  console.log("GET NUMBEROFGAMEPLAYS FROM SERVER");
+  var url = server_url.concat('numberofgameplays/');
   return getUrlFromServer(url);
 }
 

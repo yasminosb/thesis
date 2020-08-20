@@ -1,5 +1,3 @@
-
-
 class Parameters{
     /**
      * Parameters that we want to be adjustable
@@ -124,6 +122,7 @@ class Parameters{
         }
 
         /**
+         * educated guesses
          * 3 types : max obstacle duplication = 2 (default)
          * 2 types : max obstacle duplication = 7
          * 1 type  : max obstacle duplication = infinite
@@ -144,6 +143,7 @@ class Parameters{
         Runner.config.ACCELERATION = this.getAcceleration();
         Runner.config.INVERT_DISTANCE = this.getNightModeDistance();
         Runner.config.CLEAR_TIME = this.getClearTime();
+        // Runner.config.GAMEOVER_CLEAR_TIME = this.getClearTime();
         Runner.config.MAX_SPEED = this.getMaxSpeed();
         Obstacle.MAX_OBSTACLE_LENGTH = this.getMaxObstacleLength();
         Obstacle.MAX_OBSTACLE_DUPLICATION = this.getMaxObstacleDuplication();
@@ -224,20 +224,20 @@ class Parameters{
 var parameters_ranges = {
     SPEED:                  [3,10],
     ACCELERATION:           [0.002, 0.01],
-    MIN_GAP:                [0,400],
+    MIN_GAP:                [250,400],
     OBSTACLE_TYPES:         combinations(['CACTUS_LARGE', 'CACTUS_SMALL', 'PTERODACTYL']),
     OBSTACLE_TYPES_SPEC:    { 'CACTUS_LARGE': [0,1], 'CACTUS_SMALL': [0,1], 'PTERODACTYL': [0,1] }, //together 1
     NIGHT_MODE_ENABLED:     [true,false],
-    NIGHT_MODE_DISTANCE:    [200,300,400,500,600,700,800,900,1000],
+    NIGHT_MODE_DISTANCE:    [200,1000],
     CLEAR_TIME:             [0,6000],
     MAX_OBSTACLE_LENGTH:    [1,2,3],
     MAX_SPEED:              15, // speed - 15
     PTERODACTYL_YPOS:       combinations([100, 75, 50]),
     CHECK_DUPLICATION:      false, // NOT USED
-    MAX_DUPLICATION:        2,
+    MAX_DUPLICATION:        2, // NOT USED
     USE_GAME_GAP:           false, // NOT USED
-    MAX_GAP:                600, // min gap - 600
-    GAP_DISTRIBUTION_POW:   [2,4]
+    MAX_GAP:                400, // min gap - 600
+    GAP_DISTRIBUTION_POW:   2// NOT USED
 }
 
 function generate_random_parameters(){
@@ -249,7 +249,7 @@ function generate_random_parameters(){
     d.OBSTACLE_TYPES =          getRandomFromArray(p.OBSTACLE_TYPES);
     d.OBSTACLE_TYPES_SPEC =     getRandomSpec(d.OBSTACLE_TYPES);
     d.NIGHT_MODE_ENABLED =      getRandomFromArray(p.NIGHT_MODE_ENABLED);
-    d.NIGHT_MODE_DISTANCE =     getRandomFromArray(p.NIGHT_MODE_DISTANCE);
+    d.NIGHT_MODE_DISTANCE =     getRandomFromRange(p.NIGHT_MODE_DISTANCE);
     d.CLEAR_TIME =              getRandomFromRange(p.CLEAR_TIME);
     d.MAX_OBSTACLE_LENGTH =     getRandomFromArray(p.MAX_OBSTACLE_LENGTH);
     d.MAX_SPEED =               getRandomFromRange([d.SPEED,p.MAX_SPEED]);
@@ -258,9 +258,90 @@ function generate_random_parameters(){
     d.MAX_DUPLICATION =         p.MAX_DUPLICATION;
     d.USE_GAME_GAP =            p.USE_GAME_GAP;
     d.MAX_GAP =                 getRandomFromRange([d.MIN_GAP, p.MAX_GAP]);
-    d.GAP_DISTRIBUTION_POW =    getRandomFromRange(p.GAP_DISTRIBUTION_POW);
+    d.GAP_DISTRIBUTION_POW =    p.GAP_DISTRIBUTION_POW;
 
     return d;
 }
 
 // TODO: EASY - MEDIUM - HARD
+// var exteme_easy = {
+//     SPEED:                  3,
+//     ACCELERATION:           0.002,
+//     MIN_GAP:                400,
+//     OBSTACLE_TYPES:         ['CACTUS_SMALL'],
+//     OBSTACLE_TYPES_SPEC:    {'CACTUS_SMALL': 1},
+//     NIGHT_MODE_ENABLED:     false,
+//     NIGHT_MODE_DISTANCE:    700, // NOT USED
+//     CLEAR_TIME:             6000,
+//     MAX_OBSTACLE_LENGTH:    1,
+//     MAX_SPEED:              6, // speed - 15
+//     PTERODACTYL_YPOS:       [100],
+//     CHECK_DUPLICATION:      false, // NOT USED
+//     MAX_DUPLICATION:        2,
+//     USE_GAME_GAP:           false, // NOT USED
+//     MAX_GAP:                600,
+//     GAP_DISTRIBUTION_POW:   4
+// }
+
+// E M H E H M H : all combinations
+
+// var EASY = {
+//     SPEED:                  4,
+//     ACCELERATION:           0.002,
+//     MIN_GAP:                300,
+//     OBSTACLE_TYPES:         ['CACTUS_SMALL', 'CACTUS_LARGE'],
+//     OBSTACLE_TYPES_SPEC:    {'CACTUS_SMALL': 0.5, 'CACTUS_LARGE': 0.5},
+//     NIGHT_MODE_ENABLED:     false,
+//     NIGHT_MODE_DISTANCE:    700, // NOT USED
+//     CLEAR_TIME:             3000,
+//     MAX_OBSTACLE_LENGTH:    1,
+//     MAX_SPEED:              6, // speed - 15
+//     PTERODACTYL_YPOS:       [100], // NOT USED
+//     CHECK_DUPLICATION:      false, // NOT USED
+//     MAX_DUPLICATION:        2,
+//     USE_GAME_GAP:           false, // NOT USED
+//     MAX_GAP:                600,
+//     GAP_DISTRIBUTION_POW:   2
+// }
+
+// var MEDIUM = {
+//     SPEED:                  6,
+//     ACCELERATION:           0.002,
+//     MIN_GAP:                300,
+//     OBSTACLE_TYPES:         ['CACTUS_LARGE', 'CACTUS_SMALL', 'PTERODACTYL'],
+//     OBSTACLE_TYPES_SPEC:    { 'CACTUS_LARGE': 0.4, 'CACTUS_SMALL': 0.4 , 'PTERODACTYL': 0.2 },
+//     NIGHT_MODE_ENABLED:     true,
+//     NIGHT_MODE_DISTANCE:    700,
+//     CLEAR_TIME:             2000,
+//     MAX_OBSTACLE_LENGTH:    2,
+//     MAX_SPEED:              10, 
+//     PTERODACTYL_YPOS:       [100, 50],
+//     CHECK_DUPLICATION:      false, // NOT USED
+//     MAX_DUPLICATION:        2,
+//     USE_GAME_GAP:           false, // NOT USED
+//     MAX_GAP:                550, // min gap - 600
+//     GAP_DISTRIBUTION_POW:   2
+// }
+
+// var HARD = {
+//     SPEED:                  8,
+//     ACCELERATION:           0.002,
+//     MIN_GAP:                250,
+//     OBSTACLE_TYPES:         ['CACTUS_LARGE', 'CACTUS_SMALL', 'PTERODACTYL'],
+//     OBSTACLE_TYPES_SPEC:    { 'CACTUS_LARGE': 0.35, 'CACTUS_SMALL': 0.35 , 'PTERODACTYL': 0.7 },
+//     NIGHT_MODE_ENABLED:     true,
+//     NIGHT_MODE_DISTANCE:    500,
+//     CLEAR_TIME:             1000,
+//     MAX_OBSTACLE_LENGTH:    3,
+//     MAX_SPEED:              15, 
+//     PTERODACTYL_YPOS:       [100, 75, 50],
+//     CHECK_DUPLICATION:      false, // NOT USED
+//     MAX_DUPLICATION:        2,
+//     USE_GAME_GAP:           false, // NOT USED
+//     MAX_GAP:                500, // min gap - 600
+//     GAP_DISTRIBUTION_POW:   2
+// }
+
+// function generate_next_difficulty(){
+//     return HARD;
+// }

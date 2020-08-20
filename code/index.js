@@ -11,10 +11,11 @@ var form_timeout = 1000;
 
 function onDocumentLoad() {
 
+    // debug parameters
     var par = {
         SPEED: 10,
         ACCELERATION: 0.002,
-        MIN_GAP: 230,
+        MIN_GAP: 240,
         OBSTACLE_TYPES: ['CACTUS_LARGE', 'CACTUS_SMALL', 'PTERODACTYL'],
         OBSTACLE_TYPES_SPEC: { 'CACTUS_LARGE': 0.35, 'CACTUS_SMALL': 0.35, 'PTERODACTYL': 0.3 },
         NIGHT_MODE_ENABLED: true,
@@ -26,12 +27,16 @@ function onDocumentLoad() {
         CHECK_DUPLICATION: false,
         MAX_OBSTACLE_DUPLICATION: 2,
         USE_GAME_GAP: false,
-        MAX_GAP: 400,
+        MAX_GAP: 240,
         GAP_DISTRIBUTION_POW: 2,
     }
 
+    var show_form = false; // FOR DEBUG
+
+    // get random parameters
     var par = generate_random_parameters();
-    console.log(par)
+    
+    console.log("parameters", par)
 
     var r = new Runner('.interstitial-wrapper', par);
     var logger = new Logger(getCookie("UUID"));
@@ -43,20 +48,22 @@ function onDocumentLoad() {
         var serial = logger.serialize();
         await postGameplayToServer(serial);
 
-        // handle form only on ≥ second game
-        var userHasPlayed2Games = await getUserHasPlayed2GamesFromServer();
-        userHasPlayed2Games = (userHasPlayed2Games === "true");
-        if(userHasPlayed2Games){
-            // wait a few secs before showing form
-            await new Promise(r => setTimeout(r, form_timeout)); 
-            // stop handling events when the form is displayed
-            r.stopListening();
-            // show form
-            generate_form();
-            hideGame_showForm();
-            start_form_timer();
+        if(show_form){
+            // handle form only on ≥ second game
+            var userHasPlayed2Games = await getUserHasPlayed2GamesFromServer();
+            userHasPlayed2Games = (userHasPlayed2Games === "true");
+            if(userHasPlayed2Games){
+                // stop handling events when the form is displayed
+                r.stopListening();
+                // wait a few secs before showing form
+                await new Promise(r => setTimeout(r, form_timeout)); 
+                // show form
+                generate_form();
+                hideGame_showForm();
+                start_form_timer();
+            }
         } else {
-            Runner.config.GAMEOVER_CLEAR_TIME = form_timeout;
+            logger.reset();
         }
     }, false);
 

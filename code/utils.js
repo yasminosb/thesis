@@ -205,3 +205,8 @@ function combinations( list ){
     }
     return set;
 }
+
+function getCurrentDateTime(){
+    let date = new Date().toLocaleString()
+    return date;
+}

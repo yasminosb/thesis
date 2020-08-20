@@ -117,7 +117,6 @@ function get_select_value_by_id(id){
 
 function get_radiobutton_value_by_name(name){
     var value = document.querySelector(`input[name="${name}"]:checked`).value;
-    console.log(name, value)
     return value
 }
 
@@ -126,7 +125,6 @@ async function generate_form(){
     var last2games = JSON.parse(await getLast2GameplaysFromServer());
     var gameA = last2games.lastentry;
     var gameB = last2games.secondlastentry;
-    console.log("last2games", last2games);
     
     add_image_to_element(gameA.gameOverScreen, "screenA", gameA.invertedGameOver);
     add_image_to_element(gameB.gameOverScreen, "screenB", gameB.invertedGameOver);

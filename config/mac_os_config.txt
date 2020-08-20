@@ -1,0 +1,24 @@
+——————————
+— CLIENT — localhost:
+——————————
+
+https://medium.com/@ThomasTan/installing-nginx-in-mac-os-x-maverick-with-homebrew-d8867b7e8a5a
+
+1. brew install nginx
+2. /usr/local/etc/nginx/nginx.conf
+    server {
+        listen 8000;
+        server_name localhost;
+        root /Users/yasminebogaert/Desktop/Thesis/code/;
+        index index.html index.htm;
+    }
+3. brew services start/stop/restart nginx
+3. sudo nginx -s stop / 
+
+
+——————————
+— SERVER — localhost:3000
+——————————
+1. sudo npm install -g forever
+2. forever start server.js
+3. forever restart 0 (process number in brackets)

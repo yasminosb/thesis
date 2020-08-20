@@ -175,10 +175,10 @@ class Runner {
         // Images.
         this.images = {};
         this.imagesLoaded = 0;
-        var userhasplayed2games = await getUserHasPlayed2GamesFromServer();
-        if(userhasplayed2games){
-            this.config.GAMEOVER_CLEAR_TIME = 2000;
-        }
+        // var userhasplayed2games = await getUserHasPlayed2GamesFromServer();
+        // if(userhasplayed2games){
+        //     this.config.GAMEOVER_CLEAR_TIME = 2000;
+        // }
     }
 
     launch() {
@@ -426,7 +426,10 @@ class Runner {
      */
     playIntro() {
         if (!this.activated && !this.crashed) {
-            if (!this.replaying) logger.addLog("playIntro");
+            if (!this.replaying) {
+                logger.addLog("playIntro");
+                logger.store("playIntro", true);
+            }
             this.playingIntro = true;
             this.tRex.playingIntro = true;
             // CSS animation definition.

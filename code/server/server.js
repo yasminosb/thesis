@@ -90,7 +90,18 @@ const server = http.createServer(async function (request, response) {
         var gameplay = await getEntryFromDB("gameplays", GAMEID);
         response.end(JSON.stringify(gameplay));
         break;
-
+      // GET /dashboardinfo
+      case "dashboardinfo":
+        writeHeadersToResponse(response);
+        var gameplays = await getDashboardInfo()
+        response.end(JSON.stringify(gameplays)); 
+        break;
+      // GET /numberofgameplays
+      case "numberofgameplays":
+        writeHeadersToResponse(response);
+        var number = await getNumberOfEntriesFromDB("gameplays")
+        response.end(JSON.stringify(number)); 
+        break;
       default:
         console.log("WRONG GET REQUEST")
     }
@@ -213,6 +224,57 @@ function getEntryFromDB(database, id){
       });
     });
   })
+}
+
+function getDashboardInfo(){
+  return getAllEntriesFromDB("gameplays", 
+    {
+      _id: 1, 
+      actualDistance: 1, 
+      gameOverScreen: 1, 
+      dateTime: 1,
+      invertedGameOver: 1
+    }
+  );
+}
+
+function getAllEntriesFromDB(database, projection){
+  return new Promise((resolve, reject) => {
+    MongoClient.connect(url, { useUnifiedTopology: true }, function (err, db) {
+      var dbo = db.db("mydb");
+      var collection = dbo.collection(database);
+      var query = get_required_fields_from_projection(projection);
+      collection.find(query,{fields: projection}).sort({_id: -1}).toArray(function(err, docs) {
+        if (err) throw err;
+        db.close();
+        resolve(docs);
+      });
+    });
+  })
+}
+
+function getNumberOfEntriesFromDB(database){
+  console.log("getNumberOfEntriesFromDB", database)
+  return new Promise((resolve, reject) => {
+    MongoClient.connect(url, { useUnifiedTopology: true }, function (err, db) {
+      var dbo = db.db("mydb");
+      var collection = dbo.collection(database);
+      collection.find({}).count(function(err, result) {
+        if (err) throw err;
+        db.close();
+        resolve(result);
+      });
+    });
+  })
+}
+
+function get_required_fields_from_projection(projection){
+  var required_fields = Object.keys(projection);
+  var query = {}
+  for(field of required_fields){
+    query[field] = {$exists: 1};
+  }
+  return query
 }
 
 function writeHeadersToResponse(response) {

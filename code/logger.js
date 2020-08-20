@@ -78,9 +78,29 @@ class Logger{
         this.dict[ "parameters"] = parameters;
         this.dict[ "gameOverTime"] = runner.time;
         this.dict[ "gameOverScreen" ] = "loading";
-        var canvasurl = runner.canvas.toDataURL();
-        console.log("canvas url", canvasurl);
         this.dict[ "gameOverScreen"] = runner.canvas.toDataURL();
+        this.dict["dateTime"] = getCurrentDateTime();
+        this.normalize_events()
+    }
+
+    normalize_events(){
+        // let first event start at timestamp 1000
+        // adjust all events timestamps accordingly
+        var events = this.dict.events;
+        var obstacles = this.dict.obstacles;
+        var first_event_time = this.dict.events[0].time;
+        var subtract_amount = -(-this.dict.events[0].time + 1000);
+        for (let i = 0; i < events.length; i++){
+            var event = events[i];
+            event.time -= subtract_amount;
+        }
+
+        // not necessary? 
+        for (let i = 0; i < obstacles.length; i++){
+            var obstacle = obstacles[i];
+            obstacle.time -= subtract_amount;
+        }
+
     }
 
 
@@ -94,7 +114,6 @@ class Logger{
     }
 
     serialize(){
-        console.log(this.dict)
         var serialized_dict = this.dict;
         serialized_dict.events = this.serializeEvents(serialized_dict.events);
         serialized_dict.collisionObstacle = this.serializeCollisionObstacle(serialized_dict.collisionObstacle);

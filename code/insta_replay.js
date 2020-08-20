@@ -39,7 +39,7 @@ async function onDocumentLoad() {
     var response = await getLastGameFromServer();
     response = handleServerGameplayResponse(response);
     console.log("hier", response)
-    r = new ReplayRunner('.interstitial-wrapper', response.parameters, response.events, response.obstacles);
+    r = new ReplayRunner('.interstitial-wrapper', response.parameters, response.events, response.obstacles, response.playIntro);
       
   }, false);
 
