@@ -89,10 +89,8 @@ function getRandomSpec(values){
             if(i == n - 1){
                 var rest = roundFirstDecimal(1 - total);
                 d[values[i]] = rest;
-                console.log(rest)
             } else {
                 var random = getRandomNum0_1(0.1, 1-((n - 1 - i)/10)-total );
-                console.log(0.1, 1-((n - 1 - i)/10), random)
                 total += random;
                 d[values[i]] = random;
             }

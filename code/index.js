@@ -31,14 +31,16 @@ function onDocumentLoad() {
         GAP_DISTRIBUTION_POW: 2,
     }
 
-    var show_form = false; // FOR DEBUG
+    var show_form = true; // FOR DEBUG
 
     // get random parameters
     var par = generate_random_parameters();
     
+    // init runner
     console.log("parameters", par)
-
     var r = new Runner('.interstitial-wrapper', par);
+
+    // init logger
     var logger = new Logger(getCookie("UUID"));
     window.logger = logger;
 
@@ -64,13 +66,22 @@ function onDocumentLoad() {
             }
         } else {
             logger.reset();
+            // new game instance
+            var par = generate_random_parameters();
+            console.log("new parameters", par);
+            r = new Runner('.interstitial-wrapper', par);
         }
     }, false);
 
     document.addEventListener("FORMSUBMIT", function(){
+        // display form again
         hideForm_showGame();    
-        r.startListening();
         logger.reset();
+        
+        // new game instance
+        var par = generate_random_parameters();
+        console.log("new parameters", par);
+        r = new Runner('.interstitial-wrapper', par);
     }, false)
 
 

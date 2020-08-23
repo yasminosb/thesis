@@ -130,15 +130,15 @@ class Runner {
     }
 
     async setup(outerContainerId, opt_param_config) {
-        this.parameters = new Parameters(opt_param_config);
-        this.parameters.initialise();
+        this.load_parameters(opt_param_config);
         this.replaying = false;
         this.outerContainerEl = document.querySelector(outerContainerId);
         // Singleton
         if (Runner.instance_) {
-            //return Runner.instance_;
+            console.log("singleton: removing last isntance");
             var canvaselement = this.outerContainerEl.lastChild;
             this.outerContainerEl.removeChild(canvaselement);
+            //return Runner.instance_;
         }
         Runner.instance_ = this;
         this.containerEl = null;
@@ -179,6 +179,11 @@ class Runner {
         // if(userhasplayed2games){
         //     this.config.GAMEOVER_CLEAR_TIME = 2000;
         // }
+    }
+
+    load_parameters(opt_param_config){  
+        this.parameters = new Parameters(opt_param_config);
+        this.parameters.initialise();
     }
 
     launch() {
