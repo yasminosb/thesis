@@ -90,11 +90,35 @@
   }
 }
 
-@media only screen and (min-width: 1600px) {
+
+
+@media only screen and (min-width: 1200px) {
   .screen {
     width: 49.5%;
     float: left;
   }
+
+  .center{
+    width: 70%;
+    margin-left: 15%;
+  }
+
+  #screenA {
+    margin-right: 1%;
+  }
+}
+
+@media only screen and (min-width: 1650px) {
+  .screen {
+    width: 49.5%;
+    float: left;  
+  }
+
+  .center{
+    width: 50%;
+    margin-left: 25%;
+  }
+
   #screenA {
     margin-right: 1%;
   }
