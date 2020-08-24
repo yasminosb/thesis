@@ -28,7 +28,6 @@ function onDocumentLoad() {
         MAX_OBSTACLE_DUPLICATION: 2,
         USE_GAME_GAP: false,
         MAX_GAP: 240,
-        GAP_DISTRIBUTION_POW: 2,
     }
 
     var show_form = true; // FOR DEBUG

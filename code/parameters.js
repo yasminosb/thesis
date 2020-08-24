@@ -19,7 +19,6 @@ class Parameters{
         MAX_DUPLICATION: 2,
         USE_GAME_GAP: false,
         MAX_GAP: 400,
-        GAP_DISTRIBUTION_POW: 2
     }
 
     constructor(opt_config) {
@@ -201,10 +200,6 @@ class Parameters{
         return this.config.USE_GAME_GAP;
     }
 
-    getGapDistributionPow() {
-        return this.config.GAP_DISTRIBUTION_POW;
-    }
-
     getMaxObstacleDuplication() {
         return this.config.MAX_OBSTACLE_DUPLICATION;
     }
@@ -222,7 +217,7 @@ class Parameters{
 // ******* GENERATOR *******
 // -------------------------
 var parameters_ranges = {
-    SPEED:                  [3,10],
+    SPEED:                  [5,10],
     ACCELERATION:           [0.002, 0.01],
     MIN_GAP:                [250,400],
     OBSTACLE_TYPES:         combinations(['CACTUS_LARGE', 'CACTUS_SMALL', 'PTERODACTYL']),
@@ -237,7 +232,6 @@ var parameters_ranges = {
     MAX_DUPLICATION:        2, // NOT USED
     USE_GAME_GAP:           false, // NOT USED
     MAX_GAP:                400, // min gap - 600
-    GAP_DISTRIBUTION_POW:   2// NOT USED
 }
 
 function generate_random_parameters(){
@@ -258,7 +252,6 @@ function generate_random_parameters(){
     d.MAX_DUPLICATION =         p.MAX_DUPLICATION;
     d.USE_GAME_GAP =            p.USE_GAME_GAP;
     d.MAX_GAP =                 getRandomFromRange([d.MIN_GAP, p.MAX_GAP]);
-    d.GAP_DISTRIBUTION_POW =    p.GAP_DISTRIBUTION_POW;
 
     return d;
 }
@@ -280,7 +273,6 @@ function generate_random_parameters(){
 //     MAX_DUPLICATION:        2,
 //     USE_GAME_GAP:           false, // NOT USED
 //     MAX_GAP:                600,
-//     GAP_DISTRIBUTION_POW:   4
 // }
 
 // E M H E H M H : all combinations
@@ -301,7 +293,6 @@ function generate_random_parameters(){
 //     MAX_DUPLICATION:        2,
 //     USE_GAME_GAP:           false, // NOT USED
 //     MAX_GAP:                600,
-//     GAP_DISTRIBUTION_POW:   2
 // }
 
 // var MEDIUM = {
@@ -320,7 +311,6 @@ function generate_random_parameters(){
 //     MAX_DUPLICATION:        2,
 //     USE_GAME_GAP:           false, // NOT USED
 //     MAX_GAP:                550, // min gap - 600
-//     GAP_DISTRIBUTION_POW:   2
 // }
 
 // var HARD = {
@@ -339,7 +329,6 @@ function generate_random_parameters(){
 //     MAX_DUPLICATION:        2,
 //     USE_GAME_GAP:           false, // NOT USED
 //     MAX_GAP:                500, // min gap - 600
-//     GAP_DISTRIBUTION_POW:   2
 // }
 
 // function generate_next_difficulty(){

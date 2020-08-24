@@ -190,6 +190,7 @@ class Obstacle{
      * @param {number} speed
      * @return {number} The gap size.
      */
+    gap_distribution_pow = 2;
     getGap(gapCoefficient, speed){
         if (this.runner.parameters.getUseGameGap()) {
             var minGap = Math.round(this.width * speed +
@@ -200,7 +201,7 @@ class Obstacle{
         } else {
             var minGap = this.runner.parameters.getMinGap();
             var maxGap = this.runner.parameters.getMaxGap();
-            var r = getRandomSquared(this.runner.parameters.getGapDistributionPow(), minGap, maxGap);
+            var r = getRandomSquared(this.gap_distribution_pow, minGap, maxGap);
             return r
         }
     }

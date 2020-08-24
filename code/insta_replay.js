@@ -24,8 +24,7 @@ async function onDocumentLoad() {
     CHECK_DUPLICATION: false,
     MAX_OBSTACLE_DUPLICATION: 2,
     USE_GAME_GAP: false,
-    MAX_GAP: 400,
-    GAP_DISTRIBUTION_POW: 2,
+    MAX_GAP: 400
   }
 
   var r = new Runner('.interstitial-wrapper', par);
