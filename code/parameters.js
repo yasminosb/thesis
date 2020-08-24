@@ -15,7 +15,6 @@ class Parameters{
         MAX_OBSTACLE_LENGTH: 3,
         MAX_SPEED: 10,
         PTERODACTYL_YPOS: [100, 75, 50],
-        MAX_DUPLICATION: 2,
         USE_GAME_GAP: false,
         MAX_GAP: 400,
     }
@@ -107,16 +106,10 @@ class Parameters{
                 case 'PTERODACTYL':
                     if (nr_ObstacleTypes == 1) {
                         PTERODACTYL.minSpeed = 0;
-                    } else if (nr_ObstacleTypes == 2) {
-                        Runner.config.MAX_OBSTACLE_DUPLICATION = 7;
                     }
                     Obstacle.types.push(PTERODACTYL)
                     break;
             }
-        }
-
-        if (nr_ObstacleTypes == 1) {
-            Runner.config.MAX_OBSTACLE_DUPLICATION = Number.MAX_SAFE_INTEGER;
         }
 
         /**
@@ -141,10 +134,8 @@ class Parameters{
         Runner.config.ACCELERATION = this.getAcceleration();
         Runner.config.INVERT_DISTANCE = this.getNightModeDistance();
         Runner.config.CLEAR_TIME = this.getClearTime();
-        // Runner.config.GAMEOVER_CLEAR_TIME = this.getClearTime();
         Runner.config.MAX_SPEED = this.getMaxSpeed();
         Obstacle.MAX_OBSTACLE_LENGTH = this.getMaxObstacleLength();
-        Obstacle.MAX_OBSTACLE_DUPLICATION = this.getMaxObstacleDuplication();
     }
 
     getSpeed() {
@@ -199,9 +190,6 @@ class Parameters{
         return this.config.USE_GAME_GAP;
     }
 
-    getMaxObstacleDuplication() {
-        return this.config.MAX_OBSTACLE_DUPLICATION;
-    }
 
 }
 
@@ -221,7 +209,6 @@ var parameters_ranges = {
     MAX_OBSTACLE_LENGTH:    [1,2,3],
     MAX_SPEED:              15, // speed - 15
     PTERODACTYL_YPOS:       combinations([100, 75, 50]),
-    MAX_DUPLICATION:        2, // NOT USED
     USE_GAME_GAP:           false, // NOT USED
     MAX_GAP:                400, // min gap - 600
 }
@@ -240,7 +227,6 @@ function generate_random_parameters(){
     d.MAX_OBSTACLE_LENGTH =     getRandomFromArray(p.MAX_OBSTACLE_LENGTH);
     d.MAX_SPEED =               getRandomFromRange([d.SPEED,p.MAX_SPEED]);
     d.PTERODACTYL_YPOS =        getRandomFromArray(p.PTERODACTYL_YPOS);
-    d.MAX_DUPLICATION =         p.MAX_DUPLICATION;
     d.USE_GAME_GAP =            p.USE_GAME_GAP;
     d.MAX_GAP =                 getRandomFromRange([d.MIN_GAP, p.MAX_GAP]);
 
@@ -260,7 +246,6 @@ function generate_random_parameters(){
 //     MAX_OBSTACLE_LENGTH:    1,
 //     MAX_SPEED:              6, // speed - 15
 //     PTERODACTYL_YPOS:       [100],
-//     MAX_DUPLICATION:        2,
 //     USE_GAME_GAP:           false, // NOT USED
 //     MAX_GAP:                600,
 // }
@@ -279,7 +264,6 @@ function generate_random_parameters(){
 //     MAX_OBSTACLE_LENGTH:    1,
 //     MAX_SPEED:              6, // speed - 15
 //     PTERODACTYL_YPOS:       [100], // NOT USED
-//     MAX_DUPLICATION:        2,
 //     USE_GAME_GAP:           false, // NOT USED
 //     MAX_GAP:                600,
 // }
@@ -296,7 +280,6 @@ function generate_random_parameters(){
 //     MAX_OBSTACLE_LENGTH:    2,
 //     MAX_SPEED:              10, 
 //     PTERODACTYL_YPOS:       [100, 50],
-//     MAX_DUPLICATION:        2,
 //     USE_GAME_GAP:           false, // NOT USED
 //     MAX_GAP:                550, // min gap - 600
 // }
@@ -313,7 +296,6 @@ function generate_random_parameters(){
 //     MAX_OBSTACLE_LENGTH:    3,
 //     MAX_SPEED:              15, 
 //     PTERODACTYL_YPOS:       [100, 75, 50],
-//     MAX_DUPLICATION:        2,
 //     USE_GAME_GAP:           false, // NOT USED
 //     MAX_GAP:                500, // min gap - 600
 // }

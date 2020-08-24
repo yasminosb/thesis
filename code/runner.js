@@ -32,7 +32,7 @@ class Runner {
         MAX_BLINK_COUNT: 3,
         MAX_CLOUDS: 6,
         MAX_OBSTACLE_LENGTH: 3, // not used: Obstacle.MAX_OBSTACLE_LENGTH instead
-        MAX_OBSTACLE_DUPLICATION: 2, // 2
+        MAX_OBSTACLE_DUPLICATION: 2,
         MAX_SPEED: 10,
         MIN_JUMP_HEIGHT: 15,
         MOBILE_SPEED_COEFFICIENT: 1.2,

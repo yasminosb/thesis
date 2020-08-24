@@ -144,8 +144,10 @@ class Horizon{
         // Also check obstacle is available at current speed.
         if ((this.duplicateObstacleCheck(obstacleType.type)) ||
             currentSpeed < obstacleType.minSpeed) {
+            console.log("IF")
             this.addNewObstacle(currentSpeed);
         } else {
+            console.log("ELSE")
             var obstacleSpritePos = this.spritePos[obstacleType.type];
             this.obstacles.push(this.createNewObstacle(this.canvasCtx, obstacleType,
                 obstacleSpritePos, this.dimensions,
@@ -179,7 +181,7 @@ class Horizon{
     duplicateObstacleCheck(nextObstacleType){
         // original code: check duplication for consecutive osbtacles 
         // our code: random generation of all obstacles, duplication check no longer needed
-        if (this.check_duplication) {
+        if (this.check_duplication) { // Not used
             var duplicateCount = 0;
             for (var i = 0; i < this.obstacleHistory.length; i++) {
                 duplicateCount = this.obstacleHistory[i] == nextObstacleType ?
