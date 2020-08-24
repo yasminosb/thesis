@@ -191,8 +191,9 @@ class Obstacle{
      * @return {number} The gap size.
      */
     gap_distribution_pow = 2;
+    use_game_gap = false;
     getGap(gapCoefficient, speed){
-        if (this.runner.parameters.getUseGameGap()) {
+        if (this.use_game_gap) { // original code: not used anymore
             var minGap = Math.round(this.width * speed +
                 this.typeConfig.minGap * gapCoefficient);
             var maxGap = Math.round(minGap * Obstacle.MAX_GAP_COEFFICIENT);

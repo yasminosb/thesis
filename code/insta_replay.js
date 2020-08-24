@@ -21,8 +21,6 @@ async function onDocumentLoad() {
     MAX_OBSTACLE_LENGTH: 3,
     MAX_SPEED: 10,
     PTERODACTYL_YPOS: [50, 75, 100],
-    CHECK_DUPLICATION: false,
-    USE_GAME_GAP: false,
     MAX_GAP: 400
   }
 

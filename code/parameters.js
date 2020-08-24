@@ -15,7 +15,6 @@ class Parameters{
         MAX_OBSTACLE_LENGTH: 3,
         MAX_SPEED: 10,
         PTERODACTYL_YPOS: [100, 75, 50],
-        USE_GAME_GAP: false,
         MAX_GAP: 400,
     }
 
@@ -186,11 +185,6 @@ class Parameters{
         return this.config.MAX_GAP;
     }
 
-    getUseGameGap() {
-        return this.config.USE_GAME_GAP;
-    }
-
-
 }
 
 
@@ -209,7 +203,6 @@ var parameters_ranges = {
     MAX_OBSTACLE_LENGTH:    [1,2,3],
     MAX_SPEED:              15, // speed - 15
     PTERODACTYL_YPOS:       combinations([100, 75, 50]),
-    USE_GAME_GAP:           false, // NOT USED
     MAX_GAP:                400, // min gap - 600
 }
 
@@ -227,7 +220,6 @@ function generate_random_parameters(){
     d.MAX_OBSTACLE_LENGTH =     getRandomFromArray(p.MAX_OBSTACLE_LENGTH);
     d.MAX_SPEED =               getRandomFromRange([d.SPEED,p.MAX_SPEED]);
     d.PTERODACTYL_YPOS =        getRandomFromArray(p.PTERODACTYL_YPOS);
-    d.USE_GAME_GAP =            p.USE_GAME_GAP;
     d.MAX_GAP =                 getRandomFromRange([d.MIN_GAP, p.MAX_GAP]);
 
     return d;
@@ -246,7 +238,6 @@ function generate_random_parameters(){
 //     MAX_OBSTACLE_LENGTH:    1,
 //     MAX_SPEED:              6, // speed - 15
 //     PTERODACTYL_YPOS:       [100],
-//     USE_GAME_GAP:           false, // NOT USED
 //     MAX_GAP:                600,
 // }
 
@@ -264,7 +255,6 @@ function generate_random_parameters(){
 //     MAX_OBSTACLE_LENGTH:    1,
 //     MAX_SPEED:              6, // speed - 15
 //     PTERODACTYL_YPOS:       [100], // NOT USED
-//     USE_GAME_GAP:           false, // NOT USED
 //     MAX_GAP:                600,
 // }
 
@@ -280,7 +270,6 @@ function generate_random_parameters(){
 //     MAX_OBSTACLE_LENGTH:    2,
 //     MAX_SPEED:              10, 
 //     PTERODACTYL_YPOS:       [100, 50],
-//     USE_GAME_GAP:           false, // NOT USED
 //     MAX_GAP:                550, // min gap - 600
 // }
 
@@ -296,7 +285,6 @@ function generate_random_parameters(){
 //     MAX_OBSTACLE_LENGTH:    3,
 //     MAX_SPEED:              15, 
 //     PTERODACTYL_YPOS:       [100, 75, 50],
-//     USE_GAME_GAP:           false, // NOT USED
 //     MAX_GAP:                500, // min gap - 600
 // }
 
