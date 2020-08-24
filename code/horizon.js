@@ -175,8 +175,11 @@ class Horizon{
      * Maximum duplication is set in config value MAX_OBSTACLE_DUPLICATION.
      * @return {boolean}
      */
+    check_duplication = false;
     duplicateObstacleCheck(nextObstacleType){
-        if (this.runner.parameters.checkDuplication()) {
+        // original code: check duplication for consecutive osbtacles 
+        // our code: random generation of all obstacles, duplication check no longer needed
+        if (this.check_duplication) {
             var duplicateCount = 0;
             for (var i = 0; i < this.obstacleHistory.length; i++) {
                 duplicateCount = this.obstacleHistory[i] == nextObstacleType ?
