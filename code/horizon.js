@@ -144,10 +144,8 @@ class Horizon{
         // Also check obstacle is available at current speed.
         if ((this.duplicateObstacleCheck(obstacleType.type)) ||
             currentSpeed < obstacleType.minSpeed) {
-            console.log("IF")
             this.addNewObstacle(currentSpeed);
         } else {
-            console.log("ELSE")
             var obstacleSpritePos = this.spritePos[obstacleType.type];
             this.obstacles.push(this.createNewObstacle(this.canvasCtx, obstacleType,
                 obstacleSpritePos, this.dimensions,

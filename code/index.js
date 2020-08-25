@@ -7,7 +7,9 @@ window['Runner'] = Runner;
 Runner.parameters = new Parameters();
 window["Logger"] = Logger;
 
-var form_timeout = 1000;
+// wait 2 seconds before form is shown
+// or next game is started (only on first 2 games)
+var form_timeout = 2000;
 
 function onDocumentLoad() {
 
@@ -59,6 +61,9 @@ function onDocumentLoad() {
                 generate_form();
                 hideGame_showForm();
                 start_form_timer();
+            } else {
+                await new Promise(r => setTimeout(r, form_timeout)); 
+                new_game();
             }
         } else {
             logger.reset();
@@ -73,12 +78,16 @@ function onDocumentLoad() {
         // display form again
         hideForm_showGame();    
         logger.reset();
-        
+        // new game instance
+        new_game(); 
+    }, false)
+
+    function new_game(){
         // new game instance
         var par = generate_random_parameters();
         console.log("new parameters", par);
         r = new Runner('.interstitial-wrapper', par);
-    }, false)
+    }
 
 
     document.getElementById("submitbutton").addEventListener("click", submitForm, false);

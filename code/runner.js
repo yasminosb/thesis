@@ -23,7 +23,7 @@ class Runner {
         BOTTOM_PAD: 10,
         CLEAR_TIME: 3000,
         CLOUD_FREQUENCY: 0.5,
-        GAMEOVER_CLEAR_TIME: 750,
+        GAMEOVER_CLEAR_TIME: 5000, // not really used anymore
         GAP_COEFFICIENT: 0.6,
         GRAVITY: 0.001,
         INITIAL_JUMP_VELOCITY: 12,
@@ -135,7 +135,6 @@ class Runner {
         this.outerContainerEl = document.querySelector(outerContainerId);
         // Singleton
         if (Runner.instance_) {
-            console.log("singleton: removing last isntance");
             var canvaselement = this.outerContainerEl.lastChild;
             this.outerContainerEl.removeChild(canvaselement);
             //return Runner.instance_;
@@ -175,10 +174,6 @@ class Runner {
         // Images.
         this.images = {};
         this.imagesLoaded = 0;
-        // var userhasplayed2games = await getUserHasPlayed2GamesFromServer();
-        // if(userhasplayed2games){
-        //     this.config.GAMEOVER_CLEAR_TIME = 2000;
-        // }
     }
 
     load_parameters(opt_param_config){  

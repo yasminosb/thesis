@@ -1,20 +1,12 @@
 class ReplayRunner extends Runner {
     constructor(outerContainerId, opt_param_config, replay_events, replay_obstacles, playIntro){
         super(outerContainerId, opt_param_config);
-        // this.replay_playIntro = playIntro; 
         this.replaying = true;
         this.replay_obstacles = replay_obstacles;
-        // this.config.GAMEOVER_CLEAR_TIME = 0;
         this.initReplayEvents(replay_events);
         this.loadImages();
         this.tRex.replaying = true;
         this.update();
-        // if(!playIntro){
-            // this.playIntro();
-            //this.containerEl.style.width = this.dimensions.WIDTH + 'px';
-            //this.gameOver();
-            //this.update();
-        // }
     }
 
     initReplayEvents(replay_events){
@@ -53,35 +45,4 @@ class ReplayRunner extends Runner {
         }
         super.update();
     }
-
-    // playIntro() {
-    //     if (!this.activated && !this.crashed) {
-    //         if(!this.replay_playIntro){
-    //             // this.restart();
-    //             this.containerEl.style.width = this.dimensions.WIDTH + 'px';
-    //             this.playing = true;
-    //             this.activated = true;
-    //         } else {
-    //             this.playingIntro = true;
-    //             this.tRex.playingIntro = true;
-    //             // CSS animation definition.
-    //             var keyframes = '@-webkit-keyframes intro { ' +
-    //                 'from { width:' + Trex.config.WIDTH + 'px }' +
-    //                 'to { width: ' + this.dimensions.WIDTH + 'px }' +
-    //                 '}';
-    //             document.styleSheets[0].insertRule(keyframes, 0);
-    //             this.containerEl.addEventListener(Runner.events.ANIM_END,
-    //                 this.startGame.bind(this));
-    //             this.containerEl.style.webkitAnimation = 'intro .4s ease-out 1 both';
-    //             this.containerEl.style.width = this.dimensions.WIDTH + 'px';
-    //             if (this.touchController) {
-    //                 this.outerContainerEl.appendChild(this.touchController);
-    //             }
-    //             this.playing = true;
-    //             this.activated = true;
-    //         }
-    //     } else if (this.crashed) {
-    //         this.restart();
-    //     }
-    // }
 }
