@@ -3,21 +3,6 @@
  * Nightmode shows a moon and stars on the horizon.
  */
 class NightMode{
-    /**
-     * @enum {number}
-     */
-    static config = {
-        FADE_SPEED: 0.035,
-        HEIGHT: 40,
-        MOON_SPEED: 0.25,
-        NUM_STARS: 2,
-        STAR_SIZE: 9,
-        STAR_SPEED: 0.3,
-        STAR_MAX_Y: 70,
-        WIDTH: 20
-    }
-
-    static phases = [140, 120, 100, 60, 40, 20, 0];
 
     constructor(canvas, spritePos, containerWidth) {
         this.spritePos = spritePos;
@@ -142,3 +127,18 @@ class NightMode{
 
 }
 
+/**
+ * @enum {number}
+ */
+NightMode.config = {
+    FADE_SPEED: 0.035,
+    HEIGHT: 40,
+    MOON_SPEED: 0.25,
+    NUM_STARS: 2,
+    STAR_SIZE: 9,
+    STAR_SPEED: 0.3,
+    STAR_MAX_Y: 70,
+    WIDTH: 20
+}
+
+NightMode.phases = [140, 120, 100, 60, 40, 20, 0];

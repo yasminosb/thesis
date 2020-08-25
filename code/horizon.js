@@ -9,17 +9,7 @@
  */
 class Horizon{
 
-    /**
-     * Horizon config.
-     * @enum {number}
-     */
-    static config = {
-        BG_CLOUD_SPEED: 0.2,
-        BUMPY_THRESHOLD: .3,
-        CLOUD_FREQUENCY: .5,
-        HORIZON_HEIGHT: 16,
-        MAX_CLOUDS: 6
-    }
+
 
     constructor(canvas, spritePos, dimensions, gapCoefficient, runner) {
         this.canvas = canvas;
@@ -175,11 +165,11 @@ class Horizon{
      * Maximum duplication is set in config value MAX_OBSTACLE_DUPLICATION.
      * @return {boolean}
      */
-    check_duplication = false;
     duplicateObstacleCheck(nextObstacleType){
+        var check_duplication = false;
         // original code: check duplication for consecutive osbtacles 
         // our code: random generation of all obstacles, duplication check no longer needed
-        if (this.check_duplication) { // Not used
+        if (check_duplication) { // Not used
             var duplicateCount = 0;
             for (var i = 0; i < this.obstacleHistory.length; i++) {
                 duplicateCount = this.obstacleHistory[i] == nextObstacleType ?
@@ -219,4 +209,16 @@ class Horizon{
             this.dimensions.WIDTH));
     }
     
+}
+
+/**
+ * Horizon config.
+ * @enum {number}
+ */
+Horizon.config = {
+    BG_CLOUD_SPEED: 0.2,
+    BUMPY_THRESHOLD: .3,
+    CLOUD_FREQUENCY: .5,
+    HORIZON_HEIGHT: 16,
+    MAX_CLOUDS: 6
 }

@@ -7,17 +7,6 @@
  * @constructor
  */
 class HorizonLine{
-
-    /**
-     * Horizon line dimensions.
-     * @enum {number}
-     */
-    static dimensions = {
-        WIDTH: 600,
-        HEIGHT: 12,
-        YPOS: 127
-    };
-
     constructor(canvas, spritePos) {
         this.spritePos = spritePos;
         this.canvas = canvas;
@@ -118,3 +107,14 @@ class HorizonLine{
     }
 
 }
+
+
+/**
+ * Horizon line dimensions.
+ * @enum {number}
+ */
+HorizonLine.dimensions = {
+    WIDTH: 600,
+    HEIGHT: 12,
+    YPOS: 127
+};

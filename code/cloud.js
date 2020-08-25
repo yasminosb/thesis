@@ -8,19 +8,6 @@
  */
 class Cloud {
 
-    /**
-     * Cloud object config.
-     * @enum {number}
-     */
-    static config = {
-        HEIGHT: 14,
-        MAX_CLOUD_GAP: 400,
-        MAX_SKY_LEVEL: 30,
-        MIN_CLOUD_GAP: 100,
-        MIN_SKY_LEVEL: 71,
-        WIDTH: 46
-    }
-
     constructor(canvas, spritePos, containerWidth) {
         this.canvas = canvas;
         this.canvasCtx = this.canvas.getContext('2d');
@@ -81,4 +68,18 @@ class Cloud {
     isVisible(){
         return this.xPos + Cloud.config.WIDTH > 0;
     }
+}
+
+
+/**
+ * Cloud object config.
+ * @enum {number}
+ */
+Cloud.config = {
+    HEIGHT: 14,
+    MAX_CLOUD_GAP: 400,
+    MAX_SKY_LEVEL: 30,
+    MIN_CLOUD_GAP: 100,
+    MIN_SKY_LEVEL: 71,
+    WIDTH: 46
 }

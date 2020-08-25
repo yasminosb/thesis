@@ -1,22 +1,5 @@
 class Parameters{
-    /**
-     * Parameters that we want to be adjustable
-     * default config
-     */
-    static default_config = {
-        SPEED: 6,
-        ACCELERATION: 0.002,
-        MIN_GAP: 200,
-        OBSTACLE_TYPES: ['CACTUS_LARGE', 'CACTUS_SMALL', 'PTERODACTYL'],
-        OBSTACLE_TYPES_SPEC: { 'CACTUS_LARGE': 0.33, 'CACTUS_SMALL': 0.33, 'PTERODACTYL': 0.33 },
-        NIGHT_MODE_ENABLED: true,
-        NIGHT_MODE_DISTANCE: 700,
-        CLEAR_TIME: 3000,
-        MAX_OBSTACLE_LENGTH: 3,
-        MAX_SPEED: 10,
-        PTERODACTYL_YPOS: [100, 75, 50],
-        MAX_GAP: 400,
-    }
+   
 
     constructor(opt_config) {
         this.config = opt_config ? opt_config : Parameters.default_config;
@@ -185,6 +168,26 @@ class Parameters{
         return this.config.MAX_GAP;
     }
 
+}
+
+
+/**
+ * Parameters that we want to be adjustable
+ * default config
+ */
+Parameters.default_config = {
+    SPEED: 6,
+    ACCELERATION: 0.002,
+    MIN_GAP: 200,
+    OBSTACLE_TYPES: ['CACTUS_LARGE', 'CACTUS_SMALL', 'PTERODACTYL'],
+    OBSTACLE_TYPES_SPEC: { 'CACTUS_LARGE': 0.33, 'CACTUS_SMALL': 0.33, 'PTERODACTYL': 0.33 },
+    NIGHT_MODE_ENABLED: true,
+    NIGHT_MODE_DISTANCE: 700,
+    CLEAR_TIME: 3000,
+    MAX_OBSTACLE_LENGTH: 3,
+    MAX_SPEED: 10,
+    PTERODACTYL_YPOS: [100, 75, 50],
+    MAX_GAP: 400,
 }
 
 

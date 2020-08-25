@@ -281,7 +281,7 @@ function writeHeadersToResponse(response) {
   response.writeHead(200, {
     'Content-Type': 'text/html',
     'Access-Control-Allow-Origin': '*',
-    'Access-Control-Allow-Headers': '*'
+    'Access-Control-Allow-Headers': 'Content-Type'
   });
 }
 

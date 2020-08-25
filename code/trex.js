@@ -7,92 +7,6 @@
  */
 class Trex{
 
-    replaying = false;
-
-    /**
-     * T-rex player config.
-     * @enum {number}
-     */
-    static config = {
-        DROP_VELOCITY: -5,
-        GRAVITY: 0.6,
-        HEIGHT: 47,
-        HEIGHT_DUCK: 25,
-        INIITAL_JUMP_VELOCITY: -10,
-        INTRO_DURATION: 1500,
-        MAX_JUMP_HEIGHT: 30,
-        MIN_JUMP_HEIGHT: 30,
-        SPEED_DROP_COEFFICIENT: 3,
-        SPRITE_WIDTH: 262,
-        START_X_POS: 50,
-        WIDTH: 44,
-        WIDTH_DUCK: 59
-    }
-
-
-    /**
-     * Used in collision detection.
-     * @type {Array<CollisionBox>}
-     */
-    static collisionBoxes = {
-        DUCKING: [
-            new CollisionBox(1, 18, 55, 25)
-        ],
-        RUNNING: [
-            new CollisionBox(22, 0, 17, 16),
-            new CollisionBox(1, 18, 30, 9),
-            new CollisionBox(10, 35, 14, 8),
-            new CollisionBox(1, 24, 29, 5),
-            new CollisionBox(5, 30, 21, 4),
-            new CollisionBox(9, 34, 15, 4)
-        ]
-    }
-
-    /**
-     * Animation states.
-     * @enum {string}
-     */
-    static status = {
-        CRASHED: 'CRASHED',
-        DUCKING: 'DUCKING',
-        JUMPING: 'JUMPING',
-        RUNNING: 'RUNNING',
-        WAITING: 'WAITING'
-    };
-    
-    /**
-     * Blinking coefficient.
-     * @const
-     */
-    static BLINK_TIMING = 7000;
-
-        /**
-     * Animation config for different states.
-     * @enum {Object}
-     */
-    static animFrames = {
-        WAITING: {
-            frames: [44, 0],
-            msPerFrame: 1000 / 3
-        },
-        RUNNING: {
-            frames: [88, 132],
-            msPerFrame: 1000 / 12
-        },
-        CRASHED: {
-            frames: [220],
-            msPerFrame: 1000 / 60
-        },
-        JUMPING: {
-            frames: [0],
-            msPerFrame: 1000 / 60
-        },
-        DUCKING: {
-            frames: [262, 321],
-            msPerFrame: 1000 / 8
-        }
-    };
-
     constructor(canvas, spritePos) {
         this.canvas = canvas;
         this.canvasCtx = canvas.getContext('2d');
@@ -355,3 +269,90 @@ class Trex{
 }
 
 
+
+
+Trex.replaying = false;
+
+/**
+ * T-rex player config.
+ * @enum {number}
+ */
+Trex.config = {
+    DROP_VELOCITY: -5,
+    GRAVITY: 0.6,
+    HEIGHT: 47,
+    HEIGHT_DUCK: 25,
+    INIITAL_JUMP_VELOCITY: -10,
+    INTRO_DURATION: 1500,
+    MAX_JUMP_HEIGHT: 30,
+    MIN_JUMP_HEIGHT: 30,
+    SPEED_DROP_COEFFICIENT: 3,
+    SPRITE_WIDTH: 262,
+    START_X_POS: 50,
+    WIDTH: 44,
+    WIDTH_DUCK: 59
+}
+
+
+/**
+ * Used in collision detection.
+ * @type {Array<CollisionBox>}
+ */
+Trex.collisionBoxes = {
+    DUCKING: [
+        new CollisionBox(1, 18, 55, 25)
+    ],
+    RUNNING: [
+        new CollisionBox(22, 0, 17, 16),
+        new CollisionBox(1, 18, 30, 9),
+        new CollisionBox(10, 35, 14, 8),
+        new CollisionBox(1, 24, 29, 5),
+        new CollisionBox(5, 30, 21, 4),
+        new CollisionBox(9, 34, 15, 4)
+    ]
+}
+
+/**
+ * Animation states.
+ * @enum {string}
+ */
+Trex.status = {
+    CRASHED: 'CRASHED',
+    DUCKING: 'DUCKING',
+    JUMPING: 'JUMPING',
+    RUNNING: 'RUNNING',
+    WAITING: 'WAITING'
+};
+
+/**
+ * Blinking coefficient.
+ * @const
+ */
+Trex.BLINK_TIMING = 7000;
+
+    /**
+ * Animation config for different states.
+ * @enum {Object}
+ */
+Trex.animFrames = {
+    WAITING: {
+        frames: [44, 0],
+        msPerFrame: 1000 / 3
+    },
+    RUNNING: {
+        frames: [88, 132],
+        msPerFrame: 1000 / 12
+    },
+    CRASHED: {
+        frames: [220],
+        msPerFrame: 1000 / 60
+    },
+    JUMPING: {
+        frames: [0],
+        msPerFrame: 1000 / 60
+    },
+    DUCKING: {
+        frames: [262, 321],
+        msPerFrame: 1000 / 8
+    }
+};

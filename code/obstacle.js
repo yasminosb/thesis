@@ -11,17 +11,6 @@
  */
 class Obstacle{
 
-    /**
-     * Coefficient for calculating the maximum gap.
-     * @const
-     */
-    static MAX_GAP_COEFFICIENT = 1.5;
-    /**
-     * Maximum obstacle grouping count.
-     * @const
-     */
-    static MAX_OBSTACLE_LENGTH = (typeof Obstacle.MAX_OBSTACLE_LENGTH == 'undefined') ? 3 : Obstacle.MAX_OBSTACLE_LENGTH;
-
     constructor(canvasCtx, type, spriteImgPos, dimensions,
         gapCoefficient, speed, opt_xOffset, runner) {
         this.runner = runner;
@@ -190,9 +179,9 @@ class Obstacle{
      * @param {number} speed
      * @return {number} The gap size.
      */
-    gap_distribution_pow = 2;
-    use_game_gap = false;
     getGap(gapCoefficient, speed){
+        var gap_distribution_pow = 2;
+        var use_game_gap = false;
         if (this.use_game_gap) { // original code: not used anymore
             var minGap = Math.round(this.width * speed +
                 this.typeConfig.minGap * gapCoefficient);
@@ -231,7 +220,13 @@ class Obstacle{
 }
 
 
-    Obstacle.prototype = {
-       
-        
-    };
+/**
+ * Coefficient for calculating the maximum gap.
+ * @const
+ */
+Obstacle.MAX_GAP_COEFFICIENT = 1.5;
+/**
+ * Maximum obstacle grouping count.
+ * @const
+ */
+Obstacle.MAX_OBSTACLE_LENGTH = (typeof Obstacle.MAX_OBSTACLE_LENGTH == 'undefined') ? 3 : Obstacle.MAX_OBSTACLE_LENGTH;
