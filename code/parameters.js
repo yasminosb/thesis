@@ -201,7 +201,7 @@ var parameters_ranges = {
     OBSTACLE_TYPES:         combinations(['CACTUS_LARGE', 'CACTUS_SMALL', 'PTERODACTYL']),
     OBSTACLE_TYPES_SPEC:    { 'CACTUS_LARGE': [0,1], 'CACTUS_SMALL': [0,1], 'PTERODACTYL': [0,1] }, //together 1
     NIGHT_MODE_ENABLED:     [true,false],
-    NIGHT_MODE_DISTANCE:    [200,1000],
+    NIGHT_MODE_DISTANCE:    [300,400,500,600,700,800,900,1000],
     CLEAR_TIME:             [0,6000],
     MAX_OBSTACLE_LENGTH:    [1,2,3],
     MAX_SPEED:              15, // speed - 15
@@ -218,7 +218,7 @@ function generate_random_parameters(){
     d.OBSTACLE_TYPES =          getRandomFromArray(p.OBSTACLE_TYPES);
     d.OBSTACLE_TYPES_SPEC =     getRandomSpec(d.OBSTACLE_TYPES);
     d.NIGHT_MODE_ENABLED =      getRandomFromArray(p.NIGHT_MODE_ENABLED);
-    d.NIGHT_MODE_DISTANCE =     getRandomFromRange(p.NIGHT_MODE_DISTANCE);
+    d.NIGHT_MODE_DISTANCE =     getRandomFromArray(p.NIGHT_MODE_DISTANCE);
     d.CLEAR_TIME =              getRandomFromRange(p.CLEAR_TIME);
     d.MAX_OBSTACLE_LENGTH =     getRandomFromArray(p.MAX_OBSTACLE_LENGTH);
     d.MAX_SPEED =               getRandomFromRange([d.SPEED,p.MAX_SPEED]);
