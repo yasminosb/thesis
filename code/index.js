@@ -84,9 +84,11 @@ function onDocumentLoad() {
 
     function new_game(){
         // new game instance
+        r.stopListening();
         var par = generate_random_parameters();
         console.log("new parameters", par);
         r = new Runner('.interstitial-wrapper', par);
+        r.startListening();
     }
 
 
