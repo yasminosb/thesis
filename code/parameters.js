@@ -202,7 +202,7 @@ var parameters_ranges = {
     OBSTACLE_TYPES_SPEC:    { 'CACTUS_LARGE': [0,1], 'CACTUS_SMALL': [0,1], 'PTERODACTYL': [0,1] }, //together 1
     NIGHT_MODE_ENABLED:     [true,false],
     NIGHT_MODE_DISTANCE:    [300,400,500,600,700,800,900,1000],
-    CLEAR_TIME:             [0,6000],
+    CLEAR_TIME:             [1000,5000],
     MAX_OBSTACLE_LENGTH:    [1,2,3],
     MAX_SPEED:              15, // speed - 15
     PTERODACTYL_YPOS:       combinations([100, 75, 50]),
