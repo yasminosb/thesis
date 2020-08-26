@@ -9,7 +9,7 @@ window["Logger"] = Logger;
 
 // wait 2 seconds before form is shown
 // or next game is started (only on first 2 games)
-var form_timeout = 2000;
+var form_timeout = 2500;
 
 function onDocumentLoad() {
 
@@ -68,9 +68,7 @@ function onDocumentLoad() {
         } else {
             logger.reset();
             // new game instance
-            var par = generate_random_parameters();
-            console.log("new parameters", par);
-            r = new Runner('.interstitial-wrapper', par);
+            new_game();
         }
     }, false);
 
