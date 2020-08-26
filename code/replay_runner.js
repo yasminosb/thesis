@@ -1,8 +1,9 @@
 class ReplayRunner extends Runner {
-    constructor(outerContainerId, opt_param_config, replay_events, replay_obstacles, playIntro){
+    constructor(outerContainerId, opt_param_config, replay_events, replay_obstacles, delay){
         super(outerContainerId, opt_param_config);
         this.replaying = true;
         this.replay_obstacles = replay_obstacles;
+        this.delay = delay;
         this.initReplayEvents(replay_events);
         this.loadImages();
         this.tRex.replaying = true;
@@ -42,6 +43,11 @@ class ReplayRunner extends Runner {
             this.handleEvent(replay_event.event);
             this.replay_index++;
             replay_event = this.replay_events[this.replay_index];
+            if(this.delay){
+                if(this.playing){
+                    replay_event.time = replay_event.time + this.delay;
+                }
+            }
         }
         super.update();
     }

@@ -182,7 +182,7 @@ class Obstacle{
     getGap(gapCoefficient, speed){
         var gap_distribution_pow = 2;
         var use_game_gap = false;
-        if (this.use_game_gap) { // original code: not used anymore
+        if (use_game_gap) { // original code: not used anymore
             var minGap = Math.round(this.width * speed +
                 this.typeConfig.minGap * gapCoefficient);
             var maxGap = Math.round(minGap * Obstacle.MAX_GAP_COEFFICIENT);
@@ -191,7 +191,7 @@ class Obstacle{
         } else {
             var minGap = this.runner.parameters.getMinGap();
             var maxGap = this.runner.parameters.getMaxGap();
-            var r = getRandomSquared(this.gap_distribution_pow, minGap, maxGap);
+            var r = getRandomSquared(gap_distribution_pow, minGap, maxGap);
             return r
         }
     }
