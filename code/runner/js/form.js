@@ -5,8 +5,8 @@ async function submitForm(){
         var lats2ids = JSON.parse(await getLast2GameplayIdsFromServer());  
         var values = get_form_values();
         var response = {
-            A: lats2ids.secondlastentry,
-            B: lats2ids.lastentry,
+            secondlastentry: lats2ids.secondlastentry,
+            lastentry: lats2ids.lastentry,
             fun: values.fun,
             challenging: values.challenging,
             frustrating: values.frustrating,
@@ -123,18 +123,11 @@ function get_radiobutton_value_by_name(name){
 async function generate_form(){
     // dynamically generate form based on 2 past games
     var last2games = JSON.parse(await getLast2GameplaysFromServer());
-    var gameA = last2games.lastentry;
-    var gameB = last2games.secondlastentry;
+    var gameA = last2games.secondlastentry;
+    var gameB = last2games.lastentry;
     
     add_image_to_element(gameA.gameOverScreen, "screenA", gameA.invertedGameOver);
     add_image_to_element(gameB.gameOverScreen, "screenB", gameB.invertedGameOver);
-
-    var dict_screen_inverts  = {
-        screenA: gameA.invertedGameOver,
-        screenB: gameB.invertedGameOver
-    }
-    
-    //invert_screens(dict_screen_inverts);
 }
 
 function add_image_to_element(img_src, element_id, inverted){

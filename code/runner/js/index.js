@@ -49,10 +49,17 @@ function onDocumentLoad() {
         await postGameplayToServer(serial);
 
         if(show_form){
+
             // handle form only on ≥ second game
             var userHasPlayed2Games = await getUserHasPlayed2GamesFromServer();
             userHasPlayed2Games = (userHasPlayed2Games === "true");
-            if(userHasPlayed2Games){
+
+            var last2games = JSON.parse(await getLast2GameplaysFromServer());
+            var time_between_games = get_time_between_games(last2games.secondlastentry, last2games.lastentry);
+
+            // only show form when the time between last 2 games is not more than 1 hour
+            var milliseconds_in_hour = 3600000;
+            if(userHasPlayed2Games && time_between_games < milliseconds_in_hour){
                 // stop handling events when the form is displayed
                 r.stopListening();
                 // wait a few secs before showing form
@@ -95,6 +102,10 @@ function onDocumentLoad() {
 
 document.addEventListener('DOMContentLoaded', onDocumentLoad);
 
-
+function get_time_between_games(firstgame, secondgame){
+    var endtime = secondgame.dateTime;
+    var starttime = firstgame.dateTime;
+    return new Date(endtime) - new Date(starttime);
+}
 
 
