@@ -467,8 +467,8 @@ class Runner {
     }
 
     finishUpdate(deltaTime) {
-        if (this.playing || (!this.activated &&
-            this.tRex.blinkCount < Runner.config.MAX_BLINK_COUNT)) {
+        if (this.playing || (!this.activated) ){ // &&
+            //this.tRex.blinkCount < Runner.config.MAX_BLINK_COUNT)) {
             this.tRex.update(deltaTime);
             this.scheduleNextUpdate();
         } else {
