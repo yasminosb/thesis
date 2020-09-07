@@ -54,8 +54,12 @@ function onDocumentLoad() {
             var userHasPlayed2Games = await getUserHasPlayed2GamesFromServer();
             userHasPlayed2Games = (userHasPlayed2Games === "true");
 
-            var last2games = JSON.parse(await getLast2GameplaysFromServer());
-            var time_between_games = get_time_between_games(last2games.secondlastentry, last2games.lastentry);
+            if(userHasPlayed2Games){
+                var last2games = JSON.parse(await getLast2GameplaysFromServer());
+                var time_between_games = get_time_between_games(last2games.secondlastentry, last2games.lastentry);
+            } else {
+                var time_between_games = Number.MAX_SAFE_INTEGER;
+            }
 
             // only show form when the time between last 2 games is not more than 1 hour
             var milliseconds_in_hour = 3600000;
