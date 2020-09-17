@@ -111,5 +111,3 @@ function get_time_between_games(firstgame, secondgame){
     var starttime = firstgame.dateTime;
     return new Date(endtime) - new Date(starttime);
 }
-
-
