@@ -205,6 +205,6 @@ function combinations( list ){
 }
 
 function getCurrentDateTime(){
-    let date = new Date().toLocaleString()
+    let date = new Date().toLocaleString(`nl-BE`);
     return date;
 }

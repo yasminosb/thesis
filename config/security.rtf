@@ -1,9 +1,9 @@
 {\rtf1\ansi\ansicpg1252\cocoartf1561\cocoasubrtf600
-{\fonttbl\f0\fnil\fcharset0 HelveticaNeue;}
-{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red255\green255\blue255;\red212\green213\blue214;
-}
-{\*\expandedcolortbl;;\cssrgb\c0\c0\c0;\cssrgb\c100000\c100000\c100000;\cssrgb\c86275\c86667\c87059;
-}
+{\fonttbl\f0\fnil\fcharset0 AndaleMono;}
+{\colortbl;\red255\green255\blue255;\red0\green0\blue0;\red255\green255\blue255;\red255\green255\blue255;
+\red171\green173\blue176;}
+{\*\expandedcolortbl;;\cssrgb\c0\c0\c0;\cssrgb\c100000\c100000\c100000;\cssrgb\c100000\c100000\c100000;
+\cssrgb\c72549\c73333\c74510;}
 \paperw11900\paperh16840\margl1440\margr1440\vieww25100\viewh12900\viewkind0
 \deftab720
 \pard\pardeftab720\sl320\partightenfactor0
@@ -23,6 +23,20 @@ ufw allow 80\
 ufw allow 443\
 ufw enable\
 \
+\
+\
+apt install software-properties-common\
+\
+nog niet gelukt:\
+\
+\
 sudo snap install --classic certbot\
 \
-apt install software-properties-common}
+\
+\pard\pardeftab720\sl320\partightenfactor0
+\cf2 \cb4 \outl0\strokewidth0 \strokec5 apt  install software-properties-common\
+apt update\
+add-apt-repository ppa:certbot/certbot\
+apt update\
+apt install python-certbot-nginx\
+certbot --nginx -d dino.caret.be}
