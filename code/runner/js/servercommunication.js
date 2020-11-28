@@ -1,4 +1,4 @@
-var server_url = "http://193.190.127.232:3000/";
+var server_url = "http://161.35.92.218/proxy/";
 
 // -------------------------
 // ***** POST REQUESTS *****
