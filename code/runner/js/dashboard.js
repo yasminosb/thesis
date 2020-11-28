@@ -1,5 +1,5 @@
 async function onDocumentLoad() {
-    var games = JSON.parse(await getDashboardInfoFromServer());
+    var games = JSON.parse(await getAllGameplaysFromServer());
 
     var table = document.getElementById("table");
     for(var i = 0; i < games.length; i++){
@@ -28,7 +28,6 @@ async function onDocumentLoad() {
     }
 
     var number_of_gameplays = await getNumberOfGameplaysFromServer();
-    console.log("number of gameplays", number_of_gameplays);
     var gameplays_element = document.getElementById("numberofgameplays")
     gameplays_element.innerHTML = "Total:" + number_of_gameplays;
 

@@ -90,10 +90,10 @@ const server = http.createServer(async function (request, response) {
         var gameplay = await getEntryFromDB("gameplays", GAMEID);
         response.end(JSON.stringify(gameplay));
         break;
-      // GET /dashboardinfo
-      case "dashboardinfo":
+      // GET /allgameplays
+      case "allgameplays":
         writeHeadersToResponse(response);
-        var gameplays = await getDashboardInfo()
+        var gameplays = await getAllGameplays()
         response.end(JSON.stringify(gameplays)); 
         break;
       // GET /numberofgameplays
@@ -226,7 +226,7 @@ function getEntryFromDB(database, id){
   })
 }
 
-function getDashboardInfo(){
+function getAllGameplays(){
   return getAllEntriesFromDB("gameplays", 
     {
       _id: 1, 

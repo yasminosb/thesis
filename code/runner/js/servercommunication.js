@@ -1,4 +1,6 @@
-var server_url = "http://161.35.92.218/proxy/";
+//var server_url = "http://161.35.92.218/proxy/";
+var server_url = "http://127.0.0.1:3001/";
+
 
 // -------------------------
 // ***** POST REQUESTS *****
@@ -65,9 +67,9 @@ function getUserHasPlayed2GamesFromServer(){
   return getUrlFromServer(url);
 }
 
-function getDashboardInfoFromServer(){
-  console.log("GET DASHBOARDINFO FROM SERVER");
-  var url = server_url.concat('dashboardinfo/');
+function getAllGameplaysFromServer(){
+  console.log("GET ALLGAMEPLAYS FROM SERVER");
+  var url = server_url.concat('allgameplays/');
   return getUrlFromServer(url);
 }
 
