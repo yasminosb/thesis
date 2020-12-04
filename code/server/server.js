@@ -233,7 +233,21 @@ function getAllGameplays(){
       actualDistance: 1, 
       gameOverScreen: 1, 
       dateTime: 1,
-      invertedGameOver: 1
+      invertedGameOver: 1,
+      logs: 1,
+      nr_jumps: 1,
+      collisionObstacle: 1,
+      invertedGameOver: 1,
+      newHighScore: 1,
+      USERID: 1,
+      parameters: 1,
+      obstacleTypes: 1,
+      tRexConfig: 1, 
+      runnerConfig: 1,
+      distanceRan: 1,
+      obstacles: 1,
+      events: 1,
+      UUID: 1
     }
   );
 }
