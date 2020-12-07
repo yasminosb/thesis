@@ -208,3 +208,15 @@ function getCurrentDateTime(){
     let date = new Date().toISOString();
     return date;
 }
+
+var ceil = function (num, precision) {
+	num = parseFloat(num);
+	if (!precision) return num;
+	return (Math.ceil(num / precision) * precision);
+};
+
+var floor = function (num, precision) {
+	num = parseFloat(num);
+	if (!precision) return num;
+	return (Math.floor(num / precision) * precision);
+};
