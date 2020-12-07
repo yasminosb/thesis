@@ -85,6 +85,12 @@ function getNumberOfGameplaysFromServer(){
   return getUrlFromServer(url);
 }
 
+function getAllScoresFromServer(){
+  console.log("GET ALLSCORES FROM SERVER");
+  var url = server_url.concat('allscores/');
+  return getUrlFromServer(url);
+}
+
 function getUrlFromServer(url){
   return new Promise((resolve, reject) => {
     var xhr = new XMLHttpRequest();

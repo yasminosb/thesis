@@ -64,14 +64,20 @@ function onDocumentLoad() {
             // only show form when the time between last 2 games is not more than 1 hour
             var milliseconds_in_hour = 3600000;
             if(userHasPlayed2Games && time_between_games < milliseconds_in_hour){
-                // stop handling events when the form is displayed
-                r.stopListening();
-                // wait a few secs before showing form
-                await new Promise(r => setTimeout(r, form_timeout)); 
-                // show form
-                generate_form();
-                hideGame_showForm();
-                start_form_timer();
+                try {
+                    // stop handling events when the form is displayed
+                    r.stopListening();
+                    // wait a few secs before showing form
+                    await new Promise(r => setTimeout(r, form_timeout)); 
+                    // show form
+                    generate_form();
+                    hideGame_showForm();
+                    start_form_timer();
+                } catch (error) {
+                    console.error("An error occured while generating form:", error);
+                    console.error("restarting game now");
+                    new_game();
+                }
             } else {
                 await new Promise(r => setTimeout(r, form_timeout)); 
                 new_game();

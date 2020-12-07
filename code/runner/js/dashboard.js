@@ -71,9 +71,78 @@ async function onDocumentLoad() {
 
     var number_of_gameplays = await getNumberOfGameplaysFromServer();
     var gameplays_element = document.getElementById("numberofgameplays")
-    gameplays_element.innerHTML = "Total:" + number_of_gameplays;
+    gameplays_element.innerHTML = "Total gameplays: " + number_of_gameplays;
 
  
+    //d3 stuff
+    var scores = await getAllScoresFromServer();
+    data = JSON.parse(scores);
+    console.log("scores");
+    console.log(data);
+
+    // set the dimensions and margins of the graph
+    var margin = {top: 10, right: 30, bottom: 30, left: 40},
+        fullwidth = 460,
+        fullheight = 400,
+        width = fullwidth - margin.left - margin.right,
+        height = fullheight - margin.top - margin.bottom;
+
+    // append the svg object to the body of the page
+    var svg = d3.select("#histogram_scores")
+    .append("svg")
+        .attr("width", fullwidth)
+        .attr("height", fullheight)
+    .append("g")
+        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+    var min = floor(d3.min(data, d => d.actualDistance), 10),
+        max = ceil(d3.max(data, d => d.actualDistance), 10),
+        domain = [min, max],
+        range = max - min,
+        nBins = range/10;
+
+    // X axis: scale and draw
+    var xScale = d3.scaleLinear()
+        .domain(domain)
+        .range([0, width]);
+    var xAxis = d3.axisBottom()
+        .scale(xScale)
+        .ticks(nBins);
+
+    svg.append("g")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
+
+    // set the parameters for the histogram
+    var histogram = d3.histogram()
+        .value(function(d) { console.log(d); return d.actualDistance; })    // I need to give the vector of value
+        .domain(xScale.domain())                                            // then the domain of the graphic
+        .thresholds(nBins);                                                 // then the numbers of bins
+
+    // And apply this function to data to get the bins
+    var bins = histogram(data);
+
+    // Y axis: scale and draw:
+    var yScale = d3.scaleLinear()
+        .domain([0, d3.max(bins, d => d.length)])   // d3.hist has to be called before the Y axis
+        .range([height, 0]);
+    var yAxis = d3.axisLeft()
+        .scale(yScale);
+    svg.append("g")
+        .call(yAxis);
+
+    // append the bar rectangles to the svg element
+    svg.selectAll("rect")
+        .data(bins)
+        .enter()
+        .append("rect")
+            .attr("x", 1)
+            .attr("transform", function(d) { return "translate(" + xScale(d.x0) + "," + yScale(d.length) + ")"; })
+            .attr("width", function(d) { return xScale(d.x1) - xScale(d.x0) -1 ; })
+            .attr("height", function(d) { return height - yScale(d.length); })
+            .style("fill", "#69b3a2")
+
 }
 
 document.addEventListener('DOMContentLoaded', onDocumentLoad);

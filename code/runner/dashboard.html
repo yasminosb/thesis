@@ -36,6 +36,8 @@
       <script src="js/dashboard.js"></script>
       <script src="js/utils.js"></script>
       
+      <script type="text/javascript" src="https://d3js.org/d3.v4.js"></script>
+
   </head>
     
   <body  style="font-family: &quot;Segoe UI&quot;, Tahoma, sans-serif;">
@@ -43,11 +45,13 @@
     <h1>Dashboard</h1>
 
     <h2>Stats</h2>
-    <div style="height: 200px">
+    <div style="height: 50px">
         <div id="numberofgameplays">
 
         </div>
     </div>
+
+    <div id="histogram_scores"></div>
 
     <h2>Gameplays</h2>
     <div>
@@ -69,5 +73,6 @@
             </tr>
         </table>
     </div>
+
   </body>
 </html>

@@ -102,6 +102,11 @@ const server = http.createServer(async function (request, response) {
         var number = await getNumberOfEntriesFromDB("gameplays")
         response.end(JSON.stringify(number)); 
         break;
+      case "allscores":
+        writeHeadersToResponse(response);
+        var scores = await getAllScores();
+        response.end(JSON.stringify(scores)); 
+        break;
       default:
         console.log("WRONG GET REQUEST")
     }
@@ -250,6 +255,12 @@ function getAllGameplays(){
       UUID: 1
     }
   );
+}
+
+function getAllScores(){
+  return getAllEntriesFromDB("gameplays",
+    {actualDistance: 1}
+  )
 }
 
 function getAllEntriesFromDB(database, projection){
