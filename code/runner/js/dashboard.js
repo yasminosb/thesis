@@ -77,8 +77,6 @@ async function onDocumentLoad() {
     //d3 stuff
     var scores = await getAllScoresFromServer();
     data = JSON.parse(scores);
-    console.log("scores");
-    console.log(data);
 
     // set the dimensions and margins of the graph
     var margin = {top: 10, right: 30, bottom: 30, left: 40},
@@ -86,6 +84,16 @@ async function onDocumentLoad() {
         fullheight = 400,
         width = fullwidth - margin.left - margin.right,
         height = fullheight - margin.top - margin.bottom;
+
+
+    var min = floor(d3.min(data, d => d.actualDistance), 100),
+        max = ceil(d3.max(data, d => d.actualDistance), 100),
+        domain = [min, max],
+        range = max - min,
+        nBins = range/100;
+    
+        console.log(domain.toString());
+        console.log(nBins);
 
     // append the svg object to the body of the page
     var svg = d3.select("#histogram_scores")
@@ -95,12 +103,6 @@ async function onDocumentLoad() {
     .append("g")
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-
-    var min = floor(d3.min(data, d => d.actualDistance), 10),
-        max = ceil(d3.max(data, d => d.actualDistance), 10),
-        domain = [min, max],
-        range = max - min,
-        nBins = range/10;
 
     // X axis: scale and draw
     var xScale = d3.scaleLinear()
@@ -116,7 +118,7 @@ async function onDocumentLoad() {
 
     // set the parameters for the histogram
     var histogram = d3.histogram()
-        .value(function(d) { console.log(d); return d.actualDistance; })    // I need to give the vector of value
+        .value(function(d) { return d.actualDistance; })    // I need to give the vector of value
         .domain(xScale.domain())                                            // then the domain of the graphic
         .thresholds(nBins);                                                 // then the numbers of bins
 
