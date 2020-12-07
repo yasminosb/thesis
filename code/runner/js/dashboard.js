@@ -18,6 +18,7 @@ async function onDocumentLoad() {
         // gameOverScreen
         var cell4 = row.insertCell();
         var img = document.createElement("img");
+        img.style = "max-height: 150px; max-width: 450px; object-fit: contain";
         img.src = game.gameOverScreen;
         if(game.invertedGameOver){
             img.classList.add("inverted");
@@ -80,7 +81,7 @@ async function onDocumentLoad() {
 
     // set the dimensions and margins of the graph
     var margin = {top: 10, right: 30, bottom: 30, left: 40},
-        fullwidth = 460,
+        fullwidth = 1000,
         fullheight = 400,
         width = fullwidth - margin.left - margin.right,
         height = fullheight - margin.top - margin.bottom;
@@ -114,7 +115,12 @@ async function onDocumentLoad() {
 
     svg.append("g")
         .attr("transform", "translate(0," + height + ")")
-        .call(xAxis);
+        .call(xAxis)
+        .selectAll("text")	                          // slant the axis labels
+        .style("text-anchor", "start")
+        .attr("dx", "0.8em")
+        .attr("dy", ".15em")
+        .attr("transform", "rotate(45)");
 
     // set the parameters for the histogram
     var histogram = d3.histogram()
