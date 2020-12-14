@@ -1,4 +1,9 @@
+
 async function onDocumentLoad() {
+        
+    // ------------------------------------------------------
+    // ----------------------- TABLE ------------------------
+    // ------------------------------------------------------
     var games = JSON.parse(await getAllGameplaysFromServer());
 
     var table = document.getElementById("table");
@@ -74,8 +79,10 @@ async function onDocumentLoad() {
     var gameplays_element = document.getElementById("numberofgameplays")
     gameplays_element.innerHTML = "Total gameplays: " + number_of_gameplays;
 
- 
-    //d3 stuff
+    
+    // ------------------------------------------------------
+    // ------------------ SCORE HISTOGRAM -------------------
+    // ------------------------------------------------------
     var scores = await getAllScoresFromServer();
     data = JSON.parse(scores);
 
@@ -93,9 +100,6 @@ async function onDocumentLoad() {
         range = max - min,
         nBins = range/100;
     
-        console.log(domain.toString());
-        console.log(nBins);
-
     // append the svg object to the body of the page
     var svg = d3.select("#histogram_scores")
     .append("svg")
@@ -133,10 +137,11 @@ async function onDocumentLoad() {
 
     // Y axis: scale and draw:
     var yScale = d3.scaleLinear()
-        .domain([0, d3.max(bins, d => d.length)])   // d3.hist has to be called before the Y axis
+        .domain([0, ceil(d3.max(bins, d => d.length), 20)])   // d3.hist has to be called before the Y axis
         .range([height, 0]);
     var yAxis = d3.axisLeft()
         .scale(yScale);
+
     svg.append("g")
         .call(yAxis);
 
@@ -150,6 +155,144 @@ async function onDocumentLoad() {
             .attr("width", function(d) { return xScale(d.x1) - xScale(d.x0) -1 ; })
             .attr("height", function(d) { return height - yScale(d.length); })
             .style("fill", "#69b3a2")
+
+
+    // ------------------------------------------------------
+    // ------------ COLLISION OBSTACLE PIE CHART ------------
+    // ------------------------------------------------------
+
+    var collisionObstacles = await getAllCollisionObstaclesFromServer();
+    collisionObstacles = JSON.parse(collisionObstacles);
+    var d = {};
+    var total = 0;
+    for(var i = 0; i < collisionObstacles.length; i++){
+        var collisionObstacle = collisionObstacles[i];
+        var type = collisionObstacle.collisionObstacle.typeConfig.type
+        if(type in d){
+            d[type] = d[type] + 1;
+        } else {
+            d[type] = 1;
+        }
+        total++;
+    }
+    
+    var percentages = {};
+    var keys = Object.keys(d);
+    for(var i = 0; i < keys.length; i++){
+        var key = keys[i];
+        percentages[key] = d[key] / total;
+    }
+    var data_collisions = d;
+
+    // set the dimensions and margins of the graph
+    var width = 1000
+        height = 450
+        margin = 40
+
+    // The radius of the pieplot is half the width or half the height (smallest one). I subtract a bit of margin.
+    var radius = Math.min(width, height) / 2 - margin
+
+    // append the svg object to the div called 'my_dataviz'
+    var svg = d3.select("#piechart_collisionobstacle")
+    .append("svg")
+        .attr("width", width)
+        .attr("height", height)
+    .append("g")
+        .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+    // Create dummy data
+    var data = {a: 9, b: 20, c:30, d:8, e:12, f:3, g:7, h:14}
+
+    // set the color scale
+    var color = d3.scaleOrdinal()
+    .domain(Object.keys(data_collisions))//["a", "b", "c", "d", "e", "f", "g", "h"])
+    .range(d3.schemeDark2);
+
+    // Compute the position of each group on the pie:
+    var pie = d3.pie()
+    .sort(null) // Do not sort group by size
+    .value(function(d) {return d.value; })
+    var data_ready = pie(d3.entries(data_collisions))
+    console.log(data_ready);
+
+    // The arc generator
+    var arc = d3.arc()
+    .innerRadius(radius * 0.5)         // This is the size of the donut hole
+    .outerRadius(radius * 0.8)
+
+    // Another arc that won't be drawn. Just for labels positioning
+    var outerArc = d3.arc()
+    .innerRadius(radius * 0.9)
+    .outerRadius(radius * 0.9)
+
+    // Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
+    svg
+    .selectAll('allSlices')
+    .data(data_ready)
+    .enter()
+    .append('path')
+    .attr('d', arc)
+    .attr('fill', function(d){ return(color(d.data.key)) })
+    .attr("stroke", "white")
+    .style("stroke-width", "2px")
+    .style("opacity", 0.7)
+
+    // Add the polylines between chart and labels:
+    svg
+    .selectAll('allPolylines')
+    .data(data_ready)
+    .enter()
+    .append('polyline')
+        .attr("stroke", "black")
+        .style("fill", "none")
+        .attr("stroke-width", 1)
+        .attr('points', function(d) {
+        var posA = arc.centroid(d) // line insertion in the slice
+        var posB = outerArc.centroid(d) // line break: we use the other arc generator that has been built only for that
+        var posC = outerArc.centroid(d); // Label position = almost the same as posB
+        var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2 // we need the angle to see if the X position will be at the extreme right or extreme left
+        posC[0] = radius * 0.95 * (midangle < Math.PI ? 1 : -1); // multiply by 1 or -1 to put it on the right or on the left
+        return [posA, posB, posC]
+        })
+
+    // Add the polylines between chart and labels:
+    svg
+    .selectAll('allLabels')
+    .data(data_ready)
+    .enter()
+    .append('text')
+        .text( function(d) {return d.data.key} )
+        .attr('transform', function(d) {
+            var pos = outerArc.centroid(d);
+            var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2
+            pos[0] = radius * 0.99 * (midangle < Math.PI ? 1 : -1);
+            return 'translate(' + pos + ')';
+        })
+        .style('text-anchor', function(d) {
+            var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2
+            return (midangle < Math.PI ? 'start' : 'end')
+        })
+
+    svg
+        .selectAll('allLabels')
+        .data(data_ready)
+        .enter()
+        .append('text')
+            .text( function(d) {  return + percentages[d.data.key].toFixed(2) *100 + "%" } )
+            .attr('transform', function(d) {
+                var pos = outerArc.centroid(d);
+                var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2
+                pos[0] = radius * 0.99 * (midangle < Math.PI ? 1 : -1);
+                return 'translate(' + pos + ')';
+            })
+            .style('text-anchor', function(d) {
+                var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2
+                return (midangle < Math.PI ? 'start' : 'end')
+            })
+            .attr("dy", "1em") // you can vary how far apart it shows up
+
+
+
 
 }
 

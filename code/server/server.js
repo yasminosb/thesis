@@ -107,6 +107,11 @@ const server = http.createServer(async function (request, response) {
         var scores = await getAllScores();
         response.end(JSON.stringify(scores)); 
         break;
+      case "collisionobstacles":
+        writeHeadersToResponse(response);
+        var collisionobstacles = await getAllCollisionObstacles();
+        response.end(JSON.stringify(collisionobstacles)); 
+        break;
       default:
         console.log("WRONG GET REQUEST")
     }
@@ -260,6 +265,12 @@ function getAllGameplays(){
 function getAllScores(){
   return getAllEntriesFromDB("gameplays",
     {actualDistance: 1}
+  )
+}
+
+function getAllCollisionObstacles(){
+  return getAllEntriesFromDB("gameplays",
+    {collisionObstacle: 1}
   )
 }
 

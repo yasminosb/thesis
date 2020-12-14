@@ -1,6 +1,5 @@
-//var server_url = "http://161.35.92.218/proxy/";
-var server_url = "http://127.0.0.1:3001/";
-
+var server_url = "http://161.35.92.218/proxy/";
+//var server_url = "http://127.0.0.1:3001/";
 
 // -------------------------
 // ***** POST REQUESTS *****
@@ -88,6 +87,12 @@ function getNumberOfGameplaysFromServer(){
 function getAllScoresFromServer(){
   console.log("GET ALLSCORES FROM SERVER");
   var url = server_url.concat('allscores/');
+  return getUrlFromServer(url);
+}
+
+function getAllCollisionObstaclesFromServer(){
+  console.log("GET ALLCOLLISIONOBSTACLES FROM SERVER");
+  var url = server_url.concat('collisionobstacles/');
   return getUrlFromServer(url);
 }
 
