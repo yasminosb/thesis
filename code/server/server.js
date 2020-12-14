@@ -112,6 +112,11 @@ const server = http.createServer(async function (request, response) {
         var collisionobstacles = await getAllCollisionObstacles();
         response.end(JSON.stringify(collisionobstacles)); 
         break;
+      case "invertedgameovers":
+        writeHeadersToResponse(response);
+        var invertedgameovers = await getAllInvertedGameOvers();
+        response.end(JSON.stringify(invertedgameovers)); 
+        break;
       default:
         console.log("WRONG GET REQUEST")
     }
@@ -271,6 +276,12 @@ function getAllScores(){
 function getAllCollisionObstacles(){
   return getAllEntriesFromDB("gameplays",
     {collisionObstacle: 1}
+  )
+}
+
+function getAllInvertedGameOvers(){
+  return getAllEntriesFromDB("gameplays",
+    {invertedGameOver: 1}
   )
 }
 

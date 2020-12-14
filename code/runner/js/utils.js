@@ -220,3 +220,14 @@ var floor = function (num, precision) {
 	if (!precision) return num;
 	return (Math.floor(num / precision) * precision);
 };
+
+function get_percentages_from_count_dict(d){
+    var total = Object.values(d).reduce((a, b) => a + b)
+    percentages = {};
+    var keys = Object.keys(d);
+    for(var i = 0; i < keys.length; i++){
+        var key = keys[i];
+        percentages[key] = d[key] / total;
+    }
+    return percentages;
+}

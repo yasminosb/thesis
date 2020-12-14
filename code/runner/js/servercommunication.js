@@ -96,6 +96,12 @@ function getAllCollisionObstaclesFromServer(){
   return getUrlFromServer(url);
 }
 
+function getAllInvertedGameOversFromServer(){
+  console.log("GET ALLINVERTEDGAMEOVERS FROM SERVER");
+  var url = server_url.concat('invertedgameovers/');
+  return getUrlFromServer(url);
+}
+
 function getUrlFromServer(url){
   return new Promise((resolve, reject) => {
     var xhr = new XMLHttpRequest();

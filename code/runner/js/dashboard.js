@@ -161,124 +161,84 @@ async function onDocumentLoad() {
     // ------------ COLLISION OBSTACLE PIE CHART ------------
     // ------------------------------------------------------
 
-    var collisionObstacles = await getAllCollisionObstaclesFromServer();
-    collisionObstacles = JSON.parse(collisionObstacles);
-    var d = {};
-    var total = 0;
-    for(var i = 0; i < collisionObstacles.length; i++){
-        var collisionObstacle = collisionObstacles[i];
-        var type = collisionObstacle.collisionObstacle.typeConfig.type
-        if(type in d){
-            d[type] = d[type] + 1;
-        } else {
-            d[type] = 1;
-        }
-        total++;
-    }
-    
-    var percentages = {};
-    var keys = Object.keys(d);
-    for(var i = 0; i < keys.length; i++){
-        var key = keys[i];
-        percentages[key] = d[key] / total;
-    }
-    var data_collisions = d;
 
-    // set the dimensions and margins of the graph
-    var width = 1000
-        height = 450
-        margin = 40
+    function make_pie_chart(id, data, percentages){
 
-    // The radius of the pieplot is half the width or half the height (smallest one). I subtract a bit of margin.
-    var radius = Math.min(width, height) / 2 - margin
+        // set the dimensions and margins of the graph
+        var width = 1000
+            height = 450
+            margin = 40
 
-    // append the svg object to the div called 'my_dataviz'
-    var svg = d3.select("#piechart_collisionobstacle")
-    .append("svg")
-        .attr("width", width)
-        .attr("height", height)
-    .append("g")
-        .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+        // The radius of the pieplot is half the width or half the height (smallest one). I subtract a bit of margin.
+        var radius = Math.min(width, height) / 2 - margin
 
-    // Create dummy data
-    var data = {a: 9, b: 20, c:30, d:8, e:12, f:3, g:7, h:14}
+        // append the svg object to the div called 'my_dataviz'
+        var svg = d3.select(id)
+        .append("svg")
+            .attr("width", width)
+            .attr("height", height)
+        .append("g")
+            .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
-    // set the color scale
-    var color = d3.scaleOrdinal()
-    .domain(Object.keys(data_collisions))//["a", "b", "c", "d", "e", "f", "g", "h"])
-    .range(d3.schemeDark2);
+        // set the color scale
+        var color = d3.scaleOrdinal()
+        .domain(Object.keys(data))//["a", "b", "c", "d", "e", "f", "g", "h"])
+        .range(d3.schemeDark2);
 
-    // Compute the position of each group on the pie:
-    var pie = d3.pie()
-    .sort(null) // Do not sort group by size
-    .value(function(d) {return d.value; })
-    var data_ready = pie(d3.entries(data_collisions))
-    console.log(data_ready);
+        // Compute the position of each group on the pie:
+        var pie = d3.pie()
+        .sort(null) // Do not sort group by size
+        .value(function(d) {return d.value; })
+        var data_ready = pie(d3.entries(data))
+        console.log(data_ready);
 
-    // The arc generator
-    var arc = d3.arc()
-    .innerRadius(radius * 0.5)         // This is the size of the donut hole
-    .outerRadius(radius * 0.8)
+        // The arc generator
+        var arc = d3.arc()
+        .innerRadius(radius * 0.5)         // This is the size of the donut hole
+        .outerRadius(radius * 0.8)
 
-    // Another arc that won't be drawn. Just for labels positioning
-    var outerArc = d3.arc()
-    .innerRadius(radius * 0.9)
-    .outerRadius(radius * 0.9)
+        // Another arc that won't be drawn. Just for labels positioning
+        var outerArc = d3.arc()
+        .innerRadius(radius * 0.9)
+        .outerRadius(radius * 0.9)
 
-    // Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
-    svg
-    .selectAll('allSlices')
-    .data(data_ready)
-    .enter()
-    .append('path')
-    .attr('d', arc)
-    .attr('fill', function(d){ return(color(d.data.key)) })
-    .attr("stroke", "white")
-    .style("stroke-width", "2px")
-    .style("opacity", 0.7)
+        // Build the pie chart: Basically, each part of the pie is a path that we build using the arc function.
+        svg
+        .selectAll('allSlices')
+        .data(data_ready)
+        .enter()
+        .append('path')
+        .attr('d', arc)
+        .attr('fill', function(d){ return(color(d.data.key)) })
+        .attr("stroke", "white")
+        .style("stroke-width", "2px")
+        .style("opacity", 0.7)
 
-    // Add the polylines between chart and labels:
-    svg
-    .selectAll('allPolylines')
-    .data(data_ready)
-    .enter()
-    .append('polyline')
-        .attr("stroke", "black")
-        .style("fill", "none")
-        .attr("stroke-width", 1)
-        .attr('points', function(d) {
-        var posA = arc.centroid(d) // line insertion in the slice
-        var posB = outerArc.centroid(d) // line break: we use the other arc generator that has been built only for that
-        var posC = outerArc.centroid(d); // Label position = almost the same as posB
-        var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2 // we need the angle to see if the X position will be at the extreme right or extreme left
-        posC[0] = radius * 0.95 * (midangle < Math.PI ? 1 : -1); // multiply by 1 or -1 to put it on the right or on the left
-        return [posA, posB, posC]
-        })
+        // Add the polylines between chart and labels:
+        svg
+        .selectAll('allPolylines')
+        .data(data_ready)
+        .enter()
+        .append('polyline')
+            .attr("stroke", "black")
+            .style("fill", "none")
+            .attr("stroke-width", 1)
+            .attr('points', function(d) {
+            var posA = arc.centroid(d) // line insertion in the slice
+            var posB = outerArc.centroid(d) // line break: we use the other arc generator that has been built only for that
+            var posC = outerArc.centroid(d); // Label position = almost the same as posB
+            var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2 // we need the angle to see if the X position will be at the extreme right or extreme left
+            posC[0] = radius * 0.95 * (midangle < Math.PI ? 1 : -1); // multiply by 1 or -1 to put it on the right or on the left
+            return [posA, posB, posC]
+            })
 
-    // Add the polylines between chart and labels:
-    svg
-    .selectAll('allLabels')
-    .data(data_ready)
-    .enter()
-    .append('text')
-        .text( function(d) {return d.data.key} )
-        .attr('transform', function(d) {
-            var pos = outerArc.centroid(d);
-            var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2
-            pos[0] = radius * 0.99 * (midangle < Math.PI ? 1 : -1);
-            return 'translate(' + pos + ')';
-        })
-        .style('text-anchor', function(d) {
-            var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2
-            return (midangle < Math.PI ? 'start' : 'end')
-        })
-
-    svg
+        // Add the polylines between chart and labels:
+        svg
         .selectAll('allLabels')
         .data(data_ready)
         .enter()
         .append('text')
-            .text( function(d) {  return + percentages[d.data.key].toFixed(2) *100 + "%" } )
+            .text( function(d) {return d.data.key} )
             .attr('transform', function(d) {
                 var pos = outerArc.centroid(d);
                 var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2
@@ -289,8 +249,72 @@ async function onDocumentLoad() {
                 var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2
                 return (midangle < Math.PI ? 'start' : 'end')
             })
-            .attr("dy", "1em") // you can vary how far apart it shows up
 
+        // add percentages
+        svg
+            .selectAll('allLabels')
+            .data(data_ready)
+            .enter()
+            .append('text')
+                .text( function(d) {  return + percentages[d.data.key].toFixed(2) *100 + "%" } )
+                .attr('transform', function(d) {
+                    var pos = outerArc.centroid(d);
+                    var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2
+                    pos[0] = radius * 0.99 * (midangle < Math.PI ? 1 : -1);
+                    return 'translate(' + pos + ')';
+                })
+                .style('text-anchor', function(d) {
+                    var midangle = d.startAngle + (d.endAngle - d.startAngle) / 2
+                    return (midangle < Math.PI ? 'start' : 'end')
+                })
+                .attr("dy", "1em") // you can vary how far apart it shows up
+
+    }
+
+    
+
+    var collisionObstacles = await getAllCollisionObstaclesFromServer();
+    collisionObstacles = JSON.parse(collisionObstacles);
+
+    var d = {};
+    for(var i = 0; i < collisionObstacles.length; i++){
+        var collisionObstacle = collisionObstacles[i];
+        var type = collisionObstacle.collisionObstacle.typeConfig.type
+        if(type in d){
+            d[type] = d[type] + 1;
+        } else {
+            d[type] = 1;
+        }
+    }
+    var data_collisions = d;
+    var percentages_collisions = get_percentages_from_count_dict(data_collisions);
+
+
+    make_pie_chart("#piechart_collisionobstacle", data_collisions, percentages_collisions);
+
+    // ------------------------------------------------------
+    // ------------  INVERTED GAMEOVER PIE CHART ------------
+    // ------------------------------------------------------
+
+
+    var invertedGameOvers = await getAllInvertedGameOversFromServer();
+    invertedGameOvers = JSON.parse(invertedGameOvers);
+    console.log(invertedGameOvers)
+    var d = {};
+    for(var i = 0; i < invertedGameOvers.length; i++){
+        var invertedGameOver = invertedGameOvers[i];
+        var type = invertedGameOver.invertedGameOver;
+        if(type in d){
+            d[type] = d[type] + 1;
+        } else {
+            d[type] = 1;
+        }
+    }
+    var data_gameover = d;
+    var percentages_gameover = get_percentages_from_count_dict(data_gameover);
+
+    make_pie_chart("#piechart_invertedgameover", data_gameover, percentages_gameover);
+    
 
 
 
