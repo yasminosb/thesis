@@ -103,9 +103,9 @@ async function onDocumentLoad() {
         range = max - min,
         nBins = range/100;
     
-    var margin = {top: 10, right: 30, bottom: 50, left: 40},
+    var margin = {top: 10, right: 200, bottom: 50, left: 40},
         fullwidth = nBins*15,
-        fullheight = 400,
+        fullheight = 500,
         width = fullwidth - margin.left - margin.right,
         height = fullheight - margin.top - margin.bottom;
 
@@ -154,6 +154,46 @@ async function onDocumentLoad() {
     svg.append("g")
         .call(yAxis);
 
+    // Add a tooltip div. Here I define the general feature of the tooltip: stuff that do not depend on the data point.
+    // Its opacity is set to 0: we don't see it by default.
+    var tooltip = d3.select("#histogram_scores")
+    .append("div")
+    .style("opacity", 0)
+    .attr("class", "tooltip")
+    .style("background-color", "black")
+    .style("color", "white")
+    .style("border-radius", "5px")
+    .style("padding", "10px")
+
+    // A function that change this tooltip when the user hover a point.
+    // Its opacity is set to 1: we can now see it. Plus it set the text and position of tooltip depending on the datapoint (d)
+    var distance = 50;
+    var showTooltip = function(d) {
+        tooltip
+        .transition()
+        .duration(100)
+        .style("opacity", 1)
+        tooltip
+        .html(`Range: ${d.x0} - ${d.x1}<br>Count: ${d.length}`) // +  " + d.x0 + " - " + d.x1 + "\n" )
+        .style("left", (d3.mouse(this)[0]) + "px")
+        .style("top", (d3.mouse(this)[1]) + "px")
+    }
+    var moveTooltip = function(d) {
+        tooltip
+        //.style("left", (d3.mouse(this)[0]) + "px")
+        //.style("top", (d3.mouse(this)[1]) + "px")
+        .style("top", d3.event.pageY - 10 + "px")
+        .style("left", d3.event.pageX + 10 + "px");
+    }
+
+    // A function that change this tooltip when the leaves a point: just need to set opacity to 0 again
+    var hideTooltip = function(d) {
+        tooltip
+        .transition()
+        .duration(100)
+        .style("opacity", 0)
+    }
+
     // append the bar rectangles to the svg element
     svg.selectAll("rect")
         .data(bins)
@@ -164,6 +204,9 @@ async function onDocumentLoad() {
             .attr("width", function(d) { return xScale(d.x1) - xScale(d.x0) -1 ; })
             .attr("height", function(d) { return height - yScale(d.length); })
             .style("fill", "#69b3a2")
+            .on("mouseover", showTooltip )
+            .on("mousemove", moveTooltip )
+            .on("mouseleave", hideTooltip )
 
 
     // ------------------------------------------------------
