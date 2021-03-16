@@ -95,11 +95,6 @@ async function onDocumentLoad() {
     data = JSON.parse(scores);
 
     // set the dimensions and margins of the graph
-    var margin = {top: 10, right: 30, bottom: 30, left: 40},
-        fullwidth = 1000,
-        fullheight = 400,
-        width = fullwidth - margin.left - margin.right,
-        height = fullheight - margin.top - margin.bottom;
 
 
     var min = floor(d3.min(data, d => d.actualDistance), 100),
@@ -108,6 +103,12 @@ async function onDocumentLoad() {
         range = max - min,
         nBins = range/100;
     
+    var margin = {top: 10, right: 30, bottom: 50, left: 40},
+        fullwidth = nBins*15,
+        fullheight = 400,
+        width = fullwidth - margin.left - margin.right,
+        height = fullheight - margin.top - margin.bottom;
+
     // append the svg object to the body of the page
     var svg = d3.select("#histogram_scores")
     .append("svg")
