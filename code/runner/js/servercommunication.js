@@ -79,8 +79,14 @@ function getGameplayFromServer(game_id){
 }
 
 function getNumberOfGameplaysFromServer(){
-  console.log("GET NUMBEROFGAMEPLAYS FROM SERVER");
+  console.log("GET NUMBEROF GAMEPLAYS FROM SERVER");
   var url = server_url.concat('numberofgameplays/');
+  return getUrlFromServer(url);
+}
+
+function getNumberOfQuestionResponsesFromServer(){
+  console.log("GET NUMBEROF QUESTIONRESPONSES FROM SERVER");
+  var url = server_url.concat('numberofquestionresponses/');
   return getUrlFromServer(url);
 }
 

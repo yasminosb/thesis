@@ -71,7 +71,7 @@ const server = http.createServer(async function (request, response) {
       case "hasplayed2games":
         writeHeadersToResponse(response);
         var USERID = url[1];
-        var result = await userHasPlayed2Games(USERID)
+        var result = await userHasPlayed2Games(USERID);
         response.end(result.toString());
         break;
 
@@ -90,33 +90,49 @@ const server = http.createServer(async function (request, response) {
         var gameplay = await getEntryFromDB("gameplays", GAMEID);
         response.end(JSON.stringify(gameplay));
         break;
+
       // GET /allgameplays
       case "allgameplays":
         writeHeadersToResponse(response);
         var gameplays = await getAllGameplays()
         response.end(JSON.stringify(gameplays)); 
         break;
+
       // GET /numberofgameplays
       case "numberofgameplays":
         writeHeadersToResponse(response);
-        var number = await getNumberOfEntriesFromDB("gameplays")
+        var number = await getNumberOfEntriesFromDB("gameplays");
         response.end(JSON.stringify(number)); 
         break;
+
+      // GET /numberofquestionresponses
+      case "numberofquestionresponses":
+        writeHeadersToResponse(response);
+        var number = await getNumberOfEntriesFromDB("questionresponses");
+        response.end(JSON.stringify(number)); 
+        break;
+
+      // GET /allscores
       case "allscores":
         writeHeadersToResponse(response);
         var scores = await getAllScores();
         response.end(JSON.stringify(scores)); 
         break;
+
+      // GET /collisionobstacles
       case "collisionobstacles":
         writeHeadersToResponse(response);
         var collisionobstacles = await getAllCollisionObstacles();
         response.end(JSON.stringify(collisionobstacles)); 
         break;
+
+      // GET /invertedgameovers
       case "invertedgameovers":
         writeHeadersToResponse(response);
         var invertedgameovers = await getAllInvertedGameOvers();
         response.end(JSON.stringify(invertedgameovers)); 
         break;
+
       default:
         console.log("WRONG GET REQUEST")
     }

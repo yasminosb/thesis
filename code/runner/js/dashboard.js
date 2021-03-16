@@ -75,11 +75,19 @@ async function onDocumentLoad() {
         cell.innerHTML = innerHTML;
     }
 
+    
+    // ------------------------------------------------------
+    // ----------------------- STATS ------------------------
+    // ------------------------------------------------------
     var number_of_gameplays = await getNumberOfGameplaysFromServer();
     var gameplays_element = document.getElementById("numberofgameplays")
     gameplays_element.innerHTML = "Total gameplays: " + number_of_gameplays;
 
     
+    var number_of_questionresponses = await getNumberOfQuestionResponsesFromServer();
+    var questionresponses_element = document.getElementById("numberofquestionresponses")
+    questionresponses_element.innerHTML = "Total questionresponses: " + number_of_questionresponses;
+
     // ------------------------------------------------------
     // ------------------ SCORE HISTOGRAM -------------------
     // ------------------------------------------------------
